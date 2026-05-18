@@ -4457,23 +4457,87 @@ export default function App() {
   }
 
   /* ── MAIN LAYOUT ── */
-  return (
-    <div style={S.app}>
-      {/* Header */}
-      <div style={S.header}>
-        <div style={{maxWidth:1400,margin:"0 auto"}}>
-          <div style={S.heroTitle}>Computer Vision Mastery</div>
-          <div style={S.heroSub}>The complete deep dive: theory, code, challenges, and quizzes: from pixel to production</div>
-          <div style={S.stats}>
-            {[["30","CV Domains",P.accent1],["10","Learning Modules",P.accent2],["100","Code Challenges",P.accent3],["150","Quiz Questions",P.accent4]].map(([n,l,c])=>(
-              <div key={l} style={S.stat}>
-                <div style={{...S.statN,color:c}}>{n}</div>
-                <div style={S.statL}>{l}</div>
-              </div>
-            ))}
-          </div>
+/* ── MAIN LAYOUT ── */
+return (
+  <div style={S.app}>
+    
+    {/* Header */}
+    <div style={S.header}>
+      <div style={{maxWidth:1400, margin:"0 auto"}}>
+
+        {/* Brand */}
+        <div style={{
+          color:P.amber,
+          fontSize:14,
+          fontWeight:700,
+          letterSpacing:"0.18em",
+          textTransform:"uppercase",
+          marginBottom:18
+        }}>
+          Daintymindz Laboratory
         </div>
+
+        {/* Main Title */}
+        <div style={S.heroTitle}>
+          Computer Vision Mastery
+        </div>
+
+        {/* Subtitle */}
+        <div style={{
+          fontSize:22,
+          lineHeight:1.6,
+          color:P.textSoft,
+          maxWidth:1100,
+          marginTop:18,
+          fontWeight:500
+        }}>
+          A comprehensive beginner to advanced computer vision curriculum developed by Daintymindz Laboratory. This academy is designed to teach the foundations, mathematics, engineering principles, coding practices, research concepts, and modern deep learning systems that power real world computer vision applications across healthcare, robotics, autonomous systems, agriculture, satellite imaging, smart cities, industrial inspection, biometrics, multimodal AI, and intelligent digital twin systems.
+        </div>
+
+        {/* Description */}
+        <div style={{
+          marginTop:32,
+          maxWidth:1250,
+          color:P.muted,
+          fontSize:16,
+          lineHeight:1.9
+        }}>
+          This tutorial series combines theoretical intuition, detailed Python implementations, interactive coding exercises, visual learning, research oriented explanations, and industry focused projects into a unified educational experience. Learners progress from understanding pixels and image representations to building advanced systems such as convolutional neural networks, object detectors, segmentation models, transformers, multimodal vision systems, explainable AI pipelines, and modern generative vision architectures.
+
+          <br /><br />
+
+          The curriculum is intentionally structured for absolute beginners, intermediate learners, researchers, interns, and engineering professionals who want a practical and deeply detailed understanding of computer vision. Every section includes carefully explained code walkthroughs, real datasets, challenge driven learning, quiz based assessments, and progressively difficult problem solving exercises inspired by real technical interviews, research workflows, and production AI systems.
+
+          <br /><br />
+
+          Topics covered include classical computer vision, image preprocessing, feature extraction, edge detection, segmentation, object detection, image restoration, optical flow, 3D vision, medical imaging, satellite imagery, OCR, video understanding, multimodal AI, explainable computer vision, generative AI for vision, autonomous driving perception systems, visual language models, and advanced deep learning architectures using PyTorch, OpenCV, NumPy, and modern AI frameworks.
+
+          <br /><br />
+
+          Developed by Daintymindz Laboratory, this platform reflects our mission of advancing intelligent systems research, engineering education, innovation, scientific rigor, and accessible AI learning for global communities.
+        </div>
+
+        {/* Stats */}
+        <div style={S.stats}>
+          {[
+            ["30+","Computer Vision Domains",P.amber],
+            ["10+","Detailed Learning Modules",P.amberSoft],
+            ["100+","Coding Challenges",P.graphite3],
+            ["150+","Quiz Questions",P.graphite2]
+          ].map(([n,l,c]) => (
+            <div key={l} style={S.stat}>
+              <div style={{...S.statN, color:c}}>
+                {n}
+              </div>
+              <div style={S.statL}>
+                {l}
+              </div>
+            </div>
+          ))}
+        </div>
+
       </div>
+    </div>
 
       {/* Tabs */}
       <div style={S.tabs}>
