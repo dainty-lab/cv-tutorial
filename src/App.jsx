@@ -53,227 +53,79 @@ const C = i => CL[i % CL.length];
 const DOMAINS = [
 {
   id:1,
-
   name:"Image Classification",
-
-  color:P.amber,
-
+  color:P.accent1,
   tagline:"Teach a computer how to recognize and name what it sees in an image",
 
   theory:`
-
-Image classification is one of the most fundamental problems in computer vision. The goal is simple: given an image, teach a computer to assign a label to that image.
-
-For example:
-- dog
-- cat
-- car
-- airplane
-- tomato leaf disease
-- pneumonia
-- traffic sign
-
-Humans perform image classification naturally. When you look at a picture of a dog, your brain instantly understands that it is a dog. Computers cannot naturally understand images this way. To a computer, an image is only a large collection of numbers arranged in rows and columns.
-
-A computer image is made of pixels.
-
-A pixel is the smallest unit of an image. Every image is built from many pixels.
+Image classification is one of the most fundamental tasks in computer vision. The goal is simple: given one image, the computer assigns one main label to the entire image.
 
 For example:
-- a 100 × 100 grayscale image contains 10,000 pixels
-- a 1920 × 1080 HD image contains more than 2 million pixels
+- a dog image should be classified as dog
+- a car image should be classified as car
+- a diseased tomato leaf image may be classified as tomato late blight
+- a chest X-ray image may be classified as pneumonia or normal
 
-Each pixel stores numerical intensity information.
+A human can look at a picture and understand it quickly. A computer cannot do this naturally. To a computer, an image is only a grid of numbers.
 
-For grayscale images:
+A pixel is the smallest visible unit of an image. Every digital image is made from pixels.
+
+For a grayscale image:
 - 0 means black
 - 255 means white
-- values between 0 and 255 represent shades of gray
+- values between 0 and 255 represent different shades of gray
 
-For RGB color images:
-each pixel contains 3 numbers:
-- Red intensity
-- Green intensity
-- Blue intensity
+For an RGB image, each pixel has three values:
+- red
+- green
+- blue
 
 Example:
-[255, 0, 0] means pure red
-[0, 255, 0] means pure green
-[0, 0, 255] means pure blue
+[255, 0, 0] means red
+[0, 255, 0] means green
+[0, 0, 255] means blue
 [255, 255, 255] means white
 [0, 0, 0] means black
 
-A computer does not initially understand:
-- dogs
-- faces
-- plants
-- humans
-- roads
+A grayscale image has shape:
+height × width
 
-It only sees matrices of numbers.
+An RGB image has shape:
+height × width × 3
 
-The purpose of image classification is to help the machine learn patterns from these numerical matrices.
+For example, an image with shape (224, 224, 3) means:
+- 224 pixels tall
+- 224 pixels wide
+- 3 color channels
 
-Historically, early computer vision systems relied on hand-crafted feature extraction methods.
+Image classification teaches a model to find useful patterns inside these numbers.
 
-Examples include:
-- SIFT, Scale Invariant Feature Transform
-- SURF, Speeded Up Robust Features
-- HOG, Histogram of Oriented Gradients
+In older computer vision, engineers manually designed features such as edges, corners, gradients, and textures. Popular methods included SIFT, SURF, HOG, and traditional classifiers such as SVMs or k-NN.
 
-Engineers manually designed rules to extract image features such as:
-- edges
-- corners
-- gradients
-- textures
+Modern deep learning models learn these features automatically.
 
-These features were then passed into traditional machine learning models such as:
-- Support Vector Machines
-- Random Forests
-- k-Nearest Neighbors
+A convolutional neural network usually learns in stages:
+- early layers learn edges and simple patterns
+- middle layers learn textures and shapes
+- deeper layers learn object parts
+- final layers decide the class label
 
-This approach worked reasonably well for simple tasks but struggled on complex datasets.
+Image classification is used in healthcare, agriculture, manufacturing, robotics, wildlife monitoring, satellite imagery, quality inspection, smart cities, retail analytics, and autonomous systems.
 
-The deep learning revolution changed computer vision dramatically.
-
-In 2012, AlexNet won the ImageNet competition using deep convolutional neural networks trained on GPUs. This model dramatically outperformed traditional approaches and triggered the modern deep learning era.
-
-Modern image classification systems now learn features automatically from data.
-
-Instead of manually designing edge detectors, the neural network learns:
-- low-level features in early layers
-- textures and patterns in middle layers
-- object parts in deeper layers
-- full object understanding in final layers
-
-This hierarchical feature learning is one of the reasons CNNs became extremely successful.
-
-Today, image classification powers many real-world systems:
-- medical diagnosis
-- self-driving cars
-- agriculture monitoring
-- facial recognition
-- manufacturing quality inspection
-- wildlife monitoring
-- satellite imagery analysis
-- retail systems
-- robotics
-- smart cities
-
-Modern architectures include:
-- ResNet
-- EfficientNet
-- DenseNet
-- ConvNeXt
-- Vision Transformers
-
-These models can classify thousands of categories with extremely high accuracy.
-
-This module will teach image classification from absolute beginner concepts to advanced modern architectures using detailed explanations, mathematics, coding walkthroughs, visualization, and hands-on datasets.
-
+This tutorial starts from pixels and slicing, then moves gradually toward CNNs, transfer learning, ResNet, EfficientNet, Vision Transformers, evaluation metrics, datasets, and real-world classification projects.
 `,
 
   fundamentals:[
-
-    {
-      title:"What is an image mathematically?",
-      content:`
-
-An image is simply a matrix of numbers.
-
-A grayscale image:
-- height × width
-
-Example:
-28 × 28
-
-An RGB image:
-- height × width × channels
-
-Example:
-224 × 224 × 3
-
-The 3 represents:
-- red channel
-- green channel
-- blue channel
-
-In NumPy:
-- rows represent vertical movement
-- columns represent horizontal movement
-
-For example:
-
-img[0,0]
-
-means:
-- row 0
-- column 0
-
-This accesses the top-left pixel.
-
-`
-    },
-
-    {
-      title:"Understanding image slicing",
-      content:`
-
-Image slicing allows us to extract specific regions of an image.
-
-Example:
-
-img[20:80, 50:120]
-
-This means:
-- rows from 20 to 79
-- columns from 50 to 119
-
-The last number is NOT included.
-
-This extracts a rectangular region from the image.
-
-Think of slicing like cutting a piece from a large photograph.
-
-`
-    },
-
-    {
-      title:"What does a CNN learn?",
-      content:`
-
-Convolutional Neural Networks learn visual patterns automatically.
-
-Early layers learn:
-- edges
-- corners
-- gradients
-
-Middle layers learn:
-- textures
-- shapes
-- patterns
-
-Deep layers learn:
-- object parts
-- semantic meaning
-- object identity
-
-For example:
-- early layers may detect fur texture
-- deeper layers may detect dog ears
-- final layers recognize the complete dog
-
-`
-    }
-
+    "An image is a matrix of numbers. A grayscale image is a 2-D matrix, while an RGB image is a 3-D matrix with red, green, and blue channels.",
+    "Image slicing means cutting out part of an image using row and column ranges. Example: img[20:80, 50:120] selects rows 20 to 79 and columns 50 to 119.",
+    "A classifier looks at the entire image and predicts one main label. This is different from object detection, which predicts labels and bounding boxes.",
+    "CNNs learn useful visual features automatically. Early layers detect edges, middle layers detect textures, and deeper layers detect object parts.",
+    "Transfer learning allows us to use a model already trained on a huge dataset, then adapt it to a smaller custom dataset."
   ],
 
   architectures:[
-
     "LeNet-5",
     "AlexNet",
-    "ZFNet",
     "VGG-16",
     "VGG-19",
     "GoogLeNet",
@@ -283,16 +135,12 @@ For example:
     "DenseNet",
     "EfficientNet",
     "MobileNet",
-    "ShuffleNet",
     "ConvNeXt",
     "Vision Transformer",
-    "Swin Transformer",
-    "CoAtNet"
-
+    "Swin Transformer"
   ],
 
   metrics:[
-
     "Top-1 Accuracy",
     "Top-5 Accuracy",
     "Precision",
@@ -301,226 +149,29 @@ For example:
     "Confusion Matrix",
     "ROC Curve",
     "AUC Score"
-
   ],
 
   datasets:[
-
-    {
-      name:"MNIST",
-      description:"70,000 handwritten digit images. One of the best beginner datasets for learning image classification.",
-      classes:"10 digits",
-      size:"28 × 28 grayscale",
-      difficulty:"Beginner"
-    },
-
-    {
-      name:"CIFAR-10",
-      description:"Tiny color image dataset containing airplanes, cars, birds, cats, deer, dogs, frogs, horses, ships, and trucks.",
-      classes:"10",
-      size:"32 × 32 RGB",
-      difficulty:"Beginner"
-    },
-
-    {
-      name:"CIFAR-100",
-      description:"More difficult version of CIFAR-10 with 100 object classes.",
-      classes:"100",
-      size:"32 × 32 RGB",
-      difficulty:"Intermediate"
-    },
-
-    {
-      name:"ImageNet",
-      description:"The most famous large-scale image classification dataset used in modern deep learning research.",
-      classes:"1000",
-      size:"Variable",
-      difficulty:"Advanced"
-    },
-
-    {
-      name:"PlantVillage",
-      description:"Agriculture dataset used for plant disease classification.",
-      classes:"38",
-      difficulty:"Intermediate"
-    },
-
-    {
-      name:"ChestXray Pneumonia",
-      description:"Medical imaging dataset for pneumonia classification from chest X-rays.",
-      classes:"2",
-      difficulty:"Intermediate"
-    }
-
-  ],
-
-  tasks:[
-
-    {
-      title:"Task 1: Understanding Pixels and Image Arrays",
-
-      description:`
-
-This task teaches:
-- what a pixel is
-- how images are stored
-- how slicing works
-- how computers view images
-
-You will:
-- load an image
-- inspect its shape
-- inspect individual pixels
-- slice image regions
-- modify pixel values
-
-`,
-
-      code:`
-
-# ============================================================
-# TASK 1: Understanding Pixels
-# ============================================================
-
-# Install required libraries
-!pip install pillow matplotlib numpy
-
-# Import libraries
-import numpy as np
-import matplotlib.pyplot as plt
-from PIL import Image
-import urllib.request
-
-# ============================================================
-# STEP 1: Download a real image
-# ============================================================
-
-url = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg"
-
-urllib.request.urlretrieve(url, "dog.jpg")
-
-# ============================================================
-# STEP 2: Load image using PIL
-# ============================================================
-
-img = Image.open("dog.jpg")
-
-# Convert image into NumPy array
-img_np = np.array(img)
-
-# ============================================================
-# STEP 3: Understand image dimensions
-# ============================================================
-
-print("Image shape:", img_np.shape)
-
-# Explanation:
-# shape returns:
-# (height, width, channels)
-
-# Example:
-# (320, 320, 3)
-
-# This means:
-# - image height = 320 pixels
-# - image width  = 320 pixels
-# - 3 color channels (RGB)
-
-# ============================================================
-# STEP 4: Visualize image
-# ============================================================
-
-plt.figure(figsize=(6,6))
-plt.imshow(img_np)
-plt.title("Original Image")
-plt.axis("off")
-plt.show()
-
-# ============================================================
-# STEP 5: Access a single pixel
-# ============================================================
-
-pixel = img_np[0,0]
-
-print("Top-left pixel value:", pixel)
-
-# Example output:
-# [123 85 62]
-
-# Meaning:
-# Red intensity   = 123
-# Green intensity = 85
-# Blue intensity  = 62
-
-# ============================================================
-# STEP 6: Slice a region from the image
-# ============================================================
-
-crop = img_np[50:200, 80:250]
-
-# Explanation:
-# rows    50 to 199
-# columns 80 to 249
-
-plt.figure(figsize=(5,5))
-plt.imshow(crop)
-plt.title("Cropped Region")
-plt.axis("off")
-plt.show()
-
-# ============================================================
-# STEP 7: Modify image pixels
-# ============================================================
-
-modified = img_np.copy()
-
-# Remove blue channel
-modified[:,:,2] = 0
-
-plt.figure(figsize=(6,6))
-plt.imshow(modified)
-plt.title("Blue Channel Removed")
-plt.axis("off")
-plt.show()
-
-# ============================================================
-# STEP 8: Convert to grayscale manually
-# ============================================================
-
-gray = (
-    0.299 * img_np[:,:,0] +
-    0.587 * img_np[:,:,1] +
-    0.114 * img_np[:,:,2]
-)
-
-plt.figure(figsize=(6,6))
-plt.imshow(gray, cmap="gray")
-plt.title("Grayscale Image")
-plt.axis("off")
-plt.show()
-
-`
-
-    }
-
+    "MNIST, 70,000 handwritten digit images, 10 classes, 28 by 28 grayscale",
+    "FashionMNIST, clothing image classification, 10 classes, 28 by 28 grayscale",
+    "CIFAR-10, tiny color images, 10 classes, 32 by 32 RGB",
+    "CIFAR-100, tiny color images, 100 classes, 32 by 32 RGB",
+    "ImageNet, large-scale classification dataset, 1,000 classes",
+    "Oxford 102 Flowers, flower species classification",
+    "Stanford Cars, fine-grained car classification",
+    "PlantVillage, plant disease classification",
+    "Chest X-ray Pneumonia, medical image classification"
   ],
 
   colab:`
+# ============================================================
+# IMAGE CLASSIFICATION, FROM PIXELS TO RESNET
+# Beginner friendly, step-by-step
+# ============================================================
 
-# ============================================================
-# IMAGE CLASSIFICATION WITH RESNET-50
-# FULL BEGINNER WALKTHROUGH
-# ============================================================
-
-# Install required packages
-!pip install torch torchvision pillow matplotlib
-
-# ============================================================
-# STEP 1: Import libraries
-# ============================================================
+!pip install torch torchvision pillow matplotlib numpy
 
 import torch
-import torchvision
 from torchvision import transforms, models
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -528,54 +179,9 @@ import numpy as np
 import urllib.request
 import io
 
-# ============================================================
-# STEP 2: Load pretrained model
-# ============================================================
-
-# ResNet50 was trained on ImageNet
-# ImageNet contains 1.2 million images
-# and 1000 categories
-
-model = models.resnet50(
-    weights=models.ResNet50_Weights.IMAGENET1K_V2
-)
-
-# Put model in evaluation mode
-model.eval()
-
-print(model)
-
-# ============================================================
-# STEP 3: Define image preprocessing
-# ============================================================
-
-# Neural networks expect:
-# - fixed image size
-# - normalized values
-# - tensor format
-
-transform_pipeline = transforms.Compose([
-
-    # Resize shortest side to 256
-    transforms.Resize(256),
-
-    # Crop center 224 × 224 region
-    transforms.CenterCrop(224),
-
-    # Convert PIL image into tensor
-    transforms.ToTensor(),
-
-    # Normalize using ImageNet statistics
-    transforms.Normalize(
-        mean=[0.485,0.456,0.406],
-        std=[0.229,0.224,0.225]
-    )
-
-])
-
-# ============================================================
-# STEP 4: Download image
-# ============================================================
+# ------------------------------------------------------------
+# STEP 1: Download and load an image
+# ------------------------------------------------------------
 
 url = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg"
 
@@ -585,103 +191,157 @@ img = Image.open(
     io.BytesIO(response.read())
 ).convert("RGB")
 
-# ============================================================
-# STEP 5: Visualize image
-# ============================================================
-
 plt.figure(figsize=(6,6))
 plt.imshow(img)
-plt.title("Input Image")
+plt.title("Original Image")
 plt.axis("off")
 plt.show()
 
-# ============================================================
-# STEP 6: Transform image
-# ============================================================
+# ------------------------------------------------------------
+# STEP 2: Convert image to NumPy array
+# ------------------------------------------------------------
+
+img_np = np.array(img)
+
+print("Image shape:", img_np.shape)
+
+# Shape means:
+# height, width, color channels
+
+# ------------------------------------------------------------
+# STEP 3: Inspect one pixel
+# ------------------------------------------------------------
+
+pixel = img_np[0, 0]
+
+print("Top-left pixel:", pixel)
+
+# This pixel contains:
+# red value
+# green value
+# blue value
+
+# ------------------------------------------------------------
+# STEP 4: Slice a region from the image
+# ------------------------------------------------------------
+
+crop = img_np[50:200, 80:250]
+
+plt.figure(figsize=(5,5))
+plt.imshow(crop)
+plt.title("Cropped Region")
+plt.axis("off")
+plt.show()
+
+# img_np[50:200, 80:250] means:
+# rows 50 to 199
+# columns 80 to 249
+
+# ------------------------------------------------------------
+# STEP 5: Separate RGB channels
+# ------------------------------------------------------------
+
+red_channel = img_np[:, :, 0]
+green_channel = img_np[:, :, 1]
+blue_channel = img_np[:, :, 2]
+
+fig, axes = plt.subplots(1, 3, figsize=(15,5))
+
+axes[0].imshow(red_channel, cmap="Reds")
+axes[0].set_title("Red Channel")
+axes[0].axis("off")
+
+axes[1].imshow(green_channel, cmap="Greens")
+axes[1].set_title("Green Channel")
+axes[1].axis("off")
+
+axes[2].imshow(blue_channel, cmap="Blues")
+axes[2].set_title("Blue Channel")
+axes[2].axis("off")
+
+plt.show()
+
+# ------------------------------------------------------------
+# STEP 6: Convert to grayscale manually
+# ------------------------------------------------------------
+
+gray = (
+    0.299 * red_channel +
+    0.587 * green_channel +
+    0.114 * blue_channel
+)
+
+plt.figure(figsize=(6,6))
+plt.imshow(gray, cmap="gray")
+plt.title("Manual Grayscale Image")
+plt.axis("off")
+plt.show()
+
+# ------------------------------------------------------------
+# STEP 7: Load pretrained ResNet-50
+# ------------------------------------------------------------
+
+model = models.resnet50(
+    weights=models.ResNet50_Weights.IMAGENET1K_V2
+)
+
+model.eval()
+
+# ------------------------------------------------------------
+# STEP 8: Preprocess image for ResNet
+# ------------------------------------------------------------
+
+transform_pipeline = transforms.Compose([
+    transforms.Resize(256),
+    transforms.CenterCrop(224),
+    transforms.ToTensor(),
+    transforms.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]
+    )
+])
 
 x = transform_pipeline(img)
 
-print("Tensor shape:", x.shape)
-
-# Shape explanation:
-# [3, 224, 224]
-
-# Meaning:
-# - 3 color channels
-# - 224 height
-# - 224 width
-
-# ============================================================
-# STEP 7: Add batch dimension
-# ============================================================
+print("Tensor shape before batch:", x.shape)
 
 x = x.unsqueeze(0)
 
-print("Batch shape:", x.shape)
+print("Tensor shape after batch:", x.shape)
 
-# Output:
-# [1, 3, 224, 224]
-
-# Neural networks expect batches
-
-# ============================================================
-# STEP 8: Run inference
-# ============================================================
+# ------------------------------------------------------------
+# STEP 9: Run prediction
+# ------------------------------------------------------------
 
 with torch.no_grad():
-
     logits = model(x)
-
     probabilities = torch.softmax(logits, dim=1)
 
-# ============================================================
-# STEP 9: Get top predictions
-# ============================================================
+# ------------------------------------------------------------
+# STEP 10: Get top 5 predictions
+# ------------------------------------------------------------
 
 top5 = probabilities.topk(5)
-
-# ============================================================
-# STEP 10: Download labels
-# ============================================================
 
 labels = urllib.request.urlopen(
     "https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt"
 ).read().decode().splitlines()
 
-# ============================================================
-# STEP 11: Print predictions
-# ============================================================
+print("\\nTop 5 Predictions:\\n")
 
-print("\\nTop Predictions:\\n")
-
-for prob, idx in zip(top5.values[0], top5.indices[0]):
-
-    label = labels[idx]
-
-    confidence = prob.item() * 100
-
+for probability, index in zip(top5.values[0], top5.indices[0]):
+    label = labels[index]
+    confidence = probability.item() * 100
     print(f"{label:30s} : {confidence:.2f}%")
 
-# ============================================================
-# STEP 12: Understanding the output
-# ============================================================
+# ------------------------------------------------------------
+# Explanation
+# ------------------------------------------------------------
 
-# The neural network produces:
-# - logits
-# - logits converted to probabilities
-# - highest probability becomes prediction
-
-# Softmax converts raw scores into probabilities
-
-# Example:
-# dog    0.91
-# wolf   0.05
-# fox    0.02
-
-# Total probability = 1.0
-
+# logits are raw model scores
+# softmax converts logits into probabilities
+# topk selects the highest probability classes
 `
-
 },
 
   { id:2, name:"Object Detection", color:P.accent2, tagline:"Locate and classify multiple objects with bounding boxes",
