@@ -342,6 +342,414 @@ for probability, index in zip(top5.values[0], top5.indices[0]):
 # softmax converts logits into probabilities
 # topk selects the highest probability classes
 `
+
+
+trainingColab:`
+# ============================================================
+# TRAINING AND FINE-TUNING AN IMAGE CLASSIFICATION MODEL
+# Dataset: CIFAR-10
+# Goal: Train a model, fine-tune ResNet18, save weights, reload weights
+# ============================================================
+
+!pip install torch torchvision matplotlib scikit-learn
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torchvision
+import torchvision.transforms as T
+import matplotlib.pyplot as plt
+import numpy as np
+from torchvision import models
+from sklearn.metrics import classification_report, confusion_matrix
+
+# ============================================================
+# STEP 1: Choose device
+# ============================================================
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print("Using device:", device)
+
+# ============================================================
+# STEP 2: Understand the dataset
+# ============================================================
+
+# CIFAR-10 has 10 classes:
+# airplane, automobile, bird, cat, deer, dog, frog, horse, ship, truck
+# Each image is 32 by 32 pixels with 3 color channels.
+
+classes = [
+    "airplane", "automobile", "bird", "cat", "deer",
+    "dog", "frog", "horse", "ship", "truck"
+]
+
+# ============================================================
+# STEP 3: Define image transformations
+# ============================================================
+
+# Training images are augmented to help the model generalize.
+# Testing images are only converted and normalized.
+
+train_transform = T.Compose([
+    T.Resize((224, 224)),
+    T.RandomHorizontalFlip(),
+    T.RandomRotation(10),
+    T.ToTensor(),
+    T.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]
+    )
+])
+
+test_transform = T.Compose([
+    T.Resize((224, 224)),
+    T.ToTensor(),
+    T.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]
+    )
+])
+
+# ============================================================
+# STEP 4: Download and load dataset
+# ============================================================
+
+train_dataset = torchvision.datasets.CIFAR10(
+    root="./data",
+    train=True,
+    download=True,
+    transform=train_transform
+)
+
+test_dataset = torchvision.datasets.CIFAR10(
+    root="./data",
+    train=False,
+    download=True,
+    transform=test_transform
+)
+
+# ============================================================
+# STEP 5: Create data loaders
+# ============================================================
+
+# A DataLoader feeds images to the model in batches.
+# batch_size=32 means the model sees 32 images at a time.
+
+train_loader = torch.utils.data.DataLoader(
+    train_dataset,
+    batch_size=32,
+    shuffle=True,
+    num_workers=2
+)
+
+test_loader = torch.utils.data.DataLoader(
+    test_dataset,
+    batch_size=32,
+    shuffle=False,
+    num_workers=2
+)
+
+print("Training images:", len(train_dataset))
+print("Testing images:", len(test_dataset))
+
+# ============================================================
+# STEP 6: View sample images
+# ============================================================
+
+def show_batch(loader):
+    images, labels = next(iter(loader))
+
+    # undo normalization for display
+    img = images[0].permute(1, 2, 0).numpy()
+    img = img * np.array([0.229, 0.224, 0.225]) + np.array([0.485, 0.456, 0.406])
+    img = np.clip(img, 0, 1)
+
+    plt.figure(figsize=(4,4))
+    plt.imshow(img)
+    plt.title("Label: " + classes[labels[0]])
+    plt.axis("off")
+    plt.show()
+
+show_batch(train_loader)
+
+# ============================================================
+# STEP 7: Load pretrained ResNet18
+# ============================================================
+
+# ResNet18 already learned useful image features from ImageNet.
+# We replace the final layer because CIFAR-10 has only 10 classes.
+
+model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
+
+num_features = model.fc.in_features
+
+model.fc = nn.Linear(num_features, 10)
+
+model = model.to(device)
+
+# ============================================================
+# STEP 8: Freeze backbone first
+# ============================================================
+
+# Freezing means we keep pretrained layers fixed.
+# Only the final classifier layer will learn at first.
+
+for name, param in model.named_parameters():
+    if "fc" not in name:
+        param.requires_grad = False
+
+# ============================================================
+# STEP 9: Define loss function and optimizer
+# ============================================================
+
+criterion = nn.CrossEntropyLoss()
+
+optimizer = optim.Adam(
+    filter(lambda p: p.requires_grad, model.parameters()),
+    lr=0.001
+)
+
+# ============================================================
+# STEP 10: Training function
+# ============================================================
+
+def train_one_epoch(model, loader, criterion, optimizer, device):
+    model.train()
+
+    running_loss = 0.0
+    correct = 0
+    total = 0
+
+    for images, labels in loader:
+        images = images.to(device)
+        labels = labels.to(device)
+
+        optimizer.zero_grad()
+
+        outputs = model(images)
+
+        loss = criterion(outputs, labels)
+
+        loss.backward()
+
+        optimizer.step()
+
+        running_loss += loss.item() * images.size(0)
+
+        predictions = outputs.argmax(dim=1)
+
+        correct += (predictions == labels).sum().item()
+
+        total += labels.size(0)
+
+    epoch_loss = running_loss / total
+    epoch_acc = correct / total
+
+    return epoch_loss, epoch_acc
+
+# ============================================================
+# STEP 11: Evaluation function
+# ============================================================
+
+def evaluate(model, loader, criterion, device):
+    model.eval()
+
+    running_loss = 0.0
+    correct = 0
+    total = 0
+
+    all_predictions = []
+    all_labels = []
+
+    with torch.no_grad():
+        for images, labels in loader:
+            images = images.to(device)
+            labels = labels.to(device)
+
+            outputs = model(images)
+
+            loss = criterion(outputs, labels)
+
+            running_loss += loss.item() * images.size(0)
+
+            predictions = outputs.argmax(dim=1)
+
+            correct += (predictions == labels).sum().item()
+
+            total += labels.size(0)
+
+            all_predictions.extend(predictions.cpu().numpy())
+            all_labels.extend(labels.cpu().numpy())
+
+    epoch_loss = running_loss / total
+    epoch_acc = correct / total
+
+    return epoch_loss, epoch_acc, all_predictions, all_labels
+
+# ============================================================
+# STEP 12: Train classifier head
+# ============================================================
+
+epochs = 3
+
+history = {
+    "train_loss": [],
+    "train_acc": [],
+    "test_loss": [],
+    "test_acc": []
+}
+
+best_acc = 0.0
+
+for epoch in range(epochs):
+    train_loss, train_acc = train_one_epoch(
+        model,
+        train_loader,
+        criterion,
+        optimizer,
+        device
+    )
+
+    test_loss, test_acc, _, _ = evaluate(
+        model,
+        test_loader,
+        criterion,
+        device
+    )
+
+    history["train_loss"].append(train_loss)
+    history["train_acc"].append(train_acc)
+    history["test_loss"].append(test_loss)
+    history["test_acc"].append(test_acc)
+
+    print(f"Epoch {epoch+1}/{epochs}")
+    print(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f}")
+    print(f"Test  Loss: {test_loss:.4f}, Test  Acc: {test_acc:.4f}")
+    print("-" * 50)
+
+    if test_acc > best_acc:
+        best_acc = test_acc
+        torch.save(model.state_dict(), "best_resnet18_cifar10.pth")
+        print("Saved best model weights")
+
+# ============================================================
+# STEP 13: Fine-tune deeper layers
+# ============================================================
+
+# Now we unfreeze all layers.
+# This allows the whole model to adjust to CIFAR-10.
+
+for param in model.parameters():
+    param.requires_grad = True
+
+optimizer = optim.Adam(model.parameters(), lr=0.0001)
+
+fine_tune_epochs = 2
+
+for epoch in range(fine_tune_epochs):
+    train_loss, train_acc = train_one_epoch(
+        model,
+        train_loader,
+        criterion,
+        optimizer,
+        device
+    )
+
+    test_loss, test_acc, _, _ = evaluate(
+        model,
+        test_loader,
+        criterion,
+        device
+    )
+
+    print(f"Fine-tune Epoch {epoch+1}/{fine_tune_epochs}")
+    print(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f}")
+    print(f"Test  Loss: {test_loss:.4f}, Test  Acc: {test_acc:.4f}")
+    print("-" * 50)
+
+    if test_acc > best_acc:
+        best_acc = test_acc
+        torch.save(model.state_dict(), "best_resnet18_cifar10.pth")
+        print("Saved improved fine-tuned model")
+
+# ============================================================
+# STEP 14: Load saved weights
+# ============================================================
+
+loaded_model = models.resnet18(weights=None)
+
+loaded_model.fc = nn.Linear(loaded_model.fc.in_features, 10)
+
+loaded_model.load_state_dict(
+    torch.load("best_resnet18_cifar10.pth", map_location=device)
+)
+
+loaded_model = loaded_model.to(device)
+
+loaded_model.eval()
+
+print("Loaded saved model weights successfully")
+
+# ============================================================
+# STEP 15: Final evaluation
+# ============================================================
+
+test_loss, test_acc, preds, labels = evaluate(
+    loaded_model,
+    test_loader,
+    criterion,
+    device
+)
+
+print("Final Test Accuracy:", test_acc)
+
+print("\\nClassification Report:\\n")
+print(classification_report(labels, preds, target_names=classes))
+
+# ============================================================
+# STEP 16: Predict one image
+# ============================================================
+
+images, labels_batch = next(iter(test_loader))
+
+single_image = images[0].unsqueeze(0).to(device)
+
+true_label = labels_batch[0].item()
+
+with torch.no_grad():
+    output = loaded_model(single_image)
+    probabilities = torch.softmax(output, dim=1)
+    predicted_class = probabilities.argmax(dim=1).item()
+    confidence = probabilities[0, predicted_class].item()
+
+display_img = images[0].permute(1, 2, 0).numpy()
+display_img = display_img * np.array([0.229, 0.224, 0.225]) + np.array([0.485, 0.456, 0.406])
+display_img = np.clip(display_img, 0, 1)
+
+plt.figure(figsize=(5,5))
+plt.imshow(display_img)
+plt.title(
+    "True: " + classes[true_label] +
+    "\\nPredicted: " + classes[predicted_class] +
+    f"\\nConfidence: {confidence:.2f}"
+)
+plt.axis("off")
+plt.show()
+
+# ============================================================
+# STEP 17: Save full model checkpoint
+# ============================================================
+
+checkpoint = {
+    "model_state_dict": model.state_dict(),
+    "class_names": classes,
+    "best_accuracy": best_acc
+}
+
+torch.save(checkpoint, "resnet18_cifar10_checkpoint.pth")
+
+print("Saved full checkpoint")
+`
 },
 
   { id:2, name:"Object Detection", color:P.accent2, tagline:"Locate and classify multiple objects with bounding boxes",
