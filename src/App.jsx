@@ -1,14 +1,51 @@
 import { useState, useRef, useEffect } from "react";
 
 const P = {
-  bg:"#04060d", surface:"#080f1e", card:"#0d1529", card2:"#111f36",
-  accent1:"#38bdf8", accent2:"#818cf8", accent3:"#34d399",
-  accent4:"#f472b6", accent5:"#fb923c", accent6:"#facc15", accent7:"#a78bfa",
-  accent8:"#4ade80", accent9:"#f87171",
-  text:"#e2e8f0", muted:"#64748b", border:"#1e2d45", ok:"#34d399", warn:"#fb923c",
+  // Core background system
+  bg:        "#0f1115",
+  surface:   "#171b21",
+  card:      "#1f252c",
+  card2:     "#2a3138",
+
+  // Brand colours
+  amber:     "#D59C10",
+  amberSoft: "#E5B93C",
+  amberDeep: "#B88208",
+
+  graphite:  "#33383D",
+  graphite2: "#454C52",
+  graphite3: "#5A636B",
+
+  // Accent system
+  accent1:   "#D59C10",
+  accent2:   "#E5B93C",
+  accent3:   "#B88208",
+  accent4:   "#6C7A89",
+  accent5:   "#8FA3B0",
+
+  // Text system
+  text:      "#F5F7FA",
+  textSoft:  "#D6D9DD",
+  muted:     "#9AA4AE",
+
+  // Borders and states
+  border:    "#3A424B",
+  borderSoft:"#2B3138",
+
+  ok:        "#C8A227",
+  warn:      "#E0A100",
+  error:     "#C96B5C",
 };
-const CL=[P.accent1,P.accent2,P.accent3,P.accent4,P.accent5,P.accent6,P.accent7,P.accent8,P.accent9];
-const C=i=>CL[i%CL.length];
+
+const CL = [
+  P.accent1,
+  P.accent2,
+  P.accent3,
+  P.accent4,
+  P.accent5
+];
+
+const C = i => CL[i % CL.length];
 
 /* ================================================================
    30 CV DOMAINS
@@ -1056,2572 +1093,3526 @@ plt.tight_layout(); plt.savefig("gradcam.png",dpi=150); plt.show()` },
 ];
 
 /* ================================================================
-   10 LEARNING MODULES
+   10 LEARNING MODULES  (beginner to advanced)
 ================================================================ */
 const MODULES = [
-  { id:0, title:"What Is Computer Vision?", level:"Absolute Beginner", time:"25 min", color:P.accent1,
+  {
+    id:"M0", title:"What Is Computer Vision?", level:"Absolute Beginner", time:"25 min",
+    color:P.accent1,
     sections:[
-      { heading:"Definition and Scope", body:`Computer vision (CV) trains computers to interpret visual information: images, video, and 3D scans. It sits at the intersection of mathematics (linear algebra, calculus, probability), computer science (algorithms, deep learning), and optics (how cameras form images). Applications span medicine (AI dermatology), autonomous vehicles (pedestrian detection), manufacturing (defect inspection), and smartphones (real-time translation of street signs via camera).` },
-      { heading:"A Brief History", body:`CV began in the 1960s with block-world scene description. The 1980-90s brought classic algorithms: Canny edge detection (1986), SIFT descriptors (David Lowe, 1999), and Viola-Jones face detector (2001). The pivotal moment: AlexNet (2012) won ImageNet with 15.3% top-5 error, more than 10 points better than hand-crafted methods, proving that deep CNNs trained on GPUs with large datasets could dominate. Since then: ResNet (2015), ViT (2020), CLIP and SAM (2021-2023), Stable Diffusion and Sora for video generation.` },
-      { heading:"How Computers See", body:`A digital image is a 2D grid of pixels. Grayscale: each pixel is 0-255. Colour (RGB): each pixel is three values (Red, Green, Blue), each 0-255. A 640x480 RGB image is a 3D array of shape (480, 640, 3) containing 921,600 numbers. Every CV operation, from edge detection to face recognition, is a mathematical function on these numbers. Neural networks learn which transformations are useful by adjusting millions of parameters via examples.` },
-      { heading:"The CV Pipeline", body:`Most CV systems follow: (1) Image acquisition (camera, scanner). (2) Preprocessing (resize, normalise, denoise). (3) Feature extraction (edges, textures, semantic objects). (4) Model inference (classification, detection, segmentation). (5) Post-processing (NMS, filtering). (6) Decision or output (trigger alarm, move robot, display label). Understanding each stage helps debug failures: poor camera dynamic range, bad normalisation, or model overfitting.` },
+      { heading:"Definition and Scope",
+        body:`Computer vision (CV) is the field of artificial intelligence that enables machines to interpret and understand visual information from the world: images, video, and 3D data. It bridges the gap between raw pixel values and high-level semantic understanding.
+
+A camera captures light as a 2D array of numbers called pixels. Each pixel in a colour image stores three numbers: Red, Green, and Blue intensities, each ranging from 0 (dark) to 255 (bright). A 640x480 colour image therefore contains 640 x 480 x 3 = 921,600 numbers. CV algorithms process these numbers to extract meaning: "this image contains a dog," "the dog is running," "the dog is 3 metres from the camera."
+
+Human vision is effortless and immediate. CV remains challenging because: (1) a 3D world projects onto a 2D image, losing depth; (2) the same object looks completely different under different lighting, viewpoints, and occlusion; (3) pixels encode appearance, not semantics. Teaching machines to bridge this semantic gap is the central challenge of CV.` },
+      { heading:"A Brief History",
+        body:`1960s: Roberts (1963) detected edges and corners in block-world images. 1970s: Marr's computational framework defined three levels: computational (what), algorithmic (how), implementational (hardware). 1980s: Canny edge detector (1986), scale-space theory, and early CNN prototypes. 1990s: Statistical learning methods, SVM-based classifiers, Viola-Jones face detector (real-time, 2001). 2012: AlexNet wins ImageNet by a 10.9% margin, using GPU-trained deep CNNs. This moment marks the modern deep learning era of CV. 2014: VGG, GoogLeNet, R-CNN for detection. 2015: ResNet (152 layers, 3.57% top-5 error), U-Net for medical segmentation. 2017: Attention is All You Need (transformer). 2020: ViT applies transformers to images; NeRF for 3D. 2021: CLIP, DALL-E, Segment Anything, diffusion models. 2024: Depth Anything, SAM2, 3D Gaussian Splatting go mainstream.` },
+      { heading:"Core CV Tasks at a Glance",
+        body:`Classification: "What is in this image?" Single label per image. Output: class probabilities. Detection: "Where and what?" Bounding boxes + class labels per object. Segmentation (semantic): "What class does every pixel belong to?" Segmentation (instance): "Which pixels belong to which specific object?" Pose Estimation: "Where are the body joints?" Depth Estimation: "How far is each pixel?" Optical Flow: "How did each pixel move between frames?" Generation: "Create a new image." The 30 domains in this tutorial cover all these and more.` },
+      { heading:"Setting Up Your Environment",
+        body:`For this tutorial, use Google Colab (free GPU). Every code block is a complete, runnable Colab cell. Key libraries you will encounter:
+
+numpy: n-dimensional arrays, the language of images in Python.
+opencv-python (cv2): classical CV algorithms, fast image I/O.
+Pillow (PIL): convenient image loading and format conversion.
+matplotlib: visualization of images and plots.
+torch (PyTorch): deep learning framework, industry standard for research.
+torchvision: pretrained models and image transforms for PyTorch.
+transformers (HuggingFace): state-of-the-art pretrained vision-language models.
+scikit-image (skimage): additional image processing utilities and metrics.
+
+Install anything missing in Colab with: !pip install package_name` },
     ],
-    code:`# Your first image: load, inspect, and manipulate pixels
+    code:`# Your first image in Python: load, inspect, manipulate
+import numpy as np
+import urllib.request
+import io
+from PIL import Image
+import matplotlib.pyplot as plt
+
+# Download an image from the web
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg"
+img_bytes = urllib.request.urlopen(url).read()
+img_pil   = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+img       = np.array(img_pil)   # Convert to numpy array
+
+print(f"Shape:  {img.shape}")   # (height, width, channels)
+print(f"dtype:  {img.dtype}")   # uint8
+print(f"Range:  {img.min()} to {img.max()}")
+print(f"Pixels: {img.shape[0]*img.shape[1]:,}")
+
+# Access individual pixels and channels
+top_left_pixel = img[0, 0, :]          # RGB of top-left pixel
+red_channel    = img[:, :, 0]          # All red values
+green_channel  = img[:, :, 1]
+blue_channel   = img[:, :, 2]
+
+# Basic manipulations
+flipped_h   = img[:, ::-1, :]          # Horizontal flip
+flipped_v   = img[::-1, :, :]          # Vertical flip
+grayscale   = (0.299*img[:,:,0] + 0.587*img[:,:,1] + 0.114*img[:,:,2]).astype(np.uint8)
+brightened  = np.clip(img.astype(int) + 50, 0, 255).astype(np.uint8)
+darkened    = (img * 0.4).astype(np.uint8)
+
+fig, axes = plt.subplots(2, 4, figsize=(20, 10))
+for ax, im, t in zip(axes.flat,
+    [img, red_channel, green_channel, blue_channel,
+     grayscale, flipped_h, brightened, darkened],
+    ["RGB Original","Red Channel","Green Channel","Blue Channel",
+     "Grayscale (weighted)","Flipped Horizontal","Brightened (+50)","Darkened (x0.4)"]):
+    if im.ndim == 2:
+        ax.imshow(im, cmap="gray")
+    else:
+        ax.imshow(im)
+    ax.set_title(t, fontsize=10); ax.axis("off")
+plt.suptitle("Module 0: Basic Image Manipulation", fontsize=14, y=1.01)
+plt.tight_layout(); plt.savefig("m0_basics.png", dpi=150); plt.show()`,
+  },
+  {
+    id:"M1", title:"Image Preprocessing and Classical Features", level:"Beginner", time:"40 min",
+    color:P.accent2,
+    sections:[
+      { heading:"Why Preprocessing Matters",
+        body:`Raw images from real cameras contain variations irrelevant to the task: different lighting conditions, sensor noise, varying resolutions, and inconsistent colour balance. Preprocessing standardises these variations so the model focuses on semantically relevant patterns rather than imaging artifacts.
+
+Standard preprocessing for deep learning: (1) Resize to a fixed resolution (e.g. 224x224 for ImageNet models). (2) Normalise pixel values: divide by 255 to get [0,1], then subtract the dataset mean and divide by standard deviation. This ensures gradients flow well during training. (3) Data augmentation: random crops, horizontal flips, colour jitter, rotation, and Mixup/CutMix create artificial diversity, regularising the model and reducing overfitting.
+
+ImageNet normalisation (used for any pretrained model): mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225] (computed over the ImageNet training set in RGB order).` },
+      { heading:"Edge Detection: From Pixels to Structure",
+        body:`Edges are locations where pixel intensity changes rapidly. They correspond to object boundaries, surface discontinuities, and shadows. The Sobel operator computes image gradients using two 3x3 convolution kernels: Gx detects horizontal edges, Gy detects vertical edges. The gradient magnitude sqrt(Gx^2 + Gy^2) gives edge strength. The Canny edge detector (1986) is the gold standard: (1) Gaussian blur to reduce noise; (2) Sobel gradient computation; (3) Non-maximum suppression to thin edges to single-pixel width; (4) Double threshold (low, high) for hysteresis to link strong and weak edges. Canny produces clean, thin edges while suppressing noise.` },
+      { heading:"Colour Spaces",
+        body:`RGB (Red, Green, Blue): additive colour model, natural for cameras and displays. Each channel [0,255].
+HSV (Hue, Saturation, Value): perceptually intuitive. Hue is the colour type [0,179 in OpenCV], Saturation is colour purity [0,255], Value is brightness [0,255]. Excellent for colour-based object tracking (e.g. detect red objects regardless of lighting).
+LAB (L*a*b*): L is lightness (perceptually uniform), a is green-red axis, b is blue-yellow axis. The Euclidean distance in LAB space approximates human-perceived colour difference. Used in CLAHE, colour correction, and image quality assessment.
+YCbCr: Y is luminance, Cb and Cr are chrominance components. Used in JPEG compression and video codecs (the human eye is less sensitive to colour resolution than luminance).
+Grayscale: single-channel intensity. Reduces data by 3x while preserving structural information for many tasks.` },
+      { heading:"Classical Feature Descriptors",
+        body:`Before deep learning, hand-crafted features were state of the art. Understanding them deepens intuition for what CNNs learn automatically.
+
+HOG (Histogram of Oriented Gradients, Dalal and Triggs 2005): divides image into cells; computes gradient direction histogram per cell; normalises over blocks of cells. Very effective for pedestrian detection. Still used in some real-time systems.
+
+SIFT (Scale-Invariant Feature Transform, Lowe 2004): detects keypoints at scale-space extrema; builds 128-dimensional descriptor from gradient histograms around the keypoint. Invariant to scale, rotation, and partially to illumination. Used for image matching, panorama stitching, 3D reconstruction.
+
+ORB (Oriented FAST and Rotated BRIEF): fast alternative to SIFT, patent-free. FAST keypoint detector + BRIEF binary descriptor + orientation compensation. Runs in real-time on CPU.` },
+    ],
+    code:`# Complete preprocessing and feature extraction pipeline
+import cv2, numpy as np, urllib.request
+import matplotlib.pyplot as plt
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw = urllib.request.urlopen(url).read()
+img = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)
+rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# ── Edge Detection ──────────────────────────────────────
+sobel_x  = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
+sobel_y  = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
+gradient = np.sqrt(sobel_x**2 + sobel_y**2)
+gradient = (gradient / gradient.max() * 255).astype(np.uint8)
+canny    = cv2.Canny(gray, 50, 150)
+laplacian = cv2.Laplacian(gray, cv2.CV_64F)
+
+# ── Colour Spaces ───────────────────────────────────────
+hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+
+# ── SIFT Feature Detection ──────────────────────────────
+sift     = cv2.SIFT_create(nfeatures=300)
+kp, desc = sift.detectAndCompute(gray, None)
+sift_vis = cv2.drawKeypoints(rgb.copy(), kp, None,
+               flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+print(f"SIFT: {len(kp)} keypoints, descriptor shape: {desc.shape}")
+
+# ── HOG Features ────────────────────────────────────────
+win_size   = (128, 64)
+roi        = cv2.resize(gray, win_size[::-1])
+hog        = cv2.HOGDescriptor()
+hog_feat   = hog.compute(roi)
+print(f"HOG feature vector length: {len(hog_feat)}")
+
+fig, axes = plt.subplots(2, 4, figsize=(20, 10))
+data = [rgb, gray, gradient, canny,
+        hsv[:,:,0], lab[:,:,0], sift_vis, np.abs(laplacian).astype(np.uint8)]
+titles = ["Original RGB","Grayscale","Sobel Gradient","Canny Edges",
+          "HSV Hue channel","LAB Lightness (L)","SIFT Keypoints (300)","Laplacian"]
+cmaps  = [None,"gray","gray","gray","hsv","gray",None,"gray"]
+for ax,im,t,cm in zip(axes.flat,data,titles,cmaps):
+    ax.imshow(im,cmap=cm); ax.set_title(t,fontsize=10); ax.axis("off")
+plt.suptitle("Module 1: Preprocessing and Classical Features",fontsize=14,y=1.01)
+plt.tight_layout(); plt.savefig("m1_preprocess.png",dpi=150); plt.show()`,
+  },
+  {
+    id:"M2", title:"Convolutional Neural Networks from First Principles", level:"Beginner-Intermediate", time:"60 min",
+    color:P.accent3,
+    sections:[
+      { heading:"The Convolution Operation",
+        body:`A convolutional layer applies a learned filter (kernel) by sliding it across the input, computing a dot product at each position. A 3x3 kernel on a single-channel image produces one value per position: the sum of element-wise products between the kernel and the local 3x3 patch.
+
+Key parameters: kernel size (3x3, 5x5, 7x7) controls receptive field; stride controls how many pixels to skip between applications (stride=2 halves spatial resolution); padding (same or valid) controls output size. For a single output neuron: z = sum over k,l of (W[k,l] * I[i+k,j+l]) + b. With multiple filters, each produces one feature map; F filters produce F feature maps, becoming the channels of the next layer.
+
+Why convolutions work: (1) local connectivity: each output depends only on a local region, matching the locality of visual features; (2) weight sharing: the same filter slides everywhere, so the feature detector (edge, curve, texture) is learned once and applied everywhere; (3) translational equivariance: if the input feature shifts, its activation map shifts by the same amount.` },
+      { heading:"Building Blocks: Activation, Pooling, Normalisation",
+        body:`After convolution, an activation function introduces non-linearity. ReLU (max(0,x)) is universal: computationally cheap, avoids vanishing gradients, and empirically works well. LeakyReLU, PReLU, and GELU are variants used in modern architectures.
+
+Pooling reduces spatial resolution: max pooling takes the maximum in a local window, creating modest translation invariance and reducing computation. Global Average Pooling (GAP) averages each feature map to a single number, replacing fully-connected layers in modern architectures (used in ResNet, EfficientNet).
+
+Batch Normalisation (Ioffe and Szegedy, 2015) normalises each mini-batch per channel: for each channel, subtract batch mean and divide by batch std, then apply learnable scale and shift parameters. Benefits: stabilises training, allows higher learning rates, acts as regulariser, and greatly reduces sensitivity to weight initialisation. Applied after conv, before activation in most architectures.` },
+      { heading:"ResNet: Residual Learning",
+        body:`Very deep networks (>20 layers) suffer from the degradation problem: training accuracy degrades with depth, even without overfitting. He et al. (2015) showed this is not caused by vanishing gradients alone but by optimisation difficulty.
+
+Solution: skip connections (shortcuts) that bypass one or more layers: H(x) = F(x) + x, where F(x) is what the residual block learns. The network now optimises F(x) = H(x) - x, learning the residual relative to the identity. If a layer should be an identity, F can be driven to zero without disrupting the signal path.
+
+This allows training networks with 50, 101, 152, even 1000+ layers. ResNet-50 achieves 76.1% top-1 on ImageNet; ResNet-152 achieves 77.8%. The residual connection also provides gradient highways: gradients can flow directly through the shortcut, significantly mitigating vanishing gradients in deep networks.` },
+      { heading:"Transfer Learning",
+        body:`Training a deep CNN from scratch requires millions of labelled examples and many GPU-days. Transfer learning reuses weights pretrained on a large dataset (usually ImageNet) for a new task. The intuition: lower layers learn universal features (edges, textures, colours) applicable to any image task; higher layers learn task-specific features that can be replaced or fine-tuned.
+
+Two strategies: (1) Feature extraction: freeze all pretrained layers, replace only the final classification head with a new one for your task, and train only the new head. Fast, requires very little data. (2) Fine-tuning: initialise with pretrained weights, then train all layers (or the last few) on your new dataset with a small learning rate (typically 10-100x smaller than from-scratch). More powerful, requires more data but far less than training from scratch.
+
+Rule of thumb: if your dataset is small and similar to ImageNet, use feature extraction. If large and similar, fine-tune all layers. If your domain is very different (e.g. medical, satellite), fine-tune from the first domain-relevant layer.` },
+    ],
+    code:`# Build a mini-CNN from scratch + ResNet feature extraction demo
+import torch, torch.nn as nn, torch.nn.functional as F
+import torchvision.models as models
+from torchvision import transforms
 import urllib.request, io, numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
-url = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg"
-img = Image.open(io.BytesIO(urllib.request.urlopen(url).read())).convert("RGB")
-img_np = np.array(img)
+# ── 1. Conv2D from scratch (to understand what it does) ──────
+def conv2d_manual(img, kernel):
+    """Manual convolution (no PyTorch) for understanding."""
+    kh, kw   = kernel.shape
+    h, w     = img.shape
+    out_h, out_w = h - kh + 1, w - kw + 1
+    out = np.zeros((out_h, out_w))
+    for i in range(out_h):
+        for j in range(out_w):
+            out[i,j] = (img[i:i+kh, j:j+kw] * kernel).sum()
+    return out
 
-print(f"Shape:  {img_np.shape}  (H, W, C)")
-print(f"Dtype:  {img_np.dtype}")
-print(f"Range:  {img_np.min()} to {img_np.max()}")
-print(f"Pixel at (100,100): R={img_np[100,100,0]} G={img_np[100,100,1]} B={img_np[100,100,2]}")
+import cv2, urllib.request
+url  = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw  = urllib.request.urlopen(url).read()
+img  = cv2.imdecode(np.frombuffer(raw,np.uint8), cv2.IMREAD_GRAYSCALE).astype(float)/255.0
+img  = cv2.resize(img,(160,120))
 
-# Grayscale conversion (luminance formula)
-gray = (0.299*img_np[:,:,0] + 0.587*img_np[:,:,1] + 0.114*img_np[:,:,2]).astype(np.uint8)
+K_edge    = np.array([[-1,-1,-1],[-1,8,-1],[-1,-1,-1]], dtype=float)
+K_blur    = np.ones((5,5),float)/25.0
+K_sharpen = np.array([[0,-1,0],[-1,5,-1],[0,-1,0]],float)
 
-# Basic manipulations
-flipped    = img_np[:, ::-1, :]
-cropped    = img_np[50:200, 50:250, :]
-brightened = np.clip(img_np.astype(int)+60, 0, 255).astype(np.uint8)
-darkened   = np.clip(img_np.astype(int)-60, 0, 255).astype(np.uint8)
+edge_map  = conv2d_manual(img, K_edge)
+blur_map  = conv2d_manual(img, K_blur)
+sharp_map = conv2d_manual(img, K_sharpen)
 
-fig, axes = plt.subplots(2, 3, figsize=(15, 9))
-for ax, (im, t) in zip(axes.flat,
-    [(img_np,"Original RGB"),(gray,"Grayscale"),(flipped,"Flipped"),
-     (cropped,"Cropped"),(brightened,"Brightened"),(darkened,"Darkened")]):
-    ax.imshow(im, cmap="gray" if im.ndim==2 else None); ax.set_title(t); ax.axis("off")
-plt.suptitle("Module 0: Introduction to Images", fontsize=14)
-plt.tight_layout(); plt.savefig("m0.png", dpi=150); plt.show()` },
+fig, axes = plt.subplots(1,4,figsize=(20,5))
+for ax,im,t in zip(axes,[img,edge_map,blur_map,sharp_map],
+    ["Original","Edge kernel","Blur kernel","Sharpen kernel"]):
+    ax.imshow(np.abs(im),cmap="gray"); ax.set_title(t); ax.axis("off")
+plt.suptitle("Manual Conv2D: same operation as a CNN layer",fontsize=13)
+plt.tight_layout(); plt.savefig("m2_conv.png",dpi=150); plt.show()
 
-  { id:1, title:"Image Preprocessing and Classical Features", level:"Beginner", time:"40 min", color:P.accent2,
+# ── 2. ResNet-50 Transfer Learning (feature extraction) ──────
+print("\\nResNet-50 Transfer Learning demo:")
+model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V2)
+feature_extractor = nn.Sequential(*list(model.children())[:-1])  # Remove final FC
+feature_extractor.eval()
+
+tf  = transforms.Compose([transforms.Resize(256),transforms.CenterCrop(224),
+        transforms.ToTensor(),transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225])])
+url2 = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg"
+img_pil = Image.open(io.BytesIO(urllib.request.urlopen(url2).read())).convert("RGB")
+x       = tf(img_pil).unsqueeze(0)
+
+with torch.no_grad():
+    features = feature_extractor(x).squeeze()
+print(f"Feature vector shape: {features.shape}")  # 2048-dim
+print(f"Feature norm: {features.norm().item():.3f}")
+print("These 2048 numbers encode rich semantic content of the image.")
+print("Attach a small classifier head to these for any new task!")`,
+  },
+  {
+    id:"M3", title:"Object Detection: From Anchors to Transformers", level:"Intermediate", time:"55 min",
+    color:P.accent4,
     sections:[
-      { heading:"Why Preprocessing Matters", body:`Raw images from cameras are messy: inconsistent sizes, brightness differences from lighting, sensor noise, and irrelevant background. Preprocessing standardises inputs so models learn effectively. Common steps: resize to fixed dimensions; normalise pixels from [0,255] to [0,1] or subtract dataset mean and divide by std (ImageNet mean=[0.485,0.456,0.406], std=[0.229,0.224,0.225]); convert colour spaces (BGR to RGB, RGB to LAB for colour-invariant ops); and correct geometric distortions via camera calibration matrices.` },
-      { heading:"Filtering and Convolution", body:`Spatial filtering applies a kernel (small weight matrix) to every pixel neighbourhood: out[i,j] = sum(kernel * neighbourhood). A Gaussian kernel blurs, smoothing noise. A Sobel kernel computes gradients, detecting edges. This is exactly what convolutional layers in CNNs do, except CNNs learn the kernel weights from data. Understanding filtering is therefore essential for understanding deep learning: every convolutional layer is a learned bank of spatial filters.` },
-      { heading:"Classical Feature Descriptors", body:`Before deep learning, CV relied on hand-crafted descriptors. SIFT: detects keypoints at multiple scales via Difference-of-Gaussian, describes each with a 128-dim gradient orientation histogram, invariant to scale and rotation. HOG: divides image into cells, computes gradient histograms per cell, normalises across blocks; excellent for pedestrian detection (used in classic DPM detectors). ORB: binary descriptor via oriented FAST keypoints and BRIEF descriptor; extremely fast for real-time SLAM. These remain relevant for embedded systems and robotics where deep learning is too costly.` },
-      { heading:"Morphological Operations", body:`Morphological ops process binary/grayscale images using a structuring element shape. Erosion shrinks bright regions (removes small noise). Dilation expands bright regions (fills holes). Opening = erosion then dilation: removes small bright specks. Closing = dilation then erosion: fills small dark holes. Top-hat = image minus opening: isolates fine bright details. These are fundamental in document analysis, medical imaging preprocessing, and detection pipelines.` },
+      { heading:"The Detection Problem and Anchor Boxes",
+        body:`Object detection must predict a variable number of bounding boxes per image, each with a class label and confidence score. A bounding box is typically parameterised as (cx, cy, w, h): centre x, centre y, width, height, all relative to the image.
+
+Anchor boxes are a key design choice in most pre-DETR detectors. A set of predefined boxes with various aspect ratios and sizes are tiled over the image at each spatial location of the feature map. The network predicts offsets from each anchor (dx, dy, dw, dh) and a class probability. Anchors act as "priors": the network learns small adjustments rather than predicting boxes from scratch.
+
+Typical anchor design: 3 scales (small, medium, large) x 3 aspect ratios (0.5, 1, 2) = 9 anchors per spatial location. For a 13x13 feature map, this gives 13x13x9 = 1521 anchor candidates. Most are background; the network must learn to score them correctly.` },
+      { heading:"IoU, NMS, and mAP Explained",
+        body:`IoU (Intersection over Union): IoU(A,B) = area(A intersect B) / area(A union B). Range [0,1]. IoU=0: no overlap. IoU=1: perfect match. Used as the matching criterion between predictions and ground truth, and as a threshold for considering a detection correct (typically 0.5 for PASCAL VOC, 0.5:0.05:0.95 for COCO).
+
+NMS (Non-Maximum Suppression): detection networks produce many overlapping boxes for the same object. NMS suppresses duplicates: (1) sort all boxes by confidence; (2) keep the highest-confidence box; (3) remove all boxes with IoU > threshold (e.g. 0.5) with the kept box; (4) repeat for remaining boxes. Soft-NMS decays confidence instead of hard removal, improving recall on crowded scenes.
+
+mAP (mean Average Precision): compute precision-recall curve for each class; Average Precision (AP) is the area under that curve. mAP averages AP over all classes. COCO mAP averages over IoU thresholds from 0.5 to 0.95 in steps of 0.05, which is much more demanding than the original VOC mAP@0.5.` },
+      { heading:"YOLO Architecture Deep Dive",
+        body:`YOLO (You Only Look Once) divides the image into an SxS grid. Each grid cell predicts B bounding boxes and C class probabilities in a single forward pass through a single CNN. This makes it extremely fast (real-time on GPU).
+
+YOLOv1 (Redmon et al. 2016): SxS=7, B=2, C=20 (PASCAL VOC). Single stage but poor on small objects and many overlapping objects. YOLOv3 introduced multi-scale prediction at 3 feature map scales using feature pyramid-style skip connections. YOLOv5/v8 (Ultralytics): C++-optimised backbone (CSPDarknet), PANet feature pyramid neck, decoupled head for classification and regression. Anchor-free YOLOv8 predicts boxes directly as centre+size relative to grid cell without pre-defined anchors, simplifying training. Real-time at 640px input on GPU.` },
+      { heading:"DETR: Detection with Transformers",
+        body:`DETR (Carion et al., 2020) replaced anchors, NMS, and region proposal networks with a clean end-to-end transformer. Architecture: ResNet backbone extracts features; flattened features + positional encoding feed a transformer encoder (self-attention over all spatial positions); N learnable object queries feed a transformer decoder (attending to encoder output); two prediction heads per query predict a class and a bounding box.
+
+Training uses bipartite (one-to-one) matching via the Hungarian algorithm to find the optimal assignment between N predictions and M ground-truth objects (padded with "no object"). This eliminates NMS completely: each object is matched to exactly one query. DETR converges slowly (500 epochs vs 12 for Faster R-CNN) but Deformable DETR and DN-DETR improved this. RT-DETR achieves real-time DETR performance competitive with YOLOv8.` },
     ],
-    code:`# Classical CV preprocessing and feature extraction
-import cv2, numpy as np, urllib.request
-import matplotlib.pyplot as plt
+    code:`# Object Detection: IoU from scratch + NMS + YOLOv8 full demo
+import numpy as np, matplotlib.pyplot as plt, matplotlib.patches as patches
 
-url = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Bill_Nye_2017.jpg/240px-Bill_Nye_2017.jpg"
-raw = urllib.request.urlopen(url).read()
-img = cv2.imdecode(np.frombuffer(raw,np.uint8), cv2.IMREAD_COLOR)
-img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-gray    = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# ── IoU from scratch ──────────────────────────────────────────
+def iou(box1, box2):
+    """box format: [x1,y1,x2,y2]"""
+    x1 = max(box1[0], box2[0]); y1 = max(box1[1], box2[1])
+    x2 = min(box1[2], box2[2]); y2 = min(box1[3], box2[3])
+    inter = max(0, x2-x1) * max(0, y2-y1)
+    a1 = (box1[2]-box1[0]) * (box1[3]-box1[1])
+    a2 = (box2[2]-box2[0]) * (box2[3]-box2[1])
+    return inter / (a1 + a2 - inter + 1e-8)
 
-# Filtering
-gauss   = cv2.GaussianBlur(gray,(7,7),0)
-sobel_x = cv2.Sobel(gray,cv2.CV_64F,1,0,ksize=3)
-sobel_y = cv2.Sobel(gray,cv2.CV_64F,0,1,ksize=3)
-mag     = np.sqrt(sobel_x**2+sobel_y**2); mag/=mag.max()
-canny   = cv2.Canny(gray,80,200)
-
-# SIFT keypoints
-sift     = cv2.SIFT_create(nfeatures=80)
-kps,desc = sift.detectAndCompute(gray,None)
-sift_vis = cv2.drawKeypoints(img_rgb,kps,None,
-               flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-print(f"SIFT: {len(kps)} keypoints, descriptor shape: {desc.shape}")
-
-# Morphology
-kernel  = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(7,7))
-_,bw    = cv2.threshold(gray,127,255,cv2.THRESH_BINARY)
-eroded  = cv2.erode(bw,kernel); dilated = cv2.dilate(bw,kernel)
-tophat  = cv2.morphologyEx(gray,cv2.MORPH_TOPHAT,kernel)
-
-fig,axes=plt.subplots(3,3,figsize=(15,12))
-for ax,(im,t) in zip(axes.flat,[
-    (img_rgb,"Original"),(gauss,"Gaussian Blur"),(mag,"Sobel Edges"),
-    (canny,"Canny"),(sift_vis,"SIFT Keypoints"),(tophat,"Top-Hat"),
-    (gray,"Grayscale"),(eroded,"Eroded"),(dilated,"Dilated")]):
-    ax.imshow(im,cmap="gray" if im.ndim==2 else None); ax.set_title(t); ax.axis("off")
-plt.tight_layout(); plt.savefig("m1.png",dpi=150); plt.show()` },
-
-  { id:2, title:"CNNs from First Principles", level:"Beginner-Intermediate", time:"60 min", color:P.accent3,
-    sections:[
-      { heading:"The Convolution Operation", body:`A 2D convolution slides kernel K over input X: output[i,j,f] = sum(K[:,:,:,f] * X[i:i+k, j:j+k, :]). Each filter f produces one output channel. Weight sharing (same kernel at every spatial position) gives two key properties: translation equivariance and dramatic parameter efficiency vs fully connected layers. A 3x3 conv on 224x224x3 input with 64 filters has only 3*3*3*64+64=1,792 parameters vs billions for a fully connected layer of the same span.` },
-      { heading:"Activation Functions and Normalisation", body:`After convolution, a non-linearity is applied element-wise. ReLU: max(0,x); fast, no vanishing gradient for positive activations. Leaky ReLU: x if x>0 else 0.01x. GELU: x*Phi(x); smooth, used in transformers. Batch Normalisation normalises each feature map across the batch to zero mean and unit variance, then applies learnable scale (gamma) and shift (beta). Benefits: faster convergence, acts as regulariser, allows higher learning rates.` },
-      { heading:"Backpropagation and Training", body:`Training minimises cross-entropy loss: -sum(y_c * log(p_c)). Backpropagation computes gradients of loss w.r.t. every parameter using the chain rule, propagating output to input. Adam optimiser maintains per-parameter adaptive learning rates using first (mean) and second (variance) moment estimates of gradients. Cosine annealing with warm restarts and linear warmup are standard LR schedules. Data augmentation (random crop, flip, colour jitter, mixup) prevents overfitting.` },
-      { heading:"ResNet and Modern Architectures", body:`ResNet (He et al. 2015) introduced skip connections: output = F(x) + x, learning a residual instead of the full mapping. This solved vanishing gradients, enabling 100+ layer networks. EfficientNet uses compound scaling (simultaneously scale width, depth, and resolution by fixed ratios). MobileNet uses depthwise separable convolutions: depthwise (per-channel spatial filter) then pointwise (1x1 cross-channel mixing), reducing parameters by ~9x vs standard convolutions at similar accuracy.` },
-    ],
-    code:`# Build and train a CNN on CIFAR-10
-import torch, torch.nn as nn, torch.optim as optim
-import torchvision, torchvision.transforms as T
-import matplotlib.pyplot as plt
-
-tf_train = T.Compose([T.RandomCrop(32,padding=4),T.RandomHorizontalFlip(),T.ToTensor(),
-    T.Normalize([0.4914,0.4822,0.4465],[0.247,0.243,0.261])])
-tf_test  = T.Compose([T.ToTensor(),T.Normalize([0.4914,0.4822,0.4465],[0.247,0.243,0.261])])
-trainset = torchvision.datasets.CIFAR10("/tmp/c10",train=True, download=True,transform=tf_train)
-testset  = torchvision.datasets.CIFAR10("/tmp/c10",train=False,download=True,transform=tf_test)
-loader_tr= torch.utils.data.DataLoader(trainset,128,shuffle=True,num_workers=2)
-loader_te= torch.utils.data.DataLoader(testset,256,shuffle=False,num_workers=2)
-
-class SmallCNN(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.features=nn.Sequential(
-            nn.Conv2d(3,64,3,padding=1),nn.BatchNorm2d(64),nn.ReLU(),
-            nn.Conv2d(64,64,3,padding=1),nn.BatchNorm2d(64),nn.ReLU(),
-            nn.MaxPool2d(2),nn.Dropout2d(0.25),
-            nn.Conv2d(64,128,3,padding=1),nn.BatchNorm2d(128),nn.ReLU(),
-            nn.Conv2d(128,128,3,padding=1),nn.BatchNorm2d(128),nn.ReLU(),
-            nn.MaxPool2d(2),nn.Dropout2d(0.25))
-        self.head=nn.Sequential(
-            nn.Flatten(),nn.Linear(128*8*8,256),nn.BatchNorm1d(256),nn.ReLU(),
-            nn.Dropout(0.5),nn.Linear(256,10))
-    def forward(self,x): return self.head(self.features(x))
-
-device="cuda" if torch.cuda.is_available() else "cpu"
-model=SmallCNN().to(device)
-opt=optim.Adam(model.parameters(),lr=1e-3)
-sched=optim.lr_scheduler.CosineAnnealingLR(opt,T_max=15)
-crit=nn.CrossEntropyLoss()
-print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}")
-
-def run_epoch(loader,train):
-    model.train(train); tot=cor=ls=0
-    with torch.set_grad_enabled(train):
-        for x,y in loader:
-            x,y=x.to(device),y.to(device); out=model(x); loss=crit(out,y)
-            if train: opt.zero_grad(); loss.backward(); opt.step()
-            ls+=loss.item()*len(y); cor+=(out.argmax(1)==y).sum().item(); tot+=len(y)
-    return ls/tot, cor/tot*100
-
-tr_acc=[]; te_acc=[]
-for ep in range(15):
-    _,ta=run_epoch(loader_tr,True); _,va=run_epoch(loader_te,False)
-    sched.step(); tr_acc.append(ta); te_acc.append(va)
-    print(f"Ep {ep+1:2d} | train {ta:.1f}%  test {va:.1f}%")
-
-plt.figure(figsize=(8,5))
-plt.plot(tr_acc,'o-',label="Train"); plt.plot(te_acc,'s-',label="Test")
-plt.xlabel("Epoch"); plt.ylabel("Accuracy (%)"); plt.legend(); plt.grid(alpha=0.3)
-plt.title("CNN on CIFAR-10"); plt.tight_layout(); plt.savefig("m2.png",dpi=150); plt.show()` },
-
-  { id:3, title:"Object Detection: Anchors to Transformers", level:"Intermediate", time:"55 min", color:P.accent4,
-    sections:[
-      { heading:"Detection Problem Formulation", body:`Detection outputs tuples (class, confidence, x1,y1,x2,y2). Training matches ground-truth boxes to anchor boxes by IoU. IoU > 0.5 = positive; IoU < 0.3 = negative. Loss = classification (focal/cross-entropy) + regression (smooth-L1 or CIoU). At inference, NMS removes duplicates: sort by confidence, keep highest, suppress remaining boxes with IoU > threshold vs the kept box. Repeat until empty.` },
-      { heading:"Two-Stage: Faster R-CNN and FPN", body:`Faster R-CNN: backbone CNN extracts features; Region Proposal Network (RPN) predicts objectness + offsets for anchors at multiple scales; RoI head applies RoIAlign then classifies and refines each proposal. Feature Pyramid Network (FPN) adds top-down lateral connections, producing multi-scale feature maps for detecting objects of all sizes. Cascade R-CNN chains heads at IoU thresholds 0.5, 0.6, 0.7 for progressive box refinement. High accuracy (55+ AP on COCO) but 5-10 FPS.` },
-      { heading:"One-Stage: YOLO Family", body:`YOLO predicts all boxes and classes in a single forward pass. YOLOv8 uses CSP (Cross Stage Partial) backbone with FPN-PAN neck, outputting predictions at 3 scales (8, 16, 32-pixel strides). Each grid cell predicts box offsets, class probabilities, and objectness. TAL (Task-Aligned Learning) replaces IoU-based matching with a unified quality metric. YOLOv8n runs 80+ FPS on GPU; YOLOv8x achieves 53.9% mAP on COCO.` },
-      { heading:"Transformer Detectors: DETR and DINO", body:`DETR eliminates anchors and NMS: transformer encoder processes CNN features; N learnable object queries attend via cross-attention in decoder; each query predicts one box. Hungarian matching assigns ground-truth bijectively to predictions. Deformable DETR speeds convergence by sampling sparse feature points. DINO-DETR adds contrastive denoising (noisy GT boxes as positive queries), achieving state-of-the-art with faster convergence.` },
-    ],
-    code:`# NMS from scratch + YOLOv8 detection pipeline
-import torch, numpy as np, urllib.request, io, cv2
-from PIL import Image
-import matplotlib.pyplot as plt, matplotlib.patches as patches
-
-# NMS implementation
-def nms(boxes, scores, iou_thresh=0.5):
-    x1,y1,x2,y2=boxes[:,0],boxes[:,1],boxes[:,2],boxes[:,3]
-    areas=(x2-x1)*(y2-y1); order=scores.argsort()[::-1]; keep=[]
-    while len(order):
-        i=order[0]; keep.append(i)
-        xx1=np.maximum(x1[i],x1[order[1:]]); yy1=np.maximum(y1[i],y1[order[1:]])
-        xx2=np.minimum(x2[i],x2[order[1:]]); yy2=np.minimum(y2[i],y2[order[1:]])
-        inter=np.maximum(0,xx2-xx1)*np.maximum(0,yy2-yy1)
-        iou=inter/(areas[i]+areas[order[1:]]-inter+1e-7)
-        order=order[1:][iou<=iou_thresh]
+# ── NMS from scratch ──────────────────────────────────────────
+def nms(boxes, scores, threshold=0.5):
+    """boxes: [[x1,y1,x2,y2],...], scores: [conf,...]"""
+    order  = np.argsort(scores)[::-1]
+    keep   = []
+    while len(order) > 0:
+        i = order[0]; keep.append(i)
+        if len(order) == 1: break
+        ious = np.array([iou(boxes[i], boxes[j]) for j in order[1:]])
+        order = order[1:][ious < threshold]
     return keep
 
-boxes=np.array([[10,10,100,100],[15,15,105,105],[50,50,150,150],[200,200,300,300]],float)
-scores=np.array([0.95,0.80,0.88,0.91])
-kept=nms(boxes,scores,0.5)
-print(f"After NMS: kept indices {kept}, scores {scores[kept].tolist()}")
+# Simulate 8 overlapping detection boxes
+np.random.seed(42)
+boxes_raw = np.array([[60,60,200,200],[70,65,210,205],[65,62,195,198],
+                       [62,64,202,200],[200,50,350,180],[205,55,355,185],
+                       [201,52,348,178],[400,100,500,220]])
+scores_raw= np.array([0.95,0.80,0.72,0.65, 0.88,0.75,0.60, 0.91])
 
-# IoU calculation
-def compute_iou(box1,box2):
-    xi1=max(box1[0],box2[0]); yi1=max(box1[1],box2[1])
-    xi2=min(box1[2],box2[2]); yi2=min(box1[3],box2[3])
-    inter=max(0,xi2-xi1)*max(0,yi2-yi1)
-    a1=(box1[2]-box1[0])*(box1[3]-box1[1]); a2=(box2[2]-box2[0])*(box2[3]-box2[1])
-    return inter/(a1+a2-inter+1e-7)
+kept = nms(boxes_raw, scores_raw, threshold=0.5)
+print(f"Before NMS: {len(boxes_raw)} boxes")
+print(f"After  NMS: {len(kept)} boxes kept: indices {kept}")
 
-print(f"IoU boxes 0,1: {compute_iou(boxes[0],boxes[1]):.3f}")
-print(f"IoU boxes 0,2: {compute_iou(boxes[0],boxes[2]):.3f}")
+fig, (a1,a2) = plt.subplots(1,2,figsize=(14,6))
+for ax,title in zip([a1,a2],["Before NMS (all boxes)","After NMS (kept boxes)"]):
+    ax.set_xlim(0,550); ax.set_ylim(0,300); ax.invert_yaxis()
+    ax.set_facecolor("#111"); ax.set_title(title,color="white")
+for i,(b,s) in enumerate(zip(boxes_raw,scores_raw)):
+    r = patches.Rectangle((b[0],b[1]),b[2]-b[0],b[3]-b[1],linewidth=1.5,
+          edgecolor="gray" if i not in kept else "lime",facecolor="none")
+    a1.add_patch(r); a1.text(b[0],b[1]-2,f"{s:.2f}",color="gray",fontsize=8)
+for i in kept:
+    b=boxes_raw[i]; s=scores_raw[i]
+    r=patches.Rectangle((b[0],b[1]),b[2]-b[0],b[3]-b[1],linewidth=2,edgecolor="lime",facecolor="none")
+    a2.add_patch(r); a2.text(b[0],b[1]-2,f"{s:.2f}",color="lime",fontsize=9,fontweight="bold")
+plt.tight_layout(); plt.savefig("m3_nms.png",dpi=150); plt.show()
 
-# YOLOv8 (requires ultralytics)
-try:
-    from ultralytics import YOLO
-    model=YOLO("yolov8n.pt")
-    url="https://ultralytics.com/images/bus.jpg"
-    img=Image.open(io.BytesIO(urllib.request.urlopen(url).read())).convert("RGB")
-    r=model(img)[0]
-    fig,ax=plt.subplots(figsize=(12,8)); ax.imshow(np.array(img))
-    colors=plt.cm.tab20(np.linspace(0,1,80))
-    for box in r.boxes:
-        x1,y1,x2,y2=box.xyxy[0].tolist(); cls=int(box.cls[0]); conf=float(box.conf[0])
-        c=colors[cls%20]; rect=patches.Rectangle((x1,y1),x2-x1,y2-y1,lw=2,edgecolor=c[:3],facecolor="none")
-        ax.add_patch(rect); ax.text(x1,y1-5,f"{model.names[cls]} {conf:.0%}",color="white",fontsize=8,
-            bbox=dict(facecolor=c[:3],alpha=0.8,pad=1))
-    ax.axis("off"); ax.set_title(f"YOLOv8n: {len(r.boxes)} objects")
-    plt.tight_layout(); plt.savefig("m3.png",dpi=150); plt.show()
-except ImportError: print("pip install ultralytics")` },
-
-  { id:4, title:"Segmentation: Pixel-Level Understanding", level:"Intermediate", time:"50 min", color:P.accent5,
+# IoU matrix visualisation
+print("\\nIoU between all pairs of kept boxes:")
+for i in kept:
+    for j in kept:
+        print(f"  box[{i}] vs box[{j}]: IoU={iou(boxes_raw[i],boxes_raw[j]):.3f}")`,
+  },
+  {
+    id:"M4", title:"Segmentation: Pixel-Level Understanding", level:"Intermediate", time:"50 min",
+    color:P.accent5,
     sections:[
-      { heading:"Semantic vs Instance vs Panoptic", body:`Semantic: every pixel gets a class label, no instance distinction (all cars = one colour). Instance: each object instance gets its own mask (two cars = two distinct masks). Panoptic: merges both: countable things (people, vehicles) get instance IDs; uncountable stuff (sky, road) gets semantic labels only. Each needs different output formats and losses: semantic uses per-pixel cross-entropy; instance uses binary cross-entropy or Dice loss per mask; panoptic uses Panoptic Quality metric combining recognition and segmentation quality.` },
-      { heading:"U-Net Architecture", body:`U-Net (Ronneberger 2015) is the gold standard for medical and scientific segmentation. Encoder progressively downsamples extracting features at multiple scales. Decoder upsamples via transposed convolutions and concatenates skip connections from matching encoder levels, preserving fine spatial details lost during downsampling. This symmetric design with skip connections enables precise boundary localisation even with small training sets. nnU-Net auto-configures all hyperparameters and has won dozens of medical segmentation challenges.` },
-      { heading:"Dilated Convolutions and ASPP", body:`Standard convolutions grow receptive field linearly with depth. Dilated convolutions insert zeros between kernel weights (rate r), expanding receptive field to k+(k-1)(r-1) without extra parameters or resolution loss. ASPP (Atrous Spatial Pyramid Pooling, DeepLab) applies parallel dilated convolutions with rates 6,12,18 plus global average pooling, concatenating for multi-scale context. SAM (Segment Anything Model) enables zero-shot segmentation of any object given point, box, or text prompts, trained on 1.1B masks.` },
-      { heading:"Loss Functions for Segmentation", body:`Cross-entropy loss: -sum(y*log(p)); simple but unstable with extreme class imbalance (tiny lesions vs large background). Dice loss: 1 - 2*|A intersection B|/(|A|+|B|); directly optimises overlap; robust to imbalance. Focal loss: -(1-p)^gamma * log(p); down-weights easy negatives, focuses training on hard pixels. Tversky loss: generalises Dice with separate weights for false positives and false negatives, useful when false negatives are more costly (medical). Combination = Dice + Cross-Entropy is the de facto standard for medical segmentation.` },
+      { heading:"Semantic vs Instance vs Panoptic Segmentation",
+        body:`Semantic segmentation assigns one class label to every pixel. All dogs in the image share the label "dog"; the model does not distinguish between them. Output: a 2D label map of shape (H,W) with integer class indices. Evaluated with mIoU (mean Intersection over Union across all classes).
+
+Instance segmentation assigns both a class label and an instance ID to every foreground pixel. If three dogs are in the image, each pixel is labelled as dog-1, dog-2, or dog-3. Background pixels have no instance ID. Output: a set of binary masks, one per detected object. Evaluated with Mask AP (averaged over IoU thresholds).
+
+Panoptic segmentation (Kirillov et al., 2019) unifies both: every pixel gets exactly one label. For "things" (countable objects: person, car, dog), each instance gets a unique ID. For "stuff" (uncountable regions: sky, road, grass), only the semantic label is assigned. Evaluated with Panoptic Quality (PQ = SQ x RQ: segmentation quality times recognition quality).` },
+      { heading:"U-Net Architecture: The Medical Imaging Standard",
+        body:`U-Net (Ronneberger et al., 2015) was designed specifically for biomedical image segmentation where training data is scarce. Its defining feature is the contracting path (encoder) connected to an expansive path (decoder) with skip connections at each resolution level.
+
+Encoder: 4 blocks of (Conv -> BN -> ReLU -> Conv -> BN -> ReLU -> MaxPool). At each block, spatial resolution halves, number of feature channels doubles (64, 128, 256, 512, 1024). Bottleneck: 1024 channels. Decoder: 4 blocks of (Upsample/TransposedConv -> Concatenate with corresponding encoder skip -> Conv -> BN -> ReLU -> Conv). Final: 1x1 conv to produce per-pixel class scores.
+
+Why skip connections matter: the encoder's downsampling loses precise spatial information needed for pixel-accurate segmentation. Skip connections paste high-resolution encoder features directly to the decoder at the corresponding level, allowing the decoder to recover fine spatial detail. Without them, the output would be spatially imprecise.` },
+      { heading:"DeepLab and Dilated Convolutions",
+        body:`A key challenge in semantic segmentation: to classify each pixel, the model needs a large receptive field to understand context, but downsampling reduces spatial resolution, losing precise location. Dilated (atrous) convolutions solve this: they insert zeros between kernel elements, expanding the receptive field without reducing spatial resolution and without increasing parameters.
+
+A 3x3 dilated convolution with dilation rate r has the same number of parameters as a standard 3x3 convolution but a receptive field of (2r+1)x(2r+1). DeepLab v3+ uses ASPP (Atrous Spatial Pyramid Pooling): multiple parallel dilated convolutions with different rates (6, 12, 18) plus a global average pooling branch. Their outputs are concatenated and fused, capturing features at multiple scales in a single forward pass. The decoder then combines these multi-scale features with high-resolution features from the encoder backbone.` },
+      { heading:"Segment Anything Model (SAM)",
+        body:`SAM (Kirillov et al., Meta 2023) is a foundation model for promptable image segmentation. It was trained on SA-1B: 11M diverse images with 1.1 billion high-quality masks, generated semi-automatically using SAM itself in a data engine loop.
+
+Architecture: a ViT-H image encoder produces a 64x64 image embedding; a prompt encoder handles points, boxes, text, or masks; a lightweight mask decoder (two transformer layers + MLP heads) predicts up to three masks (whole, part, subpart) per prompt with ambiguity awareness.
+
+Three interaction modes: (1) point prompt: click a point, get the object at that point; (2) box prompt: draw a bounding box, get the mask within it; (3) everything mode: segment all objects automatically. SAM2 (2024) extends to video with memory attention, enabling zero-shot video object segmentation at 44 FPS.` },
     ],
-    code:`# U-Net from scratch + segmentation metrics
-import torch, torch.nn as nn, numpy as np, urllib.request, cv2
+    code:`# Segmentation pipeline: classical watershed + U-Net architecture demo
+import cv2, numpy as np, urllib.request, matplotlib.pyplot as plt
+import torch, torch.nn as nn
+
+# ── Classical: Watershed segmentation ────────────────────────
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg"
+raw = urllib.request.urlopen(url).read()
+img = cv2.imdecode(np.frombuffer(raw,np.uint8), cv2.IMREAD_COLOR)
+
+gray  = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+_, th = cv2.threshold(gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+kernel= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
+sure_bg = cv2.dilate(th,kernel,iterations=3)
+dist    = cv2.distanceTransform(th,cv2.DIST_L2,5)
+_,sure_fg=cv2.threshold(dist,0.5*dist.max(),255,0)
+sure_fg = sure_fg.astype(np.uint8)
+unknown = cv2.subtract(sure_bg,sure_fg)
+_,markers=cv2.connectedComponents(sure_fg)
+markers +=1; markers[unknown==255]=0
+watershed = cv2.watershed(img,markers)
+vis = img.copy(); vis[watershed==-1]=[0,255,0]
+
+# ── U-Net mini architecture (untrained, for illustration) ──
+class DoubleConv(nn.Module):
+    def __init__(self,inc,outc):
+        super().__init__()
+        self.block=nn.Sequential(
+            nn.Conv2d(inc,outc,3,padding=1),nn.BatchNorm2d(outc),nn.ReLU(inplace=True),
+            nn.Conv2d(outc,outc,3,padding=1),nn.BatchNorm2d(outc),nn.ReLU(inplace=True))
+    def forward(self,x): return self.block(x)
+
+class UNet(nn.Module):
+    def __init__(self,in_c=3,out_c=2,base=64):
+        super().__init__()
+        self.enc1=DoubleConv(in_c,base);   self.pool1=nn.MaxPool2d(2)
+        self.enc2=DoubleConv(base,base*2); self.pool2=nn.MaxPool2d(2)
+        self.enc3=DoubleConv(base*2,base*4);self.pool3=nn.MaxPool2d(2)
+        self.bottleneck=DoubleConv(base*4,base*8)
+        self.up3=nn.ConvTranspose2d(base*8,base*4,2,stride=2)
+        self.dec3=DoubleConv(base*8,base*4)
+        self.up2=nn.ConvTranspose2d(base*4,base*2,2,stride=2)
+        self.dec2=DoubleConv(base*4,base*2)
+        self.up1=nn.ConvTranspose2d(base*2,base,2,stride=2)
+        self.dec1=DoubleConv(base*2,base)
+        self.head=nn.Conv2d(base,out_c,1)
+    def forward(self,x):
+        e1=self.enc1(x); e2=self.enc2(self.pool1(e1))
+        e3=self.enc3(self.pool2(e2)); b=self.bottleneck(self.pool3(e3))
+        d3=self.dec3(torch.cat([self.up3(b),e3],1))
+        d2=self.dec2(torch.cat([self.up2(d3),e2],1))
+        d1=self.dec1(torch.cat([self.up1(d2),e1],1))
+        return self.head(d1)
+
+unet=UNet()
+total=sum(p.numel() for p in unet.parameters())
+print(f"U-Net parameters: {total:,}")
+x_test=torch.randn(1,3,256,256)
+with torch.no_grad(): out=unet(x_test)
+print(f"Input shape:  {x_test.shape}")
+print(f"Output shape: {out.shape}  (per-pixel logits for 2 classes)")
+
+fig,(a,b,c)=plt.subplots(1,3,figsize=(15,5))
+a.imshow(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)); a.set_title("Original"); a.axis("off")
+b.imshow(dist,cmap="hot"); b.set_title("Distance Transform"); b.axis("off")
+c.imshow(cv2.cvtColor(vis,cv2.COLOR_BGR2RGB)); c.set_title("Watershed (green=boundaries)"); c.axis("off")
+plt.tight_layout(); plt.savefig("m4_seg.png",dpi=150); plt.show()`,
+  },
+  {
+    id:"M5", title:"Image Restoration: Denoising to Diffusion", level:"Intermediate", time:"45 min",
+    color:P.accent6,
+    sections:[
+      { heading:"Degradation Models and the Ill-Posed Inverse Problem",
+        body:`Restoration assumes an observed degraded image y = D(x) + n, where x is the clean image, D is the degradation operator (blur, downsampling, rain synthesis, haze scattering), and n is additive noise. The goal is to invert D to recover x from y.
+
+This is ill-posed: for any given y, infinitely many x could have produced it (a blurred version of many sharp images looks the same). A unique solution requires regularisation: additional assumptions about what a "good" clean image looks like. Classical regularisers: Total Variation (promotes piecewise-constant images), Tikhonov (promotes smoothness), BM3D (non-local self-similarity). Deep learning implicitly learns a powerful neural regulariser from training data.
+
+Types of degradation: Gaussian blur (lens defocus, camera shake); Gaussian noise (sensor thermal noise, amplification noise); Poisson noise (photon shot noise in low light, medical imaging); JPEG compression artifacts (block discontinuities, ringing); rain streaks (synthetic or real rain); haze (atmospheric scattering); motion blur (fast object or camera motion).` },
+      { heading:"PSNR and SSIM: Understanding Quality Metrics",
+        body:`PSNR (Peak Signal-to-Noise Ratio): PSNR = 10 * log10(MAX^2 / MSE), where MAX=255 for 8-bit images and MSE is mean squared error. Higher is better. Typical values: 20 dB (poor), 30 dB (acceptable), 40 dB (excellent). Limitation: MSE treats all pixel errors equally; perceptually, a uniform shift is less noticeable than fine-grained texture error.
+
+SSIM (Structural Similarity Index): compares images on three dimensions: luminance (mean intensity), contrast (standard deviation), and structure (normalised cross-correlation). SSIM in [-1,1], higher is better; SSIM=1 means identical. More correlated with human perception than PSNR for moderate distortions.
+
+LPIPS (Learned Perceptual Image Patch Similarity): computes distance between deep CNN features (VGG or AlexNet) of the two images. Lower is better. Best correlation with human perceptual judgments. Used alongside PSNR/SSIM to evaluate generative restoration methods. No-reference metrics (NIQE, BRISQUE) estimate quality without a reference clean image, crucial when ground truth is unavailable.` },
+      { heading:"DnCNN to Restormer: Architecture Evolution",
+        body:`DnCNN (Zhang et al. 2017): 17-layer CNN trained to predict the noise residual (y - x). Subtracting the residual gives the denoised image. Batch normalisation at every layer accelerates convergence. Demonstrated blind denoising across noise levels with a single model.
+
+FFDNet (Zhang et al. 2018): modified DnCNN accepting the noise level sigma as an additional input map, allowing flexible control of denoising strength at inference. Runs in real-time.
+
+MPRNet (Zamir et al. 2021): multi-stage progressive restoration with supervised attention modules at each stage. Each stage produces an intermediate restored image, and supervised losses at each stage prevent gradient vanishing. State-of-the-art across deraining, deblurring, denoising simultaneously.
+
+Restormer (Zamir et al. 2022): efficient transformer for high-resolution image restoration. Applies multi-head self-attention across channels (not spatial positions), since for high-resolution images spatial attention is prohibitively expensive (O(H^2*W^2)). Transposed attention across C channels is O(C^2) independent of resolution. State-of-the-art on most restoration tasks.` },
+      { heading:"Diffusion Models for Image Restoration",
+        body:`Diffusion models frame restoration as conditional image generation. Given a degraded image y, generate clean images x by running a diffusion reverse process conditioned on y. SR3 (Saharia et al.) showed this for super-resolution. DiffIR conditions the U-Net denoiser on IR priors extracted from the degraded image. StableSR uses Stable Diffusion with a controllable feature wrapping module for realistic high-resolution super-resolution.
+
+Advantages: diverse, high-perceptual-quality outputs; can generate multiple plausible restorations for a given degraded input. Limitations: slow inference (many NFEs: number of function evaluations); PSNR/SSIM may be lower than regression-based methods because the model generates realistic textures that may differ from the specific ground-truth texture.
+
+The determinism vs diversity trade-off: regression-based methods (MSE loss) produce the expectation over all plausible restorations, which is a blurry average. Diffusion-based methods sample one specific plausible restoration, which is sharp but may not match the ground truth exactly. Hence high LPIPS but sometimes lower PSNR.` },
+    ],
+    code:`# Complete restoration pipeline: noise, blur, JPEG, and multiple denoisers
+import cv2, numpy as np, urllib.request, matplotlib.pyplot as plt
+from skimage.metrics import peak_signal_noise_ratio as psnr, structural_similarity as ssim
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw = urllib.request.urlopen(url).read()
+clean = cv2.imdecode(np.frombuffer(raw,np.uint8), cv2.IMREAD_COLOR)
+
+# ── Generate multiple degradations ───────────────────────────
+rng   = np.random.default_rng(123)
+noise = rng.normal(0,30,clean.shape).astype(np.float32)
+noisy = np.clip(clean.astype(float)+noise,0,255).astype(np.uint8)
+blurred= cv2.GaussianBlur(clean,(15,15),3)
+_,enc = cv2.imencode(".jpg",clean,[cv2.IMWRITE_JPEG_QUALITY,20])
+jpeg  = cv2.imdecode(enc,cv2.IMREAD_COLOR)
+
+# ── Multiple denoisers ────────────────────────────────────────
+def nlmeans(im):
+    return cv2.fastNlMeansDenoisingColored(im,None,h=10,hColor=10,
+                                            templateWindowSize=7,searchWindowSize=21)
+def guided(im, ref):
+    out=[]
+    for c in range(3):
+        out.append(cv2.ximgproc.guidedFilter(ref[:,:,c],im[:,:,c],9,0.01))
+    return np.stack(out,axis=2)
+def bilateral(im):
+    return cv2.bilateralFilter(im,d=9,sigmaColor=75,sigmaSpace=75)
+
+restored_nlm = nlmeans(noisy)
+restored_bil = bilateral(noisy)
+
+# ── Compute metrics ───────────────────────────────────────────
+def metrics(ref,img):
+    p = psnr(ref,img,data_range=255)
+    s = ssim(ref,img,channel_axis=2,data_range=255)
+    return p,s
+
+results=[("Noisy",noisy),("NLMeans",restored_nlm),("Bilateral",restored_bil),
+         ("Blurred",blurred),("JPEG q=20",jpeg)]
+print(f"{'Method':12s}  {'PSNR':6s}  {'SSIM':6s}")
+for name,img in results:
+    p,s=metrics(clean,img)
+    print(f"{name:12s}  {p:.2f}   {s:.4f}")
+
+fig,axes=plt.subplots(2,3,figsize=(18,12))
+for ax,im,t in zip(axes.flat,[clean,noisy,restored_nlm,restored_bil,blurred,jpeg],
+    ["Clean","Noisy (sigma=30)","NLMeans denoised","Bilateral denoised","Gaussian blur","JPEG q=20"]):
+    ax.imshow(cv2.cvtColor(im,cv2.COLOR_BGR2RGB)); ax.set_title(t); ax.axis("off")
+plt.suptitle("Module 5: Image Restoration Comparison",fontsize=14)
+plt.tight_layout(); plt.savefig("m5_restore.png",dpi=150); plt.show()`,
+  },
+  {
+    id:"M6", title:"Vision Transformers: Attention over Images", level:"Advanced-Intermediate", time:"55 min",
+    color:P.accent7,
+    sections:[
+      { heading:"Self-Attention Mechanism",
+        body:`Self-attention computes relationships between all pairs of positions in a sequence. Given an input sequence of vectors, three linear projections produce Queries (Q), Keys (K), and Values (V). Attention weights: A = softmax(QK^T / sqrt(d_k)), where d_k is the key dimension (scaling prevents saturation). Output: O = AV. Each output position is a weighted sum of all value vectors, with weights determined by similarity (dot product) between its query and all keys.
+
+Multi-head attention applies h attention heads in parallel with different projections, concatenates their outputs, and projects back: MultiHead(Q,K,V) = Concat(head_1, ..., head_h) * W_O. Different heads learn to attend to different types of relationships (local vs global, different semantic aspects). Computational complexity: O(N^2 * d) where N is sequence length. For images with N=H*W patches, this becomes expensive at high resolution. Efficient alternatives: shifted window attention (Swin), deformable attention (DAT), linear attention approximations.` },
+      { heading:"Vision Transformer (ViT)",
+        body:`ViT (Dosovitskiy et al., 2021) treats an image as a sequence of patches. Process: (1) split the HxW image into N non-overlapping patches of size P x P (e.g. 16x16), producing N = (H/P) * (W/P) patches; (2) linearly embed each flattened patch to dimension D; (3) prepend a learnable [CLS] token; (4) add learnable 1D positional embeddings; (5) pass through L transformer encoder layers; (6) use [CLS] token representation for classification.
+
+Key finding: ViT outperforms CNNs on large-scale data (14M-300M images) but underperforms on small datasets where CNNs' inductive biases (locality, translation equivariance) provide crucial regularisation. DeiT demonstrated data-efficient training via distillation from a CNN teacher. Swin Transformer introduced hierarchical feature maps (like ResNet) and shifted window attention (local attention with cross-window connections), enabling ViT for dense prediction tasks (detection, segmentation) at multiple scales.` },
+      { heading:"CLIP: Learning from Image-Text Pairs",
+        body:`CLIP (Contrastive Language-Image Pretraining, Radford et al., 2021) jointly trains an image encoder (ViT or ResNet) and a text encoder (GPT-like transformer) on 400M image-text pairs collected from the internet. Training objective: contrastive loss that maximises cosine similarity between matching image-text pairs and minimises it for non-matching pairs within each batch (InfoNCE loss).
+
+CLIP learns a shared embedding space where semantically related images and text are nearby. Zero-shot classification: encode the image; encode text prompts like "a photo of a dog" for each class; find the class with highest image-text similarity. CLIP achieves 76.2% zero-shot top-1 on ImageNet without any ImageNet training. It generalises remarkably across domains because the internet-scale training data covers enormous visual diversity.
+
+CLIP is the backbone of modern image generation (Stable Diffusion text conditioning), retrieval, VQA, and anomaly detection systems.` },
+      { heading:"DINOv2: Self-Supervised Vision Foundation Models",
+        body:`DINOv2 (Oquab et al., 2023) trains a ViT using self-supervised learning on a curated dataset of 142M images (LVD-142M). Training objective combines: DINO (self-distillation with no labels: student matches teacher patch-level features), iBOT (masked image modelling: predict masked patch features), and KoLeo (spread-out regulariser to prevent feature collapse).
+
+DINOv2 features generalise remarkably without fine-tuning: nearest-neighbour retrieval on ImageNet with DINOv2 ViT-L features matches supervised models. Dense prediction (segmentation, depth) via linear probing achieves competitive performance. The features exhibit impressive properties: semantic grouping (patches of the same object get similar features), scene understanding (foreground vs background separation), and correspondence (matching patches between images of different instances of the same class).` },
+    ],
+    code:`# Vision Transformer attention visualisation + CLIP zero-shot classification
+import torch, urllib.request, io, numpy as np
+from PIL import Image
 import matplotlib.pyplot as plt
 
+# ── CLIP zero-shot image classification ───────────────────────
+# !pip install transformers
+from transformers import CLIPProcessor, CLIPModel
+
+model     = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg"
+img = Image.open(io.BytesIO(urllib.request.urlopen(url).read())).convert("RGB")
+
+# Zero-shot: define class names as text prompts
+class_names = ["a dog","a cat","a bird","a car","a bicycle","a person","a horse","a boat"]
+text_prompts = [f"a photo of {c}" for c in class_names]
+
+inputs = processor(text=text_prompts, images=img, return_tensors="pt", padding=True)
+with torch.no_grad():
+    outputs = model(**inputs)
+probs = outputs.logits_per_image.softmax(dim=1).squeeze().numpy()
+
+print("CLIP Zero-Shot Classification Results:")
+for name, p in sorted(zip(class_names,probs),key=lambda x:-x[1]):
+    bar = "=" * int(p*50)
+    print(f"  {name:15s} {p*100:5.1f}%  {bar}")
+
+fig, (a,b) = plt.subplots(1,2,figsize=(14,6))
+a.imshow(img); a.set_title("Input Image"); a.axis("off")
+sorted_pairs = sorted(zip(class_names,probs),key=lambda x:x[1])
+names_s = [x[0] for x in sorted_pairs]
+probs_s = [x[1] for x in sorted_pairs]
+colors_bar = ["lime" if p==max(probs_s) else P.accent2 for p in probs_s]
+b.barh(names_s,probs_s,color=colors_bar); b.set_xlabel("Probability")
+b.set_title("CLIP Zero-Shot Predictions"); b.set_facecolor("#0d1529")
+plt.tight_layout(); plt.savefig("m6_clip.png",dpi=150); plt.show()`,
+  },
+  {
+    id:"M7", title:"Generative Vision: GANs, VAEs, and Diffusion", level:"Advanced", time:"60 min",
+    color:P.accent8,
+    sections:[
+      { heading:"Variational Autoencoders (VAEs)",
+        body:`A VAE (Kingma and Welling, 2014) consists of an encoder q(z|x) that maps input x to a distribution over latent space z (parameterised as mean mu and log-variance log_sigma^2), and a decoder p(x|z) that reconstructs x from a sampled z. Training minimises the Evidence Lower BOund (ELBO): L = E[log p(x|z)] - KL(q(z|x) || p(z)), where the first term is reconstruction loss (pixel MSE or cross-entropy) and the second term is KL divergence regularising the posterior toward a standard Gaussian prior.
+
+The reparameterisation trick enables backpropagation through the stochastic sampling: z = mu + sigma * epsilon, where epsilon ~ N(0,I). This separates the randomness (epsilon) from the learnable parameters (mu, sigma).
+
+VAEs produce smooth, well-structured latent spaces suitable for interpolation, arithmetic, and conditional generation. However, VAE samples tend to be blurry because the decoder averages over all possible reconstructions, optimising expected log-likelihood.` },
+      { heading:"GAN Training Dynamics",
+        body:`GAN training is a minimax game: Generator G minimises log(1-D(G(z))); Discriminator D maximises log(D(x)) + log(1-D(G(z))). In practice, G maximises log(D(G(z))) (non-saturating loss) for stronger gradients. This game reaches a Nash equilibrium where D(x)=0.5 for all x (cannot distinguish real from generated).
+
+Training challenges: (1) Mode collapse: G collapses to producing a few high-scoring samples, ignoring diversity. (2) Training instability: G and D can oscillate without convergence. (3) Gradient vanishing: if D is too good, D(G(z)) is near 0 and gradients to G vanish. Solutions: Wasserstein GAN (WGAN) replaces JS divergence with Wasserstein-1 distance, gradient penalty (WGAN-GP) enforces the Lipschitz constraint, spectral normalisation controls Discriminator gradients, and training tricks (label smoothing, instance noise, spectral normalisation). Progressive GAN grows both networks from 4x4 to high resolution, maintaining training stability.` },
+      { heading:"Diffusion Models: Deep Dive",
+        body:`Forward process (fixed, no learning): q(x_t | x_{t-1}) = N(x_t; sqrt(1-beta_t)*x_{t-1}, beta_t*I). With a noise schedule beta_1,...,beta_T (typically 1000 steps), x_T is approximately pure Gaussian noise. Using the closed-form: x_t = sqrt(alpha_bar_t)*x_0 + sqrt(1-alpha_bar_t)*epsilon, where alpha_bar_t = product of (1-beta_i) for i=1..t.
+
+Reverse process (learned): p_theta(x_{t-1}|x_t) = N(x_{t-1}; mu_theta(x_t,t), sigma_t^2*I). The U-Net learns to predict the noise epsilon from x_t and t, parameterising mu_theta via: mu_theta(x_t,t) = (1/sqrt(alpha_t)) * (x_t - beta_t/sqrt(1-alpha_bar_t) * epsilon_theta(x_t,t)).
+
+Training: simply minimise MSE between true noise epsilon and predicted noise epsilon_theta. Elegant and stable compared to GAN training. Inference: iteratively denoise from x_T ~ N(0,I) for T steps. DDIM enables deterministic sampling in 50-100 steps. Latent Diffusion (Stable Diffusion) encodes x to latent space z = E(x), applies diffusion on z, decodes z_0 with D.` },
+      { heading:"ControlNet: Conditional Generation",
+        body:`ControlNet (Zhang et al., 2023) adds spatial conditioning to pretrained diffusion models without modifying the original weights. It clones the encoder and middle blocks of the Stable Diffusion U-Net, connects the clone via "zero convolutions" (1x1 convolutions initialised to zero), and accepts a conditioning image (edges, depth, pose, segmentation) as input.
+
+Zero initialisation is critical: at the start of training, the ControlNet output is exactly zero, so the full model behaves identically to the original SD model. As training progresses, ControlNet gradually learns to inject spatial conditioning. This allows fine-grained control: generate photorealistic images matching a given edge map, depth map, or human pose skeleton.
+
+Applications: architecture design (condition on floor plan), character animation (condition on pose), image restoration (condition on degraded input), medical image generation (condition on anatomical segmentation), and film production (condition on storyboard sketches).` },
+    ],
+    code:`# VAE latent space interpolation + DDPM noise schedule visualisation
+import torch, torch.nn as nn, numpy as np, matplotlib.pyplot as plt
+
+# ── Minimal VAE ───────────────────────────────────────────────
+class Encoder(nn.Module):
+    def __init__(self,in_c=1,latent=16):
+        super().__init__()
+        self.net=nn.Sequential(nn.Flatten(),nn.Linear(784,256),nn.ReLU(),nn.Linear(256,128),nn.ReLU())
+        self.mu =nn.Linear(128,latent)
+        self.lv =nn.Linear(128,latent)
+    def forward(self,x):
+        h=self.net(x); return self.mu(h),self.lv(h)
+
+class Decoder(nn.Module):
+    def __init__(self,latent=16,out_c=1):
+        super().__init__()
+        self.net=nn.Sequential(nn.Linear(latent,128),nn.ReLU(),nn.Linear(128,256),nn.ReLU(),
+                               nn.Linear(256,784),nn.Sigmoid())
+    def forward(self,z): return self.net(z).view(-1,1,28,28)
+
+class VAE(nn.Module):
+    def __init__(self,latent=16):
+        super().__init__()
+        self.enc=Encoder(latent=latent); self.dec=Decoder(latent=latent)
+    def reparametrize(self,mu,lv):
+        std=torch.exp(0.5*lv)
+        eps=torch.randn_like(std)
+        return mu+eps*std
+    def forward(self,x):
+        mu,lv=self.enc(x); z=self.reparametrize(mu,lv)
+        return self.dec(z),mu,lv
+
+vae=VAE(latent=16)
+total=sum(p.numel() for p in vae.parameters())
+print(f"VAE parameters: {total:,}")
+x_demo=torch.randn(4,1,28,28)
+recon,mu,lv=vae(x_demo)
+print(f"Recon shape: {recon.shape}, mu shape: {mu.shape}")
+
+# ── DDPM noise schedule visualisation ────────────────────────
+T=1000
+beta = torch.linspace(1e-4,0.02,T)          # Linear schedule
+alpha = 1.0 - beta
+alpha_bar = torch.cumprod(alpha, dim=0)
+
+# Show image at different noise levels
+url="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg"
+import urllib.request,io
+from PIL import Image
+img_pil=Image.open(io.BytesIO(urllib.request.urlopen(url).read())).convert("RGB").resize((64,64))
+x0=(torch.tensor(np.array(img_pil)).float()/127.5-1).permute(2,0,1).unsqueeze(0)
+
+steps=[0,100,250,500,750,999]
+fig,axes=plt.subplots(1,len(steps),figsize=(18,4))
+for ax,t in zip(axes,steps):
+    ab=alpha_bar[t]
+    eps=torch.randn_like(x0)
+    xt=(ab**0.5)*x0+((1-ab)**0.5)*eps
+    im=(xt.squeeze().permute(1,2,0).numpy()*0.5+0.5).clip(0,1)
+    ax.imshow(im); ax.set_title(f"t={t}\\nalpha_bar={ab.item():.3f}"); ax.axis("off")
+plt.suptitle("DDPM Forward Diffusion Process (x_0 to x_T)",fontsize=13)
+plt.tight_layout(); plt.savefig("m7_diffusion.png",dpi=150); plt.show()`,
+  },
+  {
+    id:"M8", title:"3D Vision: Point Clouds, NeRF, and Gaussian Splatting", level:"Advanced", time:"60 min",
+    color:P.accent9,
+    sections:[
+      { heading:"Camera Models and Projective Geometry",
+        body:`A camera projects a 3D world point X = (X,Y,Z) to a 2D image point x = (u,v) via the pinhole camera model: u = f_x * X/Z + c_x, v = f_y * Y/Z + c_y, where (f_x, f_y) is the focal length in pixels and (c_x, c_y) is the principal point (optical centre). The intrinsic matrix K encodes these parameters.
+
+In homogeneous coordinates: lambda * [u,v,1]^T = K * [R|t] * [X,Y,Z,1]^T, where [R|t] is the 3x4 camera extrinsic matrix (rotation and translation). Homogeneous coordinates allow projective transformations to be expressed as matrix multiplications.
+
+Epipolar geometry: given a point in image 1, the corresponding point in image 2 lies on a line (the epipolar line). The fundamental matrix F encodes this: x2^T * F * x1 = 0. The essential matrix E = K2^T * F * K1 encodes the relative rotation R and translation t between cameras (up to scale). This is the basis of SfM and stereo reconstruction.` },
+      { heading:"PointNet: Learning Directly on Point Sets",
+        body:`PointNet (Qi et al. 2017) was the first deep learning method operating directly on raw 3D point sets (not voxels or multi-view images). Key design principles: (1) Permutation invariance: apply a shared MLP to each point independently (no ordering), then aggregate all point features with a symmetric function (max-pooling) to get a global descriptor. (2) Transformation invariance: a mini-network (T-Net) predicts an affine transformation of input points and features, aligning them to a canonical pose.
+
+Architecture: Input transform (3x3) -> Shared MLP (64, 128, 1024) -> Max-pool -> Global feature (1024) -> FC layers for classification. For segmentation, the global feature is concatenated back to each point's local feature.
+
+PointNet++ adds hierarchical feature learning with farthest point sampling, ball query grouping, and set abstraction layers, capturing local structure at multiple scales, analogous to how CNNs build hierarchical features in 2D.` },
+      { heading:"Neural Radiance Fields (NeRF)",
+        body:`NeRF (Mildenhall et al., 2020) represents a static scene as a continuous 5D function F: (x,y,z,theta,phi) -> (RGB, sigma), where (x,y,z) is a 3D position, (theta,phi) is viewing direction, RGB is emitted colour, and sigma is volume density (opacity). F is parameterised by a Multi-Layer Perceptron.
+
+Volume rendering: to render a pixel, march a ray from the camera through the scene, sample N points along the ray, query the MLP at each sample, and integrate colour and density: C(r) = integral of T(t) * sigma(t) * c(t) dt, where T(t) = exp(-integral of sigma(s)ds) is the accumulated transmittance (probability of reaching point t without hitting anything).
+
+Training: given a set of posed images (known camera parameters), minimise the reconstruction loss between rendered and observed pixel colours. After training, novel views can be rendered from arbitrary viewpoints. Limitations: per-scene optimisation (minutes to hours), not real-time rendering, and difficulty with dynamic scenes. Instant-NGP uses multi-resolution hash encoding to achieve seconds-long training. Generalizable NeRFs learn across scenes.` },
+      { heading:"3D Gaussian Splatting",
+        body:`3D Gaussian Splatting (Kerbl et al., 2023) represents a scene as millions of differentiable 3D Gaussians, each with: position (mean) mu in 3D, covariance matrix Sigma (encoding shape and orientation via scale S and rotation R: Sigma = R*S*S^T*R^T), opacity alpha, and view-dependent colour (represented by spherical harmonics coefficients).
+
+Rendering (GPU-accelerated rasterisation): project each 3D Gaussian to a 2D image plane (as a 2D Gaussian ellipse), sort by depth, and alpha-composite front-to-back. Differentiable: gradients can propagate through the rendering process to update Gaussian parameters.
+
+Training: start from a sparse SfM point cloud; initialise one Gaussian per point; optimise via gradient descent on photometric loss; adaptive control (densification: split or clone Gaussians in under-reconstructed areas; pruning: remove transparent or very small Gaussians). Achieves real-time rendering at 100+ FPS at 1080p, matching or exceeding NeRF quality with dramatically faster rendering.` },
+    ],
+    code:`# 3D Gaussian visualisation + NeRF volume rendering concept
+import numpy as np, matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import torch
+
+# ── 3D Gaussians: generate and visualise ─────────────────────
+rng = np.random.default_rng(42)
+n_gaussians = 500
+
+# Random Gaussians in 3D (simulating a simple scene)
+means   = rng.standard_normal((n_gaussians,3))
+scales  = rng.exponential(0.3,(n_gaussians,3)) + 0.05
+opacities = rng.uniform(0.3,1.0,n_gaussians)
+colors  = rng.uniform(0,1,(n_gaussians,4))
+colors[:,3] = opacities
+
+fig = plt.figure(figsize=(16,6))
+ax1 = fig.add_subplot(131,projection="3d")
+ax1.scatter(means[:,0],means[:,1],means[:,2],c=colors[:,:3],s=scales.mean(1)*200,alpha=0.6)
+ax1.set_title("3D Gaussian Means"); ax1.set_xlabel("X"); ax1.set_ylabel("Y"); ax1.set_zlabel("Z")
+
+# ── NeRF: volume rendering concept ───────────────────────────
+# Simple 1D transmittance demo along a ray
+T_steps = 200
+density  = np.zeros(T_steps)
+density[40:60]  = 3.0   # first object (dense)
+density[120:140]= 5.0   # second object (denser)
+density += rng.exponential(0.05,T_steps)  # background noise
+
+t = np.linspace(0,1,T_steps)
+delta = t[1]-t[0]
+transmittance = np.exp(-np.cumsum(density*delta))
+weight = transmittance * density * delta   # contribution per sample
+weight /= weight.sum() + 1e-8
+
+ax2 = fig.add_subplot(132)
+ax2.fill_between(t,density/density.max(),alpha=0.4,color=P.accent5,label="Density sigma(t)")
+ax2.fill_between(t,transmittance,alpha=0.4,color=P.accent1,label="Transmittance T(t)")
+ax2.fill_between(t,weight*10,alpha=0.6,color=P.accent3,label="Weight (x10)")
+ax2.legend(facecolor="#111"); ax2.set_title("NeRF: Volume Rendering Along a Ray")
+ax2.set_xlabel("Distance along ray t"); ax2.set_facecolor("#0d1529")
+
+# ── Camera projection demo ────────────────────────────────────
+def project(pts3d, K):
+    """pts3d: (N,3), K: (3,3)"""
+    p = pts3d / pts3d[:,2:3]
+    return (K @ p.T).T[:,:2]
+
+K = np.array([[500,0,320],[0,500,240],[0,0,1]],float)
+cube = np.array([[0,0,2],[1,0,2],[1,1,2],[0,1,2],
+                 [0,0,3],[1,0,3],[1,1,3],[0,1,3]],float) - [0.5,0.5,0]
+proj = project(cube, K)
+
+ax3 = fig.add_subplot(133)
+edges = [(0,1),(1,2),(2,3),(3,0),(4,5),(5,6),(6,7),(7,4),(0,4),(1,5),(2,6),(3,7)]
+for i,j in edges: ax3.plot(*zip(proj[i],proj[j]),color=P.accent2)
+ax3.scatter(proj[:,0],proj[:,1],s=50,color=P.accent3,zorder=5)
+ax3.set_title("Pinhole Camera Projection (3D cube -> 2D)")
+ax3.set_facecolor("#0d1529"); ax3.invert_yaxis()
+
+plt.tight_layout(); plt.savefig("m8_3dvision.png",dpi=150); plt.show()`,
+  },
+  {
+    id:"M9", title:"Deployment: From Research to Production", level:"Advanced", time:"50 min",
+    color:P.accent1,
+    sections:[
+      { heading:"Model Compression: Quantisation and Pruning",
+        body:`Production deployment requires smaller, faster models that run within memory and latency budgets. Four main techniques:
+
+Quantisation: reduce numerical precision of weights and activations from float32 (32 bits) to float16 (16 bits), int8 (8 bits), or even int4 (4 bits). Post-training quantisation (PTQ) applies quantisation to a pretrained model with a small calibration dataset. Quantisation-aware training (QAT) fine-tunes with simulated quantisation, recovering accuracy lost by PTQ. int8 quantisation typically causes < 1% accuracy drop while halving memory and doubling throughput on supported hardware.
+
+Pruning: remove redundant weights (weight pruning, zeroing individual weights) or entire channels/filters (structured pruning, easier to accelerate). Lottery ticket hypothesis (Frankle et al.): sparse sub-networks ("winning tickets") can be trained to full accuracy from the start if their initial values are kept. Structured pruning removes entire attention heads or layers, reducing FLOPs directly.
+
+Knowledge Distillation: train a small "student" model to match the predictions (soft logits) of a large "teacher" model, transferring the teacher's knowledge. The student is often 10-100x smaller than the teacher.` },
+      { heading:"Model Export: ONNX and TensorRT",
+        body:`PyTorch models must be exported for deployment on production systems. ONNX (Open Neural Network Exchange) is an open standard format for representing ML models, enabling framework-independent deployment: export a PyTorch model to ONNX, then run it with ONNX Runtime, TensorRT, CoreML, or any other ONNX-compatible runtime.
+
+Export: torch.onnx.export(model, dummy_input, "model.onnx", opset_version=17). ONNX Runtime applies graph optimisations (constant folding, operator fusion) automatically. Typical 2-4x speedup over native PyTorch inference on CPU.
+
+TensorRT (NVIDIA) applies aggressive optimisations for NVIDIA GPU: layer fusion, kernel auto-tuning, mixed precision (FP16+INT8), and batching. Achieves 5-15x speedup over PyTorch on GPU. Required for production NVIDIA deployments. Torch-TensorRT (formerly TRTorch) automates the conversion.
+
+CoreML (Apple): deploy on Apple Silicon (iPhone, iPad, Mac) with hardware-accelerated inference via Neural Engine. Export via coremltools from PyTorch or ONNX.` },
+      { heading:"Calibration and Uncertainty Quantification",
+        body:`A model is calibrated if its confidence scores reflect true probabilities: a model predicting 80% confidence should be correct 80% of the time. Most neural networks are overconfident: they output high-confidence predictions even when they are wrong. Calibration matters critically in medical, safety, and financial applications.
+
+Temperature scaling is the simplest post-hoc calibration method: divide logits by a learned scalar T before softmax, using a held-out validation set to find T that minimises Expected Calibration Error (ECE). T > 1 reduces confidence (softens predictions); T < 1 increases confidence.
+
+Uncertainty estimation methods: Monte Carlo Dropout (apply dropout at test time, take multiple forward passes, estimate uncertainty as variance of predictions); Deep Ensembles (train K independent models, use disagreement as uncertainty); Conformal Prediction (distribution-free prediction sets with guaranteed coverage). ECE (Expected Calibration Error) and MCE (Maximum Calibration Error) measure calibration quality. Reliability diagrams (confidence vs accuracy per bin) visualise calibration.` },
+      { heading:"Real-Time Inference: Optimisation Strategies",
+        body:`Throughput vs latency: throughput is samples per second (maximised by large batches); latency is time per single sample (minimised by no batching). Most edge applications require low latency; server applications prioritise throughput.
+
+Key strategies: (1) Batch inference: process N samples simultaneously to saturate GPU parallelism. (2) Half precision (fp16): halves memory bandwidth, doubles throughput on tensor cores, minimal accuracy loss. (3) JIT compilation: torch.jit.script or torch.compile (PyTorch 2.0) compiles model graphs, applying kernel fusion and memory layout optimisations. (4) Asynchronous preprocessing: move data loading and augmentation off the critical path onto CPU threads. (5) Model caching: ONNX Runtime sessions are expensive to initialise; cache them across requests. (6) Horizontal scaling: deploy multiple model replicas behind a load balancer.
+
+Edge-specific: MobileNet/EfficientNet-Lite/NASNet for mobile; YOLO Nano for embedded; INT8 quantisation for microcontrollers (TensorFlow Lite, ONNX Runtime Mobile).` },
+    ],
+    code:`# Production deployment pipeline: quantisation, ONNX export, latency benchmarking
+import torch, time, numpy as np
+import torchvision.models as models
+from torchvision import transforms
+import urllib.request, io
+from PIL import Image
+
+model_fp32 = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
+model_fp32.eval()
+
+# ── Dynamic INT8 Quantisation ─────────────────────────────────
+model_int8 = torch.quantization.quantize_dynamic(
+    model_fp32, {torch.nn.Linear}, dtype=torch.qint8)
+
+# ── Benchmarking ──────────────────────────────────────────────
+def benchmark(model, x, n=100, warmup=10):
+    with torch.no_grad():
+        for _ in range(warmup): model(x)
+    times=[]
+    with torch.no_grad():
+        for _ in range(n):
+            t0=time.perf_counter(); model(x); times.append(time.perf_counter()-t0)
+    return np.array(times)
+
+x = torch.randn(1,3,224,224)
+t_fp32 = benchmark(model_fp32, x)
+t_int8 = benchmark(model_int8, x)
+
+print(f"FP32 latency: {t_fp32.mean()*1000:.2f} +/- {t_fp32.std()*1000:.2f} ms")
+print(f"INT8 latency: {t_int8.mean()*1000:.2f} +/- {t_int8.std()*1000:.2f} ms")
+print(f"Speedup:      {t_fp32.mean()/t_int8.mean():.2f}x")
+
+# ── Model size comparison ─────────────────────────────────────
+import os
+torch.save(model_fp32.state_dict(), "/tmp/fp32.pt")
+torch.save(model_int8.state_dict(), "/tmp/int8.pt")
+fp32_mb = os.path.getsize("/tmp/fp32.pt")/1e6
+int8_mb = os.path.getsize("/tmp/int8.pt")/1e6
+print(f"FP32 size: {fp32_mb:.1f} MB")
+print(f"INT8 size: {int8_mb:.1f} MB")
+print(f"Compression: {fp32_mb/int8_mb:.2f}x")
+
+# ── ONNX export ───────────────────────────────────────────────
+torch.onnx.export(model_fp32, x, "/tmp/resnet18.onnx",
+    opset_version=17, input_names=["input"], output_names=["logits"],
+    dynamic_axes={"input":{0:"batch"},"logits":{0:"batch"}})
+onnx_mb = os.path.getsize("/tmp/resnet18.onnx")/1e6
+print(f"ONNX size: {onnx_mb:.1f} MB")
+
+import matplotlib.pyplot as plt
+labels = ["FP32 PyTorch","INT8 PyTorch","ONNX export"]
+latencies = [t_fp32.mean()*1000, t_int8.mean()*1000, None]
+sizes     = [fp32_mb, int8_mb, onnx_mb]
+
+fig,(a,b)=plt.subplots(1,2,figsize=(12,5))
+a.bar(["FP32","INT8"],[t_fp32.mean()*1000,t_int8.mean()*1000],
+      color=[P.accent5,P.accent3],edgecolor="none")
+a.set_ylabel("Latency (ms)"); a.set_title("Inference Latency (CPU)"); a.set_facecolor("#0d1529")
+b.bar(labels,[fp32_mb,int8_mb,onnx_mb],color=[P.accent5,P.accent3,P.accent1],edgecolor="none")
+b.set_ylabel("Size (MB)"); b.set_title("Model Size Comparison"); b.set_facecolor("#0d1529")
+plt.tight_layout(); plt.savefig("m9_deploy.png",dpi=150); plt.show()`,
+  },
+];
+
+/* ================================================================
+   100 LEETCODE-STYLE CODING CHALLENGES
+================================================================ */
+const CHALLENGES = [
+  // ─── EASY (1-30) ───────────────────────────────────────────────
+  { id:"C01", difficulty:"Easy", tag:"Arrays / Pixels", title:"Flip and Invert Binary Image",
+    company:"Google, Meta", points:10,
+    desc:`Given a binary image as a 2-D list of 0s and 1s, horizontally flip each row (reverse), then invert every bit (0 becomes 1, 1 becomes 0). Return the resulting image.`,
+    example:`Input:  [[1,1,0],[1,0,1],[0,0,0]]
+Output: [[1,0,0],[0,1,0],[1,1,1]]`,
+    hint:"Step 1: reverse each row with [::-1]. Step 2: XOR each element with 1 (x^1 flips a single bit). Both steps can be combined in one list comprehension.",
+    fullSolution:`# DETAILED SOLUTION
+# The problem has two operations applied in sequence:
+# 1. Horizontal flip: reverse each row
+# 2. Bit inversion: 0->1, 1->0
+
+# Key insight: XOR with 1 flips a single bit.
+# Both ops can be combined: flip then invert = XOR each element
+# of the reversed row with 1. In Python, x^1 on a bit does this.
+
+def flipAndInvertImage(image):
+    # For each row, reverse it with [::-1], then XOR each element with 1
+    return [[x ^ 1 for x in row[::-1]] for row in image]
+
+# --- Test ---
+img = [[1,1,0],[1,0,1],[0,0,0]]
+result = flipAndInvertImage(img)
+print("Result:", result)
+# Expected: [[1,0,0],[0,1,0],[1,1,1]]
+
+# Step-by-step trace for [[1,1,0]]:
+# After flip:   [0,1,1]
+# After invert: [1,0,0]  <-- correct
+
+# NumPy extension (RGB image, 3 channels):
+import numpy as np
+rgb_img = np.random.randint(0,2,(4,4,3))
+flipped_rgb = rgb_img[:, ::-1, :]  # horizontal flip (no invert needed for RGB)
+print("RGB flipped shape:", flipped_rgb.shape)`,
+    complexity:"Time O(m*n)  Space O(m*n) for output (O(1) in-place variant)",
+    followup:"How would you extend this to an RGB image? How does this relate to image mirroring for data augmentation?" },
+
+  { id:"C02", difficulty:"Easy", tag:"2-D Prefix Sum", title:"Count Black Pixels in Rectangles",
+    company:"Amazon, Bloomberg", points:10,
+    desc:`Given a binary image matrix and queries [r1,c1,r2,c2], count the number of 1s (black pixels) inside each rectangle in O(1) per query after O(m*n) preprocessing.`,
+    example:`Matrix:
+  1 0 1
+  0 1 0
+  1 1 1
+Query(0,0,2,2) -> 6   Query(0,0,1,1) -> 2`,
+    hint:"Build a 2-D prefix sum table P where P[i][j] = sum of all elements in the rectangle from (0,0) to (i-1,j-1). Answer = P[r2+1][c2+1] - P[r1][c2+1] - P[r2+1][c1] + P[r1][c1].",
+    fullSolution:`# DETAILED SOLUTION
+# 2D Prefix Sum (Integral Image) - the same technique used in
+# Viola-Jones face detection (Haar features computed in O(1)).
+
+# Build prefix sum: P[i][j] = sum of all elements mat[0..i-1][0..j-1]
+# Using inclusion-exclusion to fill:
+#   P[i][j] = mat[i-1][j-1] + P[i-1][j] + P[i][j-1] - P[i-1][j-1]
+
+def build_prefix(mat):
+    m, n = len(mat), len(mat[0])
+    P = [[0]*(n+1) for _ in range(m+1)]
+    for i in range(1, m+1):
+        for j in range(1, n+1):
+            P[i][j] = mat[i-1][j-1] + P[i-1][j] + P[i][j-1] - P[i-1][j-1]
+    return P
+
+def query(P, r1, c1, r2, c2):
+    # Inclusion-exclusion on the prefix table (1-indexed boundary)
+    return P[r2+1][c2+1] - P[r1][c2+1] - P[r2+1][c1] + P[r1][c1]
+
+mat = [[1,0,1],[0,1,0],[1,1,1]]
+P   = build_prefix(mat)
+print(query(P,0,0,2,2))  # -> 6 (entire matrix has 6 ones)
+print(query(P,0,0,1,1))  # -> 2 (top-left 2x2 has 2 ones: mat[0][0]=1, mat[1][1]=1)
+print(query(P,2,0,2,2))  # -> 3 (bottom row: 1+1+1=3)
+
+# NumPy equivalent (integral image):
+import numpy as np
+mat_np = np.array(mat)
+integral = np.zeros((4,4),int)
+integral[1:,1:] = np.cumsum(np.cumsum(mat_np,0),1)
+print("NumPy integral image query (0,0,2,2):", integral[3,3])`,
+    complexity:"Time O(m*n) build + O(1) per query  Space O(m*n)",
+    followup:"How does this relate to OpenCV's integral() function? How is it used to compute Haar cascade features in real-time face detection?" },
+
+  { id:"C03", difficulty:"Easy", tag:"BFS / Flood Fill", title:"Flood Fill (Paint Bucket)",
+    company:"Amazon, Google", points:10,
+    desc:`Implement the flood-fill algorithm (the paint-bucket tool in image editors). Given an image, a starting pixel (sr, sc), and a new colour, repaint the starting pixel and all 4-connected pixels sharing the original colour.`,
+    example:`image=[[1,1,1],[1,1,0],[1,0,1]]  sr=1, sc=1, newColor=2
+Output: [[2,2,2],[2,2,0],[2,0,1]]`,
+    hint:"BFS from (sr,sc). Record the original colour. Skip pixels that are already the new colour or have a different colour.",
+    fullSolution:`# DETAILED SOLUTION
+# Flood fill visits all 4-connected neighbours with the same original colour.
+# BFS is iterative (safer for large images vs recursive DFS which can hit Python's stack limit).
+
+from collections import deque
+
+def floodFill(image, sr, sc, color):
+    orig = image[sr][sc]
+    if orig == color:          # Already the target colour; nothing to do
+        return image
+    m, n = len(image), len(image[0])
+    q = deque([(sr, sc)])
+    image[sr][sc] = color      # Paint start pixel
+    
+    while q:
+        r, c = q.popleft()
+        for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:   # 4-connectivity
+            nr, nc = r+dr, c+dc
+            if 0 <= nr < m and 0 <= nc < n and image[nr][nc] == orig:
+                image[nr][nc] = color
+                q.append((nr, nc))
+    return image
+
+# Test
+print(floodFill([[1,1,1],[1,1,0],[1,0,1]], 1, 1, 2))
+# Expected: [[2,2,2],[2,2,0],[2,0,1]]
+
+# --- OpenCV equivalent (real image flood fill) ---
+import cv2, numpy as np, urllib.request, matplotlib.pyplot as plt
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg"
+raw = urllib.request.urlopen(url).read()
+img = cv2.imdecode(np.frombuffer(raw,np.uint8), cv2.IMREAD_COLOR)
+
+# OpenCV floodFill: fills from seed point with given colour
+seed_point = (img.shape[1]//2, img.shape[0]//4)   # (x,y) format
+flood = img.copy()
+mask  = np.zeros((img.shape[0]+2, img.shape[1]+2), np.uint8)
+cv2.floodFill(flood, mask, seed_point, (0,200,255), (30,30,30), (30,30,30))
+
+fig,(a,b) = plt.subplots(1,2,figsize=(12,5))
+a.imshow(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)); a.set_title("Original"); a.axis("off")
+b.imshow(cv2.cvtColor(flood,cv2.COLOR_BGR2RGB)); b.set_title("Flood Filled"); b.axis("off")
+plt.tight_layout(); plt.savefig("c03.png",dpi=150); plt.show()`,
+    complexity:"Time O(m*n)  Space O(m*n) for queue",
+    followup:"How would you implement 8-connectivity (diagonals)? How does flood fill relate to region growing in medical image segmentation?" },
+
+  { id:"C04", difficulty:"Easy", tag:"Sliding Window / Convolution", title:"Image Smoother (Mean Filter)",
+    company:"Microsoft, Apple", points:10,
+    desc:`Apply a 3x3 mean filter to a grayscale image WITHOUT using any library convolution functions. Each output pixel is the floor of the average of its valid neighbours.`,
+    example:`Input:  [[1,1,1],[1,0,1],[1,1,1]]
+Output: [[0,0,0],[0,0,0],[0,0,0]]  (all averages < 1, floor to 0)`,
+    hint:"Iterate every pixel. Collect all valid neighbours (including self) within a 3x3 window, clamping coordinates to image bounds. Compute floor(mean).",
+    fullSolution:`# DETAILED SOLUTION
+# This is a manual implementation of a 3x3 box filter, identical to
+# what cv2.blur(img,(3,3)) does internally.
+# Understanding this from scratch is essential before using library functions.
+
+import math
+
+def imageSmoother(img):
+    m, n = len(img), len(img[0])
+    result = [[0]*n for _ in range(m)]
+    
+    for i in range(m):
+        for j in range(n):
+            total = 0
+            count = 0
+            # Iterate 3x3 neighbourhood, clamping to valid range
+            for di in range(-1, 2):      # -1, 0, 1
+                for dj in range(-1, 2):  # -1, 0, 1
+                    ni, nj = i+di, j+dj
+                    if 0 <= ni < m and 0 <= nj < n:
+                        total += img[ni][nj]
+                        count += 1
+            result[i][j] = math.floor(total / count)
+    return result
+
+# Test
+img = [[1,1,1],[1,0,1],[1,1,1]]
+print(imageSmoother(img))
+
+# Apply to a real image and compare methods
+import cv2, numpy as np, urllib.request, matplotlib.pyplot as plt
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw = urllib.request.urlopen(url).read()
+gray = cv2.imdecode(np.frombuffer(raw,np.uint8), cv2.IMREAD_GRAYSCALE)
+gray = cv2.resize(gray,(160,120))
+
+rng  = np.random.default_rng(0)
+noisy= np.clip(gray.astype(int)+rng.integers(-40,40,gray.shape),0,255).astype(np.uint8)
+
+box_3   = cv2.blur(noisy,(3,3))
+box_7   = cv2.blur(noisy,(7,7))
+gauss_5 = cv2.GaussianBlur(noisy,(5,5),1.5)
+median  = cv2.medianBlur(noisy,5)
+
+fig,axes=plt.subplots(1,5,figsize=(20,4))
+for ax,im,t in zip(axes,[noisy,box_3,box_7,gauss_5,median],
+    ["Noisy","Box 3x3","Box 7x7","Gaussian 5x5","Median 5x5"]):
+    ax.imshow(im,cmap="gray"); ax.set_title(t); ax.axis("off")
+plt.tight_layout(); plt.savefig("c04.png",dpi=150); plt.show()`,
+    complexity:"Time O(m*n*k^2) for k x k kernel  Space O(m*n)",
+    followup:"Compare box filter vs Gaussian blur vs median filter for noise removal. When is median filter preferable (salt-and-pepper noise)?" },
+
+  { id:"C05", difficulty:"Easy", tag:"BFS / Connected Components", title:"Count and Label Connected Components",
+    company:"Microsoft, NVIDIA", points:10,
+    desc:`Given a binary image, count the number of connected components (groups of 4-connected white pixels). Return the count and a label map where each component has a unique integer label.`,
+    example:`Input:
+  1 0 0 1 1
+  1 0 0 0 1
+  0 0 1 0 0
+Output: 3 components, labels [[1,0,0,2,2],[1,0,0,0,2],[0,0,3,0,0]]`,
+    hint:"BFS from every unvisited white pixel. Each new BFS call starts a new component. Use a visited array or modify the image in-place.",
+    fullSolution:`# DETAILED SOLUTION
+# Connected component labelling is foundational for blob analysis,
+# object counting, and region-based image processing.
+# This is what cv2.connectedComponents() does under the hood.
+
+from collections import deque
+import numpy as np
+
+def label_components(img):
+    m, n    = len(img), len(img[0])
+    labels  = [[0]*n for _ in range(m)]
+    visited = [[False]*n for _ in range(m)]
+    comp_id = 0
+    
+    for i in range(m):
+        for j in range(n):
+            if img[i][j] == 1 and not visited[i][j]:
+                comp_id += 1
+                q = deque([(i,j)])
+                visited[i][j] = True
+                labels[i][j]  = comp_id
+                while q:
+                    r, c = q.popleft()
+                    for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:
+                        nr, nc = r+dr, c+dc
+                        if 0<=nr<m and 0<=nc<n and img[nr][nc]==1 and not visited[nr][nc]:
+                            visited[nr][nc] = True
+                            labels[nr][nc]  = comp_id
+                            q.append((nr, nc))
+    return comp_id, labels
+
+img = [[1,0,0,1,1],[1,0,0,0,1],[0,0,1,0,0]]
+count, lbls = label_components(img)
+print(f"Components: {count}")
+for row in lbls: print(row)
+
+# --- OpenCV version on a real image ---
+import cv2, urllib.request, matplotlib.pyplot as plt
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw = urllib.request.urlopen(url).read()
+img = cv2.imdecode(np.frombuffer(raw,np.uint8), cv2.IMREAD_GRAYSCALE)
+_, bw = cv2.threshold(img, 128, 1, cv2.THRESH_BINARY)
+
+n, labels, stats, centroids = cv2.connectedComponentsWithStats(bw.astype(np.uint8))
+print(f"\\nOpenCV found {n-1} components (excl. background)")
+print(f"Largest component area: {stats[1:,cv2.CC_STAT_AREA].max()} pixels")
+
+label_display = (labels % 10 * 25).astype(np.uint8)  # colour-cycle for display
+fig,(a,b)=plt.subplots(1,2,figsize=(12,5))
+a.imshow(bw,cmap="gray"); a.set_title("Binary Image"); a.axis("off")
+b.imshow(label_display,cmap="tab10"); b.set_title(f"Component Labels ({n-1} total)"); b.axis("off")
+plt.tight_layout(); plt.savefig("c05.png",dpi=150); plt.show()`,
+    complexity:"Time O(m*n)  Space O(m*n)",
+    followup:"How does Union-Find give O(alpha(n)) per operation? When would you use 8-connectivity instead of 4?" },
+
+  { id:"C06", difficulty:"Easy", tag:"Histogram", title:"Image Histogram and Equalisation",
+    company:"Adobe, NVIDIA", points:10,
+    desc:`Implement histogram computation and histogram equalisation from scratch for a grayscale image. Equalisation redistributes pixel intensities so the cumulative distribution function (CDF) is approximately linear.`,
+    example:`Input: dark image with most pixels in [0-80] range
+Output: equalised image with pixels spread across [0-255]`,
+    hint:"Histogram H[v] = count of pixels with intensity v. CDF[v] = sum(H[0..v]). Equalised pixel = round((CDF[v]-CDF_min) / (total_pixels-CDF_min) * 255).",
+    fullSolution:`# DETAILED SOLUTION
+# Histogram equalisation improves contrast by making the intensity distribution
+# uniform. It is the basis of CLAHE (used in low-light enhancement, retinography).
+
+import numpy as np, urllib.request, cv2, matplotlib.pyplot as plt
+
+def histogram(img):
+    h = np.zeros(256, int)
+    for v in img.flatten():
+        h[v] += 1
+    return h
+
+def equalise(img):
+    hist  = histogram(img)
+    cdf   = np.cumsum(hist)                           # Cumulative distribution
+    cdf_min = cdf[cdf > 0][0]                         # Smallest non-zero CDF value
+    N     = img.size                                  # Total pixels
+    lut   = np.round((cdf - cdf_min) / (N - cdf_min) * 255).astype(np.uint8)
+    return lut[img]                                   # Apply look-up table
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Camponotus_flavomarginatus_ant.jpg/320px-Camponotus_flavomarginatus_ant.jpg"
+raw = urllib.request.urlopen(url).read()
+gray= cv2.imdecode(np.frombuffer(raw,np.uint8), cv2.IMREAD_GRAYSCALE)
+dark= np.clip(gray.astype(int)//3, 0, 255).astype(np.uint8)   # Simulate dark image
+
+eq_manual = equalise(dark)
+eq_cv      = cv2.equalizeHist(dark)
+clahe_obj  = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))
+clahe_out  = clahe_obj.apply(dark)
+
+fig, axes = plt.subplots(2,4,figsize=(20,10))
+imgs   = [dark,eq_manual,eq_cv,clahe_out]*2
+titles = ["Dark original","Manual HE","OpenCV HE","CLAHE"] + ["Histogram"]*4
+for i,(ax,im,t) in enumerate(zip(axes.flat,imgs,titles)):
+    if i < 4:
+        ax.imshow(im,cmap="gray"); ax.set_title(t)
+    else:
+        ax.hist(im.flatten(),bins=128,color=["cyan","magenta","yellow","lime"][i-4],alpha=0.8)
+        ax.set_xlim(0,255); ax.set_title(f"{titles[i-4]} histogram")
+    ax.axis("off" if i<4 else "on")
+plt.tight_layout(); plt.savefig("c06.png",dpi=150); plt.show()`,
+    complexity:"Time O(m*n)  Space O(256) for histogram",
+    followup:"When would CLAHE outperform global HE? (Answer: when the image has regions with very different local contrast, e.g. a dark shadow next to a bright window.)" },
+
+  { id:"C07", difficulty:"Easy", tag:"Morphology", title:"Erosion and Dilation from Scratch",
+    company:"OpenCV, Adobe", points:10,
+    desc:`Implement binary erosion and dilation using a 3x3 square structuring element, without using any library morphological functions.`,
+    example:`Input binary image, erode removes border pixels, dilate expands foreground pixels.`,
+    hint:"Erosion: output=1 only if ALL neighbourhood pixels are 1. Dilation: output=1 if ANY neighbourhood pixel is 1.",
+    fullSolution:`# DETAILED SOLUTION
+# Morphological operations form the foundation of classical CV:
+# opening = erode then dilate (removes small noise blobs)
+# closing = dilate then erode (fills small holes)
+
+import numpy as np, cv2, urllib.request, matplotlib.pyplot as plt
+
+def erode_manual(img, k=3):
+    """Binary erosion: output pixel=1 only if all kernel-covered pixels are 1."""
+    pad = k//2
+    padded = np.pad(img, pad, mode='constant', constant_values=0)
+    out = np.zeros_like(img)
+    for i in range(img.shape[0]):
+        for j in range(img.shape[1]):
+            patch = padded[i:i+k, j:j+k]
+            out[i,j] = 1 if patch.min() == 1 else 0
+    return out
+
+def dilate_manual(img, k=3):
+    """Binary dilation: output pixel=1 if any kernel-covered pixel is 1."""
+    pad = k//2
+    padded = np.pad(img, pad, mode='constant', constant_values=0)
+    out = np.zeros_like(img)
+    for i in range(img.shape[0]):
+        for j in range(img.shape[1]):
+            patch = padded[i:i+k, j:j+k]
+            out[i,j] = 1 if patch.max() == 1 else 0
+    return out
+
+# Create a test binary image
+binary = np.zeros((60,60), np.uint8)
+cv2.circle(binary,(30,30),20,1,-1)  # White circle
+cv2.rectangle(binary,(5,5),(15,15),1,-1)  # Small noise blob
+
+eroded  = erode_manual(binary)
+dilated = dilate_manual(binary)
+opened  = dilate_manual(erode_manual(binary))   # removes noise blob
+closed  = erode_manual(dilate_manual(binary))   # fills holes
+
+fig,axes=plt.subplots(1,5,figsize=(20,5))
+for ax,im,t in zip(axes,[binary,eroded,dilated,opened,closed],
+                        ["Original","Eroded","Dilated","Opening","Closing"]):
+    ax.imshow(im,cmap="gray",vmin=0,vmax=1); ax.set_title(t); ax.axis("off")
+plt.tight_layout(); plt.savefig("c07.png",dpi=150); plt.show()
+print("Noise blob present after opening:", opened[5:16,5:16].any())  # Should be False`,
+    complexity:"Time O(m*n*k^2)  Space O(m*n)",
+    followup:"What is the hat transform (tophat, blackhat) and when is it used? How does MORPH_GRADIENT detect edges from morphological operations?" },
+
+  { id:"C08", difficulty:"Easy", tag:"Geometry", title:"Image Rotation Without Library",
+    company:"Adobe, Apple", points:10,
+    desc:`Rotate a grayscale image by an arbitrary angle (in degrees) around its centre using bilinear interpolation, without using cv2.warpAffine or any rotation library call.`,
+    example:`Input: 100x100 image, angle=45 degrees
+Output: rotated image with black fill for out-of-bounds pixels`,
+    hint:"For each output pixel (x', y'), compute the corresponding source pixel (x,y) by applying inverse rotation around the centre. Use bilinear interpolation to sample the source.",
+    fullSolution:`# DETAILED SOLUTION
+# Inverse mapping: for each destination pixel, compute the source location.
+# This avoids holes (which forward mapping can create).
+# Bilinear interpolation: weighted average of 4 surrounding source pixels.
+
+import numpy as np, cv2, urllib.request, matplotlib.pyplot as plt, math
+
+def rotate_bilinear(img, angle_deg):
+    h, w    = img.shape
+    cx, cy  = w/2, h/2
+    rad     = math.radians(-angle_deg)    # Negative: inverse rotation
+    cos_a, sin_a = math.cos(rad), math.sin(rad)
+    
+    out = np.zeros_like(img)
+    for y_dst in range(h):
+        for x_dst in range(w):
+            # Translate to centre, rotate, translate back
+            xc, yc  = x_dst - cx, y_dst - cy
+            x_src   = cos_a*xc - sin_a*yc + cx
+            y_src   = sin_a*xc + cos_a*yc + cy
+            
+            # Bilinear interpolation
+            x0, y0 = int(x_src), int(y_src)
+            x1, y1 = x0+1, y0+1
+            if 0<=x0<w-1 and 0<=y0<h-1:
+                dx, dy = x_src-x0, y_src-y0
+                out[y_dst,x_dst] = int(
+                    (1-dx)*(1-dy)*img[y0,x0] + dx*(1-dy)*img[y0,x1] +
+                    (1-dx)*dy*img[y1,x0]     + dx*dy*img[y1,x1])
+    return out
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw = urllib.request.urlopen(url).read()
+gray= cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_GRAYSCALE)
+gray= cv2.resize(gray,(120,90))   # small for manual speed
+
+rot30  = rotate_bilinear(gray, 30)
+rot90  = rotate_bilinear(gray, 90)
+
+# Compare with cv2.warpAffine
+M     = cv2.getRotationMatrix2D((gray.shape[1]//2,gray.shape[0]//2),30,1)
+cv_rot= cv2.warpAffine(gray,M,(gray.shape[1],gray.shape[0]))
+
+fig,axes=plt.subplots(1,4,figsize=(18,5))
+for ax,im,t in zip(axes,[gray,rot30,rot90,cv_rot],
+    ["Original","Manual 30deg","Manual 90deg","cv2 30deg (reference)"]):
+    ax.imshow(im,cmap="gray"); ax.set_title(t); ax.axis("off")
+plt.tight_layout(); plt.savefig("c08.png",dpi=150); plt.show()
+print("Max diff vs cv2:", np.abs(rot30.astype(int)-cv_rot.astype(int)).max())`,
+    complexity:"Time O(m*n)  Space O(m*n)",
+    followup:"What are the artefacts of nearest-neighbour vs bilinear vs bicubic interpolation? When does bicubic produce ringing artefacts?" },
+
+  { id:"C09", difficulty:"Easy", tag:"Statistics", title:"Compute PSNR and SSIM from Scratch",
+    company:"Netflix, Qualcomm", points:10,
+    desc:`Implement Peak Signal-to-Noise Ratio (PSNR) and Structural Similarity Index (SSIM) from mathematical definitions, then apply them to compare a clean vs noisy image.`,
+    example:`PSNR = 10*log10(255^2 / MSE).  SSIM = (2*mu1*mu2+c1)*(2*sigma12+c2) / ((mu1^2+mu2^2+c1)*(sigma1^2+sigma2^2+c2))`,
+    hint:"PSNR: compute MSE first, then apply the log formula. SSIM: compute local means, variances, and covariances over an 11x11 Gaussian window.",
+    fullSolution:`# DETAILED SOLUTION
+# These metrics appear in virtually every image restoration paper.
+# Understanding the formulas helps you know what you're optimising.
+
+import numpy as np, cv2, urllib.request, matplotlib.pyplot as plt
+
+def psnr_manual(ref, img, max_val=255.0):
+    """PSNR in dB. Higher is better. Perfect: infinity. Typical: 30-45 dB."""
+    mse = np.mean((ref.astype(float) - img.astype(float))**2)
+    if mse == 0:
+        return float('inf')
+    return 10 * np.log10(max_val**2 / mse)
+
+def ssim_manual(ref, img, C1=(0.01*255)**2, C2=(0.03*255)**2):
+    """Simplified global SSIM (skimage computes it locally with Gaussian windows)."""
+    ref_f = ref.astype(float); img_f = img.astype(float)
+    mu1, mu2   = ref_f.mean(), img_f.mean()
+    s1_sq      = ref_f.var(); s2_sq = img_f.var()
+    s12        = np.mean((ref_f-mu1)*(img_f-mu2))
+    numerator  = (2*mu1*mu2+C1)*(2*s12+C2)
+    denominator= (mu1**2+mu2**2+C1)*(s1_sq+s2_sq+C2)
+    return numerator/denominator
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw = urllib.request.urlopen(url).read()
+clean = cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_GRAYSCALE)
+rng   = np.random.default_rng(0)
+
+print(f"{'Distortion':25s}  {'PSNR (dB)':>10s}  {'SSIM':>8s}")
+for sigma in [10,30,50]:
+    noisy = np.clip(clean.astype(float)+rng.normal(0,sigma,clean.shape),0,255).astype(np.uint8)
+    p = psnr_manual(clean,noisy); s = ssim_manual(clean,noisy)
+    print(f"  Gauss noise sigma={sigma:<3d}   {p:>10.2f}   {s:>8.4f}")
+blurred = cv2.GaussianBlur(clean,(15,15),3)
+print(f"  Gauss blur k=15         {psnr_manual(clean,blurred):>10.2f}   {ssim_manual(clean,blurred):>8.4f}")
+jpeg_enc= cv2.imencode(".jpg",clean,[cv2.IMWRITE_JPEG_QUALITY,10])[1]
+jpeg_dec= cv2.imdecode(jpeg_enc,cv2.IMREAD_GRAYSCALE)
+print(f"  JPEG quality=10         {psnr_manual(clean,jpeg_dec):>10.2f}   {ssim_manual(clean,jpeg_dec):>8.4f}")`,
+    complexity:"Time O(m*n)  Space O(1) for global SSIM",
+    followup:"Why is LPIPS more correlated with human perception than PSNR? What does it mean when a method has high PSNR but low LPIPS?" },
+
+  { id:"C10", difficulty:"Easy", tag:"Feature Matching", title:"Template Matching with Normalised Cross-Correlation",
+    company:"Google Maps, automotive", points:10,
+    desc:`Find the location of a small template image within a larger image using normalised cross-correlation (NCC), without using cv2.matchTemplate.`,
+    example:`Input: 200x200 scene image + 30x30 template patch
+Output: (row, col) location of best match`,
+    hint:"Slide the template over the image. At each position, compute NCC = sum((I_patch - I_mean) * (T - T_mean)) / (std(I_patch) * std(T) * N). The location with the highest NCC is the match.",
+    fullSolution:`# DETAILED SOLUTION
+# Template matching with NCC is used in optical flow (Lucas-Kanade),
+# visual tracking, panorama stitching, and stereo matching cost volumes.
+
+import numpy as np, cv2, urllib.request, matplotlib.pyplot as plt
+
+def ncc_match(image, template):
+    """Slide template over image, return score map (NCC at each position)."""
+    ih, iw = image.shape; th, tw = template.shape
+    score   = np.zeros((ih-th+1, iw-tw+1))
+    t_norm  = template - template.mean()
+    t_std   = template.std() + 1e-8
+    for i in range(ih-th+1):
+        for j in range(iw-tw+1):
+            patch  = image[i:i+th, j:j+tw].astype(float)
+            p_norm = patch - patch.mean()
+            p_std  = patch.std() + 1e-8
+            score[i,j] = (p_norm * t_norm).sum() / (t_std * p_std * th * tw)
+    return score
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw = urllib.request.urlopen(url).read()
+gray= cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_GRAYSCALE)
+gray= cv2.resize(gray,(200,150))   # shrink for speed
+
+# Extract a template patch from a known location
+ty,tx,th,tw = 30,50,35,35
+template = gray[ty:ty+th, tx:tx+tw].copy()
+
+# Add small noise to simulate real-world template variation
+noisy_scene = gray.copy()
+noisy_scene = np.clip(noisy_scene.astype(int)+np.random.randint(-10,10,gray.shape),0,255).astype(np.uint8)
+
+score = ncc_match(noisy_scene.astype(float)/255.0, template.astype(float)/255.0)
+best  = np.unravel_index(score.argmax(), score.shape)
+print(f"True location: ({ty},{tx})  |  Found: {best}  |  Max NCC: {score.max():.4f}")
+
+vis = cv2.cvtColor(noisy_scene, cv2.COLOR_GRAY2RGB)
+cv2.rectangle(vis,(tx,ty),(tx+tw,ty+th),(0,255,0),2)      # True location (green)
+cv2.rectangle(vis,(best[1],best[0]),(best[1]+tw,best[0]+th),(255,0,0),2)  # Found (red)
+
+fig,(a,b,c)=plt.subplots(1,3,figsize=(15,5))
+a.imshow(template,cmap="gray"); a.set_title("Template"); a.axis("off")
+b.imshow(vis); b.set_title("Match: green=true, red=found"); b.axis("off")
+c.imshow(score,cmap="hot"); c.set_title("NCC Score Map"); c.axis("off")
+plt.tight_layout(); plt.savefig("c10.png",dpi=150); plt.show()`,
+    complexity:"Time O((m-th)*(n-tw)*th*tw)  Space O((m-th)*(n-tw))",
+    followup:"How does normalised cross-correlation compare to sum of squared differences (SSD)? Why does normalisation help?" },
+
+  // ─── MEDIUM (11-60) ────────────────────────────────────────────
+  { id:"C11", difficulty:"Medium", tag:"Dynamic Programming", title:"Non-Maximum Suppression and Soft-NMS",
+    company:"NVIDIA, Amazon Rekognition", points:20,
+    desc:`Implement standard NMS and Soft-NMS for object detection bounding boxes. Soft-NMS decays confidence instead of hard removal, improving recall on crowded scenes.`,
+    example:`5 overlapping boxes with confidences [0.9,0.8,0.75,0.7,0.6].
+After NMS (threshold=0.5): keep [0.9, 0.6] (separated).
+After Soft-NMS: all boxes retained but with decayed confidences.`,
+    hint:"NMS: sort by conf, greedily keep, remove all IoU>thresh. Soft-NMS: instead of removing, decay conf of overlapping boxes by a factor of exp(-IoU^2/sigma).",
+    fullSolution:`# DETAILED SOLUTION
+# NMS is used in every object detector after the final prediction head.
+# Soft-NMS was introduced by Bodla et al. (2017) to handle occlusion.
+
+import numpy as np, matplotlib.pyplot as plt, matplotlib.patches as patches
+
+def iou(b1, b2):
+    x1=max(b1[0],b2[0]); y1=max(b1[1],b2[1])
+    x2=min(b1[2],b2[2]); y2=min(b1[3],b2[3])
+    inter=max(0,x2-x1)*max(0,y2-y1)
+    a1=(b1[2]-b1[0])*(b1[3]-b1[1]); a2=(b2[2]-b2[0])*(b2[3]-b2[1])
+    return inter/(a1+a2-inter+1e-8)
+
+def hard_nms(boxes, scores, threshold=0.5):
+    """Standard greedy NMS."""
+    order = np.argsort(scores)[::-1]; keep=[]
+    while len(order):
+        i=order[0]; keep.append(i)
+        if len(order)==1: break
+        ious=np.array([iou(boxes[i],boxes[j]) for j in order[1:]])
+        order=order[1:][ious<threshold]
+    return keep
+
+def soft_nms(boxes, scores, sigma=0.5, score_thresh=0.3):
+    """Soft-NMS: decay scores instead of hard removal."""
+    boxes  = [list(b) for b in boxes]
+    scores = list(scores)
+    N      = len(boxes); keep=[]
+    for i in range(N):
+        # Find max score box
+        max_idx = max(range(len(scores)), key=lambda k: scores[k])
+        if scores[max_idx] < score_thresh: break
+        keep.append(max_idx)
+        max_box = boxes[max_idx]
+        # Decay all remaining boxes
+        for j in range(len(scores)):
+            if j != max_idx:
+                ov = iou(max_box, boxes[j])
+                scores[j] *= np.exp(-(ov**2)/sigma)
+        scores[max_idx] = 0   # Prevent re-selection
+    return keep
+
+# Simulate 8 boxes (2 clusters + 1 isolated)
+boxes = np.array([[50,50,200,200],[60,55,210,205],[55,52,195,198],
+                  [58,58,202,200],[250,50,400,180],[260,55,410,185],
+                  [252,52,398,178],[500,150,600,250]])
+scores= np.array([0.95,0.82,0.76,0.70, 0.88,0.74,0.61, 0.92])
+
+keep_hard = hard_nms(boxes,scores,0.5)
+keep_soft = soft_nms(boxes,scores,sigma=0.5,score_thresh=0.3)
+
+print(f"Hard NMS kept {len(keep_hard)} boxes: indices {keep_hard}")
+print(f"Soft NMS kept {len(keep_soft)} boxes: indices {keep_soft}")
+
+fig,(a,b)=plt.subplots(1,2,figsize=(14,6))
+for ax,kept,title in zip([a,b],[keep_hard,keep_soft],["Hard NMS","Soft NMS"]):
+    ax.set_xlim(0,650); ax.set_ylim(0,280); ax.invert_yaxis()
+    ax.set_facecolor("#0d1529"); ax.set_title(title,color="white")
+    for i,(bx,sc) in enumerate(zip(boxes,scores)):
+        col="lime" if i in kept else "gray"
+        r=patches.Rectangle((bx[0],bx[1]),bx[2]-bx[0],bx[3]-bx[1],
+                             linewidth=2,edgecolor=col,facecolor="none")
+        ax.add_patch(r)
+        ax.text(bx[0],bx[1]-3,f"{sc:.2f}",color=col,fontsize=8,fontweight="bold")
+plt.tight_layout(); plt.savefig("c11.png",dpi=150); plt.show()`,
+    complexity:"Hard NMS O(n^2)  Soft-NMS O(n^2)  Space O(n)",
+    followup:"When does Soft-NMS substantially outperform hard NMS? (Crowded pedestrian scenes, overlapping objects with similar class.) What is WBF (Weighted Boxes Fusion)?" },
+
+  { id:"C12", difficulty:"Medium", tag:"Thresholding", title:"Otsu's Global Threshold from Scratch",
+    company:"OpenCV, Mathworks", points:20,
+    desc:`Implement Otsu's optimal global threshold algorithm. Find the threshold t* that minimises the within-class variance (equivalently maximises the between-class variance) of pixel intensities.`,
+    example:`Input: bimodal grayscale image
+Output: t* = optimal threshold value + binary image`,
+    hint:"For each candidate threshold t, compute the probability (weight) and mean of each class (foreground, background). Between-class variance = w0*w1*(mu0-mu1)^2. Choose t that maximises this.",
+    fullSolution:`# DETAILED SOLUTION
+# Otsu's method (1979) is used in document binarisation, medical imaging,
+# and any segmentation task requiring automatic thresholding.
+# OpenCV's THRESH_OTSU calls exactly this algorithm.
+
+import numpy as np, cv2, urllib.request, matplotlib.pyplot as plt
+
+def otsu_threshold(gray):
+    """Returns optimal threshold that maximises between-class variance."""
+    hist = np.bincount(gray.flatten(), minlength=256).astype(float)
+    total = gray.size
+    prob  = hist / total          # Probability of each intensity
+
+    best_t    = 0
+    best_var  = 0
+    w0, mu0   = 0.0, 0.0
+
+    for t in range(256):
+        w0 += prob[t]
+        w1  = 1.0 - w0
+        if w0 == 0 or w1 == 0: continue
+        mu0 = mu0 + t * prob[t]          # Running weighted sum for class 0
+        mu1 = (np.arange(256)*prob).sum() - mu0   # Remaining mean (class 1)
+        mean0 = mu0 / (w0 + 1e-8)
+        mean1 = mu1 / (w1 + 1e-8)
+        # Between-class variance
+        var_between = w0 * w1 * (mean0 - mean1)**2
+        if var_between > best_var:
+            best_var = var_between
+            best_t   = t
+
+    return best_t
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw = urllib.request.urlopen(url).read()
+gray= cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_GRAYSCALE)
+
+t_manual = otsu_threshold(gray)
+_, t_cv   = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+print(f"Manual Otsu threshold: {t_manual}")
+print(f"OpenCV Otsu threshold: {t_cv}")
+
+binary_manual = (gray > t_manual).astype(np.uint8)*255
+binary_cv, _  = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU), None
+
+fig,(a,b,c,d)=plt.subplots(1,4,figsize=(20,5))
+a.imshow(gray,cmap="gray"); a.set_title("Grayscale"); a.axis("off")
+a.axvline(x=0,color="none")
+b.hist(gray.flatten(),bins=128,color=P.accent1)
+b.axvline(x=t_manual,color="red",linewidth=2,label=f"t*={t_manual}")
+b.legend(); b.set_title("Histogram + Otsu Threshold")
+c.imshow(binary_manual,cmap="gray"); c.set_title(f"Binary (t={t_manual})"); c.axis("off")
+d.imshow(cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2),cmap="gray")
+d.set_title("Adaptive Threshold (comparison)"); d.axis("off")
+plt.tight_layout(); plt.savefig("c12.png",dpi=150); plt.show()`,
+    complexity:"Time O(m*n + 256)  Space O(256)",
+    followup:"When does Otsu fail? (Multimodal histograms, heavily skewed distributions.) How does adaptive thresholding (Sauvola, Niblack) handle non-uniform illumination?" },
+
+  { id:"C13", difficulty:"Medium", tag:"Dynamic Programming", title:"Seam Carving for Content-Aware Resizing",
+    company:"Adobe (classic interview)", points:20,
+    desc:`Implement seam carving to remove one vertical seam from an image. A vertical seam is a connected path of pixels from top to bottom, one pixel per row, that minimises the total energy (gradient magnitude). This allows content-aware resizing that avoids cutting through important objects.`,
+    example:`Input: 320x240 colour image
+Output: 319x240 image with one low-energy seam removed`,
+    hint:"1. Compute energy map (gradient magnitude). 2. Dynamic programming: dp[i][j] = energy[i][j] + min(dp[i-1][j-1], dp[i-1][j], dp[i-1][j+1]). 3. Backtrack from minimum in last row. 4. Remove seam pixels.",
+    fullSolution:`# DETAILED SOLUTION
+# Seam carving (Avidan & Shamir, SIGGRAPH 2007) resizes images while
+# preserving important content. This is in Photoshop as "Content-Aware Scale".
+
+import numpy as np, cv2, urllib.request, matplotlib.pyplot as plt
+
+def compute_energy(img):
+    """Gradient magnitude energy: high at edges, low in smooth regions."""
+    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY).astype(float)
+    gx   = np.gradient(gray, axis=1)
+    gy   = np.gradient(gray, axis=0)
+    return np.sqrt(gx**2 + gy**2)
+
+def find_seam(energy):
+    """DP to find minimum-energy vertical seam."""
+    h, w   = energy.shape
+    dp     = energy.copy()
+    back   = np.zeros((h,w), int)   # Backtrack direction: -1, 0, 1
+    for i in range(1, h):
+        for j in range(w):
+            lo, hi = max(0,j-1), min(w-1,j+1)
+            prev   = dp[i-1, lo:hi+1]
+            min_j  = lo + prev.argmin()
+            dp[i,j]   = energy[i,j] + dp[i-1,min_j]
+            back[i,j] = min_j - j   # -1, 0, or 1
+    # Backtrack
+    seam = np.zeros(h, int)
+    seam[-1] = dp[-1].argmin()
+    for i in range(h-2,-1,-1):
+        seam[i] = seam[i+1] + back[i+1, seam[i+1]]
+    return seam
+
+def remove_seam(img, seam):
+    """Remove seam pixels from image."""
+    h, w = img.shape[:2]
+    out  = np.zeros((h, w-1, img.shape[2]), img.dtype)
+    for i in range(h):
+        out[i,:seam[i]] = img[i,:seam[i]]
+        out[i,seam[i]:] = img[i,seam[i]+1:]
+    return out
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw = urllib.request.urlopen(url).read()
+img = cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_COLOR)
+img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+
+energy = compute_energy(img)
+seam   = find_seam(energy)
+
+# Visualise seam on image
+vis = img.copy()
+for i,j in enumerate(seam):
+    vis[i,max(0,j-1):min(img.shape[1],j+2)] = [255,0,0]
+
+carved = remove_seam(img, seam)
+print(f"Original: {img.shape}  ->  Carved: {carved.shape}")
+
+fig,(a,b,c,d)=plt.subplots(1,4,figsize=(20,5))
+a.imshow(img); a.set_title(f"Original {img.shape[1]}x{img.shape[0]}"); a.axis("off")
+b.imshow(energy,cmap="hot"); b.set_title("Energy Map"); b.axis("off")
+c.imshow(vis); c.set_title("Seam Highlighted (red)"); c.axis("off")
+d.imshow(carved); d.set_title(f"After 1 Seam Removal {carved.shape[1]}x{carved.shape[0]}"); d.axis("off")
+plt.tight_layout(); plt.savefig("c13.png",dpi=150); plt.show()`,
+    complexity:"Time O(m*n) per seam  Space O(m*n)",
+    followup:"How would you remove k seams efficiently? (Recompute energy only in the local neighbourhood of the removed seam.) What energy function could protect faces from removal?" },
+
+  { id:"C14", difficulty:"Medium", tag:"Hashing", title:"Perceptual Hash (pHash) for Near-Duplicate Detection",
+    company:"Google Photos, Shutterstock", points:20,
+    desc:`Implement perceptual hashing (pHash) to detect near-duplicate images. The hash should be similar for images that are slightly cropped, resized, or colour-adjusted, and very different for unrelated images.`,
+    example:`Input: original image vs slightly brightened copy vs completely different image
+Output: Hamming distances: 0-5 (near-duplicate), >10 (different)`,
+    hint:"1. Resize to 32x32 grayscale. 2. Apply DCT (discrete cosine transform). 3. Take top-left 8x8 coefficients. 4. Threshold at the mean. 5. Read bits row by row to get 64-bit hash.",
+    fullSolution:`# DETAILED SOLUTION
+# Perceptual hashing is used for copyright detection, deduplication,
+# and reverse image search. Hamming distance of hashes gives similarity.
+
+import numpy as np, cv2, urllib.request, io
+from PIL import Image
+import matplotlib.pyplot as plt
+from scipy.fft import dct
+
+def phash(img_arr, hash_size=8, highfreq_factor=4):
+    """Perceptual hash: DCT-based 64-bit hash."""
+    img_size = hash_size * highfreq_factor   # 32
+    gray     = cv2.cvtColor(img_arr,cv2.COLOR_RGB2GRAY) if img_arr.ndim==3 else img_arr
+    resized  = cv2.resize(gray,(img_size,img_size),interpolation=cv2.INTER_AREA).astype(float)
+    # 2D DCT via separable 1D DCTs
+    dct_2d   = dct(dct(resized.T, norm='ortho').T, norm='ortho')
+    # Take top-left hash_size x hash_size (low-frequency components)
+    dct_low  = dct_2d[:hash_size,:hash_size]
+    avg      = dct_low.mean()
+    bits     = (dct_low > avg).flatten()  # 64 bits
+    return bits
+
+def hamming(h1, h2):
+    return np.sum(h1 != h2)
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg"
+raw = urllib.request.urlopen(url).read()
+img_orig = np.array(Image.open(io.BytesIO(raw)).convert("RGB"))
+
+# Create near-duplicate variants
+img_bright = np.clip(img_orig.astype(int)+30,0,255).astype(np.uint8)
+img_crop   = img_orig[10:img_orig.shape[0]-10, 10:img_orig.shape[1]-10]  # slight crop
+img_flip   = img_orig[:,::-1,:]                                            # horizontal flip
+
+url2 = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw2 = urllib.request.urlopen(url2).read()
+img_diff = np.array(Image.open(io.BytesIO(raw2)).convert("RGB"))
+
+h_orig   = phash(img_orig)
+variants = [("Brightened +30", img_bright), ("Cropped 10px",img_crop),
+            ("Flipped H",img_flip), ("Different image",img_diff)]
+print(f"{'Variant':25s}  {'Hamming':>7s}  {'Verdict':>12s}")
+for name,img in variants:
+    d = hamming(h_orig, phash(img))
+    verdict = "Near-duplicate" if d <= 10 else "Different"
+    print(f"  {name:22s}  {d:>7d}  {verdict:>12s}")`,
+    complexity:"Time O(N^2 log N) for DCT on N x N image  Space O(N^2)",
+    followup:"How does dHash (difference hash) differ from pHash? How would you build a large-scale near-duplicate detection system using pHash + LSH (Locality Sensitive Hashing)?" },
+
+  { id:"C15", difficulty:"Medium", tag:"Deep Learning", title:"Conv2D Forward Pass from Scratch",
+    company:"FAANG system design", points:20,
+    desc:`Implement a Conv2D forward pass (single input, single output channel) using only NumPy. Validate against PyTorch's F.conv2d with the same kernel weights.`,
+    example:`Input: 1x1x5x5 tensor, kernel: 1x1x3x3, padding=1, stride=1
+Output: 1x1x5x5 feature map matching PyTorch exactly`,
+    hint:"The output spatial size: H_out = (H_in + 2*padding - kernel_h) // stride + 1. Use nested loops or reshape the input into overlapping patches (im2col trick).",
+    fullSolution:`# DETAILED SOLUTION
+# Understanding the Conv2D forward pass is fundamental.
+# This is what every CNN layer computes at its core.
+# The im2col trick converts convolution to a single matrix multiply.
+
+import numpy as np, torch, torch.nn.functional as F, matplotlib.pyplot as plt
+
+def conv2d_numpy(x, w, bias=None, stride=1, padding=0):
+    """
+    x: (N,C_in,H,W), w: (C_out,C_in,kH,kW)
+    Returns: (N,C_out,H_out,W_out)
+    """
+    N,C_in,H,W     = x.shape
+    C_out,_,kH,kW  = w.shape
+    H_out = (H + 2*padding - kH)//stride + 1
+    W_out = (W + 2*padding - kW)//stride + 1
+    
+    # Pad input
+    x_pad = np.pad(x,((0,0),(0,0),(padding,padding),(padding,padding)),mode='constant')
+    out   = np.zeros((N,C_out,H_out,W_out))
+    
+    for n in range(N):
+        for co in range(C_out):
+            for i in range(H_out):
+                for j in range(W_out):
+                    r, c = i*stride, j*stride
+                    patch = x_pad[n,:,r:r+kH,c:c+kW]   # (C_in,kH,kW)
+                    out[n,co,i,j] = (patch * w[co]).sum()
+            if bias is not None:
+                out[n,co] += bias[co]
+    return out
+
+# Test against PyTorch
+np.random.seed(42)
+x_np = np.random.randn(1,3,8,8).astype(np.float32)
+w_np = np.random.randn(8,3,3,3).astype(np.float32)
+b_np = np.random.randn(8).astype(np.float32)
+
+out_np = conv2d_numpy(x_np, w_np, b_np, stride=1, padding=1)
+out_pt = F.conv2d(torch.tensor(x_np), torch.tensor(w_np),
+                  torch.tensor(b_np), stride=1, padding=1).numpy()
+
+print(f"NumPy output shape:   {out_np.shape}")
+print(f"PyTorch output shape: {out_pt.shape}")
+print(f"Max absolute diff:    {np.abs(out_np-out_pt).max():.2e}")
+print("Outputs match:", np.allclose(out_np, out_pt, atol=1e-5))
+
+# Visualise feature maps from first 8 filters
+fig,axes=plt.subplots(2,4,figsize=(16,8))
+for i,ax in enumerate(axes.flat):
+    ax.imshow(out_np[0,i],cmap="RdBu_r"); ax.set_title(f"Filter {i}"); ax.axis("off")
+plt.suptitle("Conv2D Output Feature Maps (8 filters, 3x3, padding=1)",fontsize=13)
+plt.tight_layout(); plt.savefig("c15.png",dpi=150); plt.show()`,
+    complexity:"Time O(N*C_out*C_in*H_out*W_out*kH*kW)  optimised via FFT or GEMM",
+    followup:"What is the im2col transformation and how does it convert convolution to a GEMM (General Matrix-Matrix Multiply)? Why do GPU BLAS libraries make this fast?" },
+
+  { id:"C16", difficulty:"Medium", tag:"Gradient / Optimisation", title:"Gradient Descent for Image Denoising (TV Regularisation)",
+    company:"Research / Adobe", points:20,
+    desc:`Implement iterative Total Variation (TV) denoising using gradient descent. TV regularisation penalises large gradients while preserving sharp edges.`,
+    example:`Input: noisy image. After 100 iterations of gradient descent on L2 + lambda*TV(x), output a smoother image with preserved edges.`,
+    hint:"TV(x) = sum |grad_x| + |grad_y|. Gradient of TV w.r.t. x[i,j] involves finite difference quotients. Data term gradient: 2*(x-y). Total: grad = 2*(x-y) + lambda * grad_TV.",
+    fullSolution:`# DETAILED SOLUTION
+# Total Variation was foundational in image restoration (Rudin-Osher-Fatemi, 1992).
+# Modern deep denoisers (DnCNN, FFDNet) supersede it but TV regularisation
+# is still used in compressed sensing MRI, CT reconstruction, and edge-aware smoothing.
+
+import numpy as np, cv2, urllib.request, matplotlib.pyplot as plt
+
+def tv_gradient(x, eps=1e-4):
+    """Isotropic TV gradient (smooth approximation to |grad|)."""
+    dx = np.diff(x, axis=1, append=x[:,-1:])   # Right difference
+    dy = np.diff(x, axis=0, append=x[-1:,:])   # Down difference
+    norm = np.sqrt(dx**2 + dy**2 + eps)         # Smooth abs
+    # Divergence of (dx/norm, dy/norm)
+    gx = dx/norm
+    gy = dy/norm
+    div_x = np.diff(gx, axis=1, prepend=gx[:,:1])
+    div_y = np.diff(gy, axis=0, prepend=gy[:1,:])
+    return -(div_x + div_y)   # Negative divergence
+
+def tv_denoise(noisy, lam=0.1, lr=0.05, n_iters=150):
+    x = noisy.astype(float)/255.0
+    y = x.copy()
+    losses=[]
+    for it in range(n_iters):
+        data_grad = 2*(x-y)
+        tv_grad   = tv_gradient(x)
+        grad      = data_grad + lam*tv_grad
+        x        -= lr * grad
+        x         = x.clip(0,1)
+        if it%10==0:
+            loss = np.mean((x-y)**2) + lam*np.sum(np.sqrt(
+                np.gradient(x,axis=0)**2 + np.gradient(x,axis=1)**2))
+            losses.append(loss)
+    return (x*255).astype(np.uint8), losses
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw = urllib.request.urlopen(url).read()
+clean = cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_GRAYSCALE)
+clean = cv2.resize(clean,(160,120))
+rng   = np.random.default_rng(0)
+noisy = np.clip(clean.astype(int)+rng.normal(0,30,clean.shape),0,255).astype(np.uint8)
+
+denoised, losses = tv_denoise(noisy, lam=0.15, n_iters=150)
+
+from skimage.metrics import peak_signal_noise_ratio as psnr
+print(f"PSNR noisy:    {psnr(clean,noisy,data_range=255):.2f} dB")
+print(f"PSNR denoised: {psnr(clean,denoised,data_range=255):.2f} dB")
+
+fig,(a,b,c,d)=plt.subplots(1,4,figsize=(20,5))
+a.imshow(clean,cmap="gray"); a.set_title("Clean"); a.axis("off")
+b.imshow(noisy,cmap="gray"); b.set_title("Noisy"); b.axis("off")
+c.imshow(denoised,cmap="gray"); c.set_title("TV Denoised"); c.axis("off")
+d.plot(losses,color=P.accent3); d.set_title("Loss Curve"); d.set_xlabel("Iteration x10")
+d.set_facecolor("#0d1529")
+plt.tight_layout(); plt.savefig("c16.png",dpi=150); plt.show()`,
+    complexity:"Time O(n_iters * m*n)  Space O(m*n)",
+    followup:"Compare TV denoising with Gaussian blur: TV preserves sharp edges while Gaussian blurs them. What is the split-Bregman / ADMM algorithm for fast TV minimisation?" },
+
+  { id:"C17", difficulty:"Medium", tag:"Neural Network", title:"Backpropagation Through a Conv Layer",
+    company:"Deep Learning interviews", points:20,
+    desc:`Implement the backward pass of a single Conv2D layer from scratch. Compute gradients with respect to the input, weights, and bias, and verify against PyTorch autograd.`,
+    example:`Given dL/dOutput (output gradient), compute dL/dInput, dL/dWeights, dL/dBias.`,
+    hint:"dL/dInput uses full convolution (transpose convolution with flipped kernel). dL/dWeights uses cross-correlation between input patches and output gradients. dL/dBias = sum of output gradients.",
+    fullSolution:`# DETAILED SOLUTION
+# Backprop through conv is the heart of CNN training.
+# dL/dWeights = correlate(input, dL/dOutput)
+# dL/dInput   = full_conv(dL/dOutput, flipped_weights)  i.e. transposed conv
+
+import numpy as np, torch, torch.nn.functional as F
+
+def conv2d_forward(x, w, padding=0):
+    N,C_in,H,W = x.shape; C_out,_,kH,kW = w.shape
+    H_out=(H+2*padding-kH)+1; W_out=(W+2*padding-kW)+1
+    x_pad = np.pad(x,((0,0),(0,0),(padding,padding),(padding,padding)))
+    out   = np.zeros((N,C_out,H_out,W_out))
+    for n in range(N):
+        for co in range(C_out):
+            for ci in range(C_in):
+                for i in range(H_out):
+                    for j in range(W_out):
+                        out[n,co,i,j]+=np.sum(x_pad[n,ci,i:i+kH,j:j+kW]*w[co,ci])
+    return out
+
+def conv2d_backward(dout, x, w, padding=0):
+    N,C_in,H,W = x.shape; C_out,_,kH,kW = w.shape
+    _,_,H_out,W_out = dout.shape
+    x_pad  = np.pad(x,((0,0),(0,0),(padding,padding),(padding,padding)))
+    dw     = np.zeros_like(w)
+    db     = dout.sum(axis=(0,2,3))     # Sum over N,H,W
+    dx_pad = np.zeros_like(x_pad)
+
+    for n in range(N):
+        for co in range(C_out):
+            for ci in range(C_in):
+                for i in range(H_out):
+                    for j in range(W_out):
+                        patch = x_pad[n,ci,i:i+kH,j:j+kW]
+                        dw[co,ci] += dout[n,co,i,j]*patch          # dL/dW
+                        dx_pad[n,ci,i:i+kH,j:j+kW]+=dout[n,co,i,j]*w[co,ci]  # dL/dX
+    dx = dx_pad[:,:,padding:padding+H,padding:padding+W] if padding>0 else dx_pad
+    return dx, dw, db
+
+# Test vs PyTorch autograd
+np.random.seed(1)
+x_np = np.random.randn(1,2,5,5).astype(np.float32)
+w_np = np.random.randn(3,2,3,3).astype(np.float32)
+dout_np= np.random.randn(1,3,3,3).astype(np.float32)   # H_out=W_out=3
+
+dx_np,dw_np,db_np = conv2d_backward(dout_np, x_np, w_np, padding=0)
+
+x_pt  = torch.tensor(x_np,  requires_grad=True)
+w_pt  = torch.tensor(w_np,  requires_grad=True)
+b_pt  = torch.zeros(3,      requires_grad=True)
+out_pt= F.conv2d(x_pt, w_pt, b_pt, padding=0)
+out_pt.backward(torch.tensor(dout_np))
+
+print(f"dX max diff: {np.abs(dx_np - x_pt.grad.numpy()).max():.2e}")
+print(f"dW max diff: {np.abs(dw_np - w_pt.grad.numpy()).max():.2e}")
+print(f"db max diff: {np.abs(db_np - b_pt.grad.numpy()).max():.2e}")
+print("All match PyTorch!", np.allclose(dx_np,x_pt.grad.numpy(),atol=1e-5) and
+      np.allclose(dw_np,w_pt.grad.numpy(),atol=1e-5))`,
+    complexity:"Time O(N*C_out*C_in*H*W*kH*kW) per backward  Space O(m*n)",
+    followup:"What is the Winograd algorithm that speeds up 3x3 convolution? How does FFT-based convolution achieve O(m*n*log(m*n)) complexity?" },
+
+  { id:"C18", difficulty:"Medium", tag:"BFS / Shortest Path", title:"Shortest Safe Path Through an Image Grid",
+    company:"Robotics, Google Maps", points:20,
+    desc:`Given a binary overhead map (0=free, 1=obstacle), find the shortest path from the top-left to the bottom-right corner using BFS. If no path exists, return -1. This models robot path planning on an occupancy grid.`,
+    example:`Grid:
+  0 0 1 0
+  1 0 0 0
+  0 0 1 0
+  0 0 0 0
+Shortest path length: 7 steps`,
+    hint:"BFS on 4-connected or 8-connected grid. Start from (0,0), target (H-1,W-1). Track visited cells. Each step has cost 1.",
+    fullSolution:`# DETAILED SOLUTION
+# BFS gives shortest path in unweighted graphs.
+# This problem models robot navigation, game pathfinding (A*), and route planning.
+# In CV: used for finding paths in skeleton images, maze solving, watershed preprocessing.
+
+from collections import deque
+import numpy as np, cv2, urllib.request, matplotlib.pyplot as plt
+
+def bfs_path(grid):
+    """BFS shortest path from (0,0) to (H-1,W-1) through free cells (0).
+    Returns (path, distance) or (None,-1) if no path."""
+    H, W = len(grid), len(grid[0])
+    if grid[0][0]==1 or grid[H-1][W-1]==1: return None,-1
+    
+    visited = [[False]*W for _ in range(H)]
+    parent  = [[None]*W  for _ in range(H)]
+    q = deque([(0,0)]); visited[0][0]=True
+    
+    while q:
+        r,c = q.popleft()
+        if r==H-1 and c==W-1:
+            # Reconstruct path
+            path=[]; cur=(r,c)
+            while cur: path.append(cur); cur=parent[cur[0]][cur[1]]
+            return path[::-1], len(path)-1
+        for dr,dc in [(-1,0),(1,0),(0,-1),(0,1)]:  # 4-connectivity
+            nr,nc=r+dr,c+dc
+            if 0<=nr<H and 0<=nc<W and grid[nr][nc]==0 and not visited[nr][nc]:
+                visited[nr][nc]=True; parent[nr][nc]=(r,c); q.append((nr,nc))
+    return None,-1
+
+# Test
+grid1 = [[0,0,1,0],[1,0,0,0],[0,0,1,0],[0,0,0,0]]
+path,dist = bfs_path(grid1)
+print(f"Path length: {dist}")
+print(f"Path: {path}")
+
+# Visualise on a random map
+np.random.seed(7)
+H,W = 30,40
+occ = (np.random.rand(H,W) < 0.3).astype(int)   # 30% obstacles
+occ[0,0]=0; occ[H-1,W-1]=0
+
+path,dist = bfs_path(occ.tolist())
+vis = np.stack([occ*200,(1-occ)*50,np.zeros((H,W))],axis=-1).astype(np.uint8)   # red=obstacle
+if path:
+    for r,c in path: vis[r,c]=[0,255,100]   # green path
+    vis[0,0]=[0,100,255]; vis[H-1,W-1]=[255,200,0]  # start=blue, end=yellow
+    print(f"Path found! Length = {dist} steps")
+else:
+    print("No path found!")
+
+plt.figure(figsize=(12,9))
+plt.imshow(vis); plt.title(f"BFS Shortest Path (green), Length={dist}"); plt.axis("off")
+plt.savefig("c18.png",dpi=150); plt.show()`,
+    complexity:"Time O(H*W)  Space O(H*W)",
+    followup:"When would A* (A-star with heuristic) outperform BFS? (Large grids with diagonal movement.) How do occupancy grids relate to simultaneous localisation and mapping (SLAM)?" },
+
+  { id:"C19", difficulty:"Medium", tag:"Attention / Transformer", title:"Scaled Dot-Product Attention from Scratch",
+    company:"DeepMind, OpenAI, Anthropic", points:20,
+    desc:`Implement scaled dot-product attention from scratch using only NumPy. Validate against PyTorch's F.scaled_dot_product_attention. This is the core operation of every Vision Transformer.`,
+    example:`Input: Q (N,S,d_k), K (N,S,d_k), V (N,S,d_v)
+Output: Attention output (N,S,d_v)`,
+    hint:"Attention(Q,K,V) = softmax(Q @ K.T / sqrt(d_k)) @ V. Apply softmax row-wise along the key dimension.",
+    fullSolution:`# DETAILED SOLUTION
+# Scaled dot-product attention (Vaswani et al., 2017) is in every transformer.
+# In ViT, each image patch is a token; attention computes global feature relationships.
+
+import numpy as np, torch, torch.nn.functional as F, matplotlib.pyplot as plt
+
+def softmax(x, axis=-1):
+    x   = x - x.max(axis=axis, keepdims=True)   # Numerical stability
+    ex  = np.exp(x)
+    return ex / ex.sum(axis=axis, keepdims=True)
+
+def scaled_dot_product_attention(Q, K, V, mask=None):
+    """
+    Q: (B,H,S,d_k), K: (B,H,S,d_k), V: (B,H,S,d_v)
+    Returns: output (B,H,S,d_v), attn_weights (B,H,S,S)
+    """
+    d_k     = Q.shape[-1]
+    scores  = Q @ K.swapaxes(-2,-1) / np.sqrt(d_k)   # (B,H,S,S)
+    if mask is not None:
+        scores = np.where(mask==0, -1e9, scores)
+    weights = softmax(scores, axis=-1)               # (B,H,S,S)
+    out     = weights @ V                            # (B,H,S,d_v)
+    return out, weights
+
+# Test
+np.random.seed(0)
+B,H,S,d_k,d_v = 2,4,8,16,16
+Q_np = np.random.randn(B,H,S,d_k).astype(np.float32)
+K_np = np.random.randn(B,H,S,d_k).astype(np.float32)
+V_np = np.random.randn(B,H,S,d_v).astype(np.float32)
+
+out_np,w_np = scaled_dot_product_attention(Q_np,K_np,V_np)
+out_pt      = F.scaled_dot_product_attention(torch.tensor(Q_np),torch.tensor(K_np),torch.tensor(V_np))
+
+print(f"NumPy output shape:  {out_np.shape}")
+print(f"PyTorch output shape:{out_pt.shape}")
+print(f"Max diff:            {np.abs(out_np-out_pt.numpy()).max():.2e}")
+
+# Visualise attention weights (head 0, batch 0)
+fig,axes=plt.subplots(1,H,figsize=(20,4))
+for h,ax in enumerate(axes):
+    im=ax.imshow(w_np[0,h],cmap="viridis",vmin=0,vmax=0.3)
+    ax.set_title(f"Head {h}"); ax.set_xlabel("Key"); ax.set_ylabel("Query")
+plt.suptitle("Attention Weight Maps (random Q,K,V)",fontsize=13)
+plt.tight_layout(); plt.savefig("c19.png",dpi=150); plt.show()`,
+    complexity:"Time O(B*H*S^2*d_k)  Space O(B*H*S^2)",
+    followup:"Why does the scaling by sqrt(d_k) prevent gradient vanishing? How does multi-head attention learn different relationship types per head?" },
+
+  { id:"C20", difficulty:"Medium", tag:"Image Processing", title:"Harris Corner Detector from Scratch",
+    company:"SLAM, Robotics, Google Maps", points:20,
+    desc:`Implement the Harris corner detector from scratch. A corner is a point where the image has large intensity variation in multiple directions (not just edges).`,
+    example:`Input: image of a building or chessboard
+Output: corner response map, with strong responses at corners`,
+    hint:"1. Compute Ix, Iy (image gradients). 2. Compute structure tensor M = [[Ix^2, IxIy],[IxIy, Iy^2]] smoothed with a Gaussian. 3. Corner response R = det(M) - k*trace(M)^2 (k ~ 0.04-0.06).",
+    fullSolution:`# DETAILED SOLUTION
+# Harris corners (Harris & Stephens, 1988) are used for feature matching,
+# visual SLAM, panorama stitching, and as keypoints for descriptors like SIFT.
+
+import numpy as np, cv2, urllib.request, matplotlib.pyplot as plt
+
+def harris_corner(img_gray, k=0.04, sigma=1.5, threshold=0.01):
+    img = img_gray.astype(np.float64)
+    # Compute image gradients with Sobel
+    Ix = cv2.Sobel(img,cv2.CV_64F,1,0,ksize=3)
+    Iy = cv2.Sobel(img,cv2.CV_64F,0,1,ksize=3)
+    # Structure tensor components (Gaussian-smoothed products)
+    Ixx = cv2.GaussianBlur(Ix*Ix,(5,5),sigma)
+    Ixy = cv2.GaussianBlur(Ix*Iy,(5,5),sigma)
+    Iyy = cv2.GaussianBlur(Iy*Iy,(5,5),sigma)
+    # Corner response
+    det  = Ixx*Iyy - Ixy**2
+    tr   = Ixx + Iyy
+    R    = det - k * tr**2
+    # Normalise and threshold
+    R_norm = (R - R.min())/(R.max()-R.min()+1e-8)
+    corners = (R_norm > threshold).astype(np.uint8)
+    return R_norm, corners
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw = urllib.request.urlopen(url).read()
+img = cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_COLOR)
+gray= cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+
+R, corners = harris_corner(gray)
+# Non-maximum suppression: only keep local maxima
+corners_nm = cv2.dilate(R.astype(np.float32),None)
+pts = np.argwhere((R==corners_nm) & (R>0.01))   # (row,col) of corners
+print(f"Detected {len(pts)} Harris corners")
+
+vis = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+for (r,c) in pts: cv2.circle(vis,(c,r),3,(255,0,0),-1)
+
+# Compare with OpenCV Harris
+dst = cv2.cornerHarris(gray.astype(np.float32),2,3,0.04)
+dst_norm = (dst-dst.min())/(dst.max()-dst.min()+1e-8)
+
+fig,(a,b,c,d)=plt.subplots(1,4,figsize=(20,5))
+a.imshow(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)); a.set_title("Original"); a.axis("off")
+b.imshow(R,cmap="hot"); b.set_title("Harris Response Map"); b.axis("off")
+c.imshow(vis); c.set_title(f"Corners Overlaid ({len(pts)})"); c.axis("off")
+d.imshow(dst_norm,cmap="hot"); d.set_title("OpenCV Harris (reference)"); d.axis("off")
+plt.tight_layout(); plt.savefig("c20.png",dpi=150); plt.show()`,
+    complexity:"Time O(m*n)  Space O(m*n)",
+    followup:"How does FAST (Features from Accelerated Segment Test) achieve real-time corner detection? What makes Shi-Tomasi corners ('Good Features to Track') different from Harris?" },
+
+  // ─── HARD (21-40 of medium, then hard) ──────────────────────────
+  { id:"C21", difficulty:"Medium", tag:"Segmentation", title:"K-Means Image Segmentation",
+    company:"Adobe, NVIDIA", points:20,
+    desc:`Segment an image into k colour clusters using k-means clustering from scratch. Each pixel is assigned to the nearest cluster centre in RGB space, then replaced by the cluster's mean colour.`,
+    example:`Input: colour photo, k=5
+Output: image posterised into 5 dominant colour regions`,
+    hint:"Initialise k cluster centres (random or k-means++). Assign each pixel to nearest centre (L2 distance). Update centres to mean of assigned pixels. Repeat until convergence.",
+    fullSolution:`# DETAILED SOLUTION
+# K-means colour segmentation is used for colour quantisation (reducing palette),
+# image compression, and as a preprocessing step for more sophisticated segmentation.
+
+import numpy as np, cv2, urllib.request, matplotlib.pyplot as plt
+from sklearn.cluster import KMeans   # For validation
+
+def kmeans_segment(img_rgb, k=5, n_iters=20, tol=1.0):
+    h, w, c = img_rgb.shape
+    pixels  = img_rgb.reshape(-1, c).astype(float)
+    # k-means++ init: first centre random, then choose next proportional to distance
+    rng = np.random.default_rng(42)
+    centres = [pixels[rng.integers(len(pixels))]]
+    for _ in range(k-1):
+        dists = np.min([np.sum((pixels-ctr)**2,axis=1) for ctr in centres],axis=0)
+        probs = dists / dists.sum()
+        centres.append(pixels[rng.choice(len(pixels),p=probs)])
+    centres = np.array(centres)
+
+    for it in range(n_iters):
+        # Assignment step
+        dists   = np.array([np.sum((pixels-ctr)**2,axis=1) for ctr in centres])
+        labels  = dists.argmin(axis=0)
+        # Update step
+        new_ctrs= np.array([pixels[labels==ki].mean(axis=0) if (labels==ki).any() else centres[ki]
+                             for ki in range(k)])
+        if np.max(np.abs(new_ctrs-centres)) < tol: break
+        centres = new_ctrs
+
+    segmented = centres[labels].reshape(h,w,c).astype(np.uint8)
+    return segmented, labels.reshape(h,w), centres
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg"
+raw = urllib.request.urlopen(url).read()
+img = cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_COLOR)
+img_rgb = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+
+fig,axes=plt.subplots(1,4,figsize=(20,5))
+axes[0].imshow(img_rgb); axes[0].set_title("Original"); axes[0].axis("off")
+for i,k in enumerate([3,5,8],1):
+    seg,_,ctrs = kmeans_segment(img_rgb,k=k)
+    axes[i].imshow(seg); axes[i].set_title(f"k-Means k={k}"); axes[i].axis("off")
+plt.tight_layout(); plt.savefig("c21.png",dpi=150); plt.show()`,
+    complexity:"Time O(k*n*n_iters)  Space O(n)",
+    followup:"What are the limitations of k-means for image segmentation compared to GrabCut or deep segmentation models? When is SLIC superpixel segmentation preferred?" },
+
+  { id:"C22", difficulty:"Medium", tag:"Convolution", title:"Implement Depthwise Separable Convolution",
+    company:"Google (MobileNet), Apple", points:20,
+    desc:`Implement depthwise separable convolution: first a depthwise convolution (one filter per input channel), then a pointwise (1x1) convolution to mix channels. Measure parameter and FLOPs reduction vs standard Conv2D.`,
+    example:`Standard Conv2D: C_in=32, C_out=64, k=3x3 -> 32*64*9 = 18,432 parameters
+Depthwise Sep: (32*9) + (32*64) = 288 + 2048 = 2,336 parameters (8x fewer)`,
+    hint:"Depthwise: apply one k x k filter per input channel independently (groups=C_in in PyTorch). Pointwise: apply 1x1 conv to mix channels across all C_in.",
+    fullSolution:`# DETAILED SOLUTION
+# Depthwise separable convolution (Chollet 2017, Howard et al. MobileNet 2017)
+# reduces computation by 8-9x for 3x3 kernels while maintaining accuracy.
+# Used in MobileNet, EfficientNet, Xception, and many mobile-efficient architectures.
+
+import numpy as np, torch, torch.nn as nn, matplotlib.pyplot as plt
+
+def dw_sep_conv_numpy(x, dw_kernel, pw_kernel):
+    """
+    x:         (N, C_in, H, W)
+    dw_kernel: (C_in, 1, kH, kW) - one filter per channel
+    pw_kernel: (C_out, C_in, 1, 1) - pointwise mix
+    """
+    N, C_in, H, W = x.shape
+    _,_,kH,kW     = dw_kernel.shape
+    pad            = kH//2
+    C_out          = pw_kernel.shape[0]
+    x_pad          = np.pad(x,((0,0),(0,0),(pad,pad),(pad,pad)))
+    
+    # Depthwise: each channel convolved with its own single filter
+    dw_out = np.zeros_like(x)
+    for n in range(N):
+        for c in range(C_in):
+            for i in range(H):
+                for j in range(W):
+                    dw_out[n,c,i,j] = np.sum(x_pad[n,c,i:i+kH,j:j+kW]*dw_kernel[c,0])
+    
+    # Pointwise: 1x1 conv mixes channels
+    pw_out = np.zeros((N,C_out,H,W))
+    for n in range(N):
+        for co in range(C_out):
+            for ci in range(C_in):
+                pw_out[n,co] += dw_out[n,ci] * pw_kernel[co,ci,0,0]
+    return pw_out
+
+# Compare parameter counts
+C_in,C_out,k = 32,64,3
+std_params = C_in*C_out*k*k    + C_out   # + bias
+dw_params  = C_in*1*k*k        + C_in    # depthwise
+pw_params  = C_out*C_in*1*1   + C_out    # pointwise
+total_dws  = dw_params + pw_params
+print(f"Standard Conv2D params:      {std_params:,}")
+print(f"Depthwise Separable params:  {total_dws:,}")
+print(f"Parameter reduction:         {std_params/total_dws:.2f}x")
+
+# FLOPs comparison (ignoring bias)
+H_out=W_out=28
+std_flops = 2*C_in*C_out*k*k*H_out*W_out
+dws_flops = 2*C_in*k*k*H_out*W_out + 2*C_in*C_out*H_out*W_out
+print(f"Standard FLOPs: {std_flops/1e6:.2f}M")
+print(f"Depthwise Sep FLOPs: {dws_flops/1e6:.2f}M  ({std_flops/dws_flops:.2f}x fewer)")
+
+# PyTorch implementation
+class DWSConv(nn.Module):
+    def __init__(self,c_in,c_out,k):
+        super().__init__()
+        self.dw=nn.Conv2d(c_in,c_in,k,padding=k//2,groups=c_in,bias=False)
+        self.pw=nn.Conv2d(c_in,c_out,1,bias=True)
+        self.bn=nn.BatchNorm2d(c_out); self.relu=nn.ReLU()
+    def forward(self,x): return self.relu(self.bn(self.pw(self.dw(x))))
+
+model=DWSConv(32,64,3); x=torch.randn(1,32,28,28)
+out=model(x); print(f"PyTorch DWS output: {out.shape}")`,
+    complexity:"DWS: O(k^2*C_in + C_in*C_out)*H*W  Standard: O(k^2*C_in*C_out)*H*W",
+    followup:"What is an Inverted Residual Block (MobileNetV2)? How does the expansion factor balance model capacity vs efficiency?" },
+
+  // Continue with more medium challenges...
+  { id:"C23", difficulty:"Medium", tag:"Loss Functions", title:"Implement Focal Loss from Scratch",
+    company:"NVIDIA (RetinaNet)", points:20,
+    desc:`Implement focal loss, which down-weights easy (well-classified) examples and focuses training on hard examples. This solves the extreme class imbalance in one-stage object detectors.`,
+    example:`For gamma=2, alpha=0.25:
+Easy example (p=0.99): FL = -0.25*(1-0.99)^2*log(0.99) ≈ 0.000025 (very small)
+Hard example (p=0.05): FL = -0.25*(1-0.05)^2*log(0.05) ≈ 0.6 (large)`,
+    hint:"FL(p_t) = -alpha_t * (1 - p_t)^gamma * log(p_t), where p_t = p if y=1 else 1-p, alpha_t = alpha if y=1 else 1-alpha.",
+    fullSolution:`# DETAILED SOLUTION
+# Focal loss (Lin et al. 2017, RetinaNet) solved the accuracy gap between
+# one-stage (fast but less accurate) and two-stage (slower but accurate) detectors.
+# It is now widely used in detection, segmentation, and any class-imbalanced task.
+
+import numpy as np, torch, torch.nn.functional as F, matplotlib.pyplot as plt
+
+def focal_loss_numpy(pred_logits, targets, alpha=0.25, gamma=2.0):
+    """
+    pred_logits: (N,) raw network outputs
+    targets:     (N,) binary labels 0 or 1
+    """
+    p    = 1 / (1 + np.exp(-pred_logits))     # Sigmoid
+    p_t  = np.where(targets==1, p, 1-p)        # Probability of true class
+    alpha_t = np.where(targets==1, alpha, 1-alpha)
+    fl   = -alpha_t * (1-p_t)**gamma * np.log(p_t+1e-8)
+    return fl.mean()
+
+def binary_cross_entropy(pred_logits, targets):
+    p = 1/(1+np.exp(-pred_logits))
+    return -(targets*np.log(p+1e-8) + (1-targets)*np.log(1-p+1e-8)).mean()
+
+# Simulate: 1000 easy negatives (prediction=0.95 for class 0) +
+#           10 hard positives  (prediction=0.4 for class 1)
+np.random.seed(0)
+neg_logits = np.random.randn(1000)*0.5 - 2.5  # Mostly negative
+pos_logits = np.random.randn(10)*0.5  + 0.0   # Hard positives
+logits  = np.concatenate([neg_logits, pos_logits])
+targets = np.array([0]*1000 + [1]*10)
+
+bce_val = binary_cross_entropy(logits, targets)
+fl_val  = focal_loss_numpy(logits, targets, alpha=0.25, gamma=2.0)
+print(f"BCE loss:         {bce_val:.4f}  (dominated by easy negatives)")
+print(f"Focal loss:       {fl_val:.4f}   (focuses on hard positives)")
+
+# Show loss as function of probability for different gamma values
+probs = np.linspace(0.01,0.99,200)
+fig,axes=plt.subplots(1,2,figsize=(14,6))
+for gamma in [0,0.5,1,2,5]:
+    fl = -(1-probs)**gamma * np.log(probs)
+    axes[0].plot(probs,fl,label=f"gamma={gamma}")
+axes[0].legend(); axes[0].set_xlabel("p (prob of correct class)")
+axes[0].set_ylabel("Focal Loss"); axes[0].set_title("Focal Loss vs Probability")
+axes[0].set_facecolor("#0d1529")
+
+# Distribution of per-sample losses
+p_all = 1/(1+np.exp(-logits))
+bce_each = -(targets*np.log(p_all+1e-8)+(1-targets)*np.log(1-p_all+1e-8))
+fl_each  = focal_loss_numpy.__wrapped__(logits,targets) if hasattr(focal_loss_numpy,'__wrapped__') else np.array([0])
+p_t = np.where(targets==1,p_all,1-p_all)
+alpha_t=np.where(targets==1,0.25,0.75)
+fl_each = -alpha_t*(1-p_t)**2*np.log(p_t+1e-8)
+
+axes[1].scatter(range(len(bce_each)),bce_each,s=5,label="BCE",alpha=0.5,c=P.accent4)
+axes[1].scatter(range(len(fl_each)),fl_each,s=5,label="FL",alpha=0.5,c=P.accent3)
+axes[1].legend(); axes[1].set_title("Per-sample Loss (left=negatives, right=positives)")
+axes[1].set_facecolor("#0d1529")
+plt.tight_layout(); plt.savefig("c23.png",dpi=150); plt.show()`,
+    complexity:"Time O(N)  Space O(N)",
+    followup:"How does Varifocal Loss and Quality Focal Loss extend this idea? When does class weighting (resampling) outperform focal loss?" },
+
+  { id:"C24", difficulty:"Hard", tag:"Projective Geometry", title:"Perspective Transform and Homography Estimation",
+    company:"Adobe, Snapchat, Google Maps", points:30,
+    desc:`Compute the homography matrix H between two images given 4+ point correspondences using the Direct Linear Transform (DLT) algorithm. Apply H to warp one image onto the plane of another.`,
+    example:`4 point pairs -> 3x3 homography H. Warp image using cv2.warpPerspective(img, H, size).`,
+    hint:"DLT: for each point pair (x,x'), write 2 linear equations in the 9 elements of H. Stack for all n pairs -> Ah=0. Solve via SVD: h = last column of V. Reshape to 3x3.",
+    fullSolution:`# DETAILED SOLUTION
+# Homography estimation is used in panorama stitching, AR marker tracking,
+# document deskewing, and stereo vision plane rectification.
+# DLT derives from the constraint that x' x H*x = 0 (cross product is zero).
+
+import numpy as np, cv2, urllib.request, matplotlib.pyplot as plt
+
+def dlt_homography(src_pts, dst_pts):
+    """
+    Estimate 3x3 homography from n>=4 point correspondences using DLT + SVD.
+    src_pts, dst_pts: (n,2) arrays of (x,y) pixel coordinates.
+    """
+    n   = len(src_pts)
+    A   = []
+    for (x,y),(xp,yp) in zip(src_pts,dst_pts):
+        A.append([-x,-y,-1,  0, 0, 0,  x*xp, y*xp, xp])
+        A.append([ 0, 0, 0, -x,-y,-1,  x*yp, y*yp, yp])
+    A   = np.array(A)
+    _,S,Vt = np.linalg.svd(A)
+    H   = Vt[-1].reshape(3,3)     # Last row of Vt = null space vector
+    H  /= H[2,2]                  # Normalise so H[2,2]=1
+    return H
+
+def apply_homography(pts, H):
+    """Apply H to a set of 2D points."""
+    pts_h = np.column_stack([pts, np.ones(len(pts))])  # Homogeneous
+    pts_t = (H @ pts_h.T).T
+    return pts_t[:,:2] / pts_t[:,2:3]  # Normalise by w
+
+# Use a real image and define a homography (document deskewing simulation)
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw = urllib.request.urlopen(url).read()
+img = cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_COLOR)
+img_rgb = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+h,w = img.shape[:2]
+
+# Define source (image corners) and destination (simulated perspective skew)
+src = np.float32([[0,0],[w,0],[w,h],[0,h]])
+dst = np.float32([[30,20],[w-20,40],[w-10,h-15],[20,h-30]])
+
+H_cv   = cv2.getPerspectiveTransform(src, dst)
+H_dlt  = dlt_homography(src, dst)
+print("DLT vs OpenCV max diff:", np.abs(H_dlt - H_cv).max())
+
+warped_cv  = cv2.warpPerspective(img, H_cv,  (w,h))
+warped_dlt = cv2.warpPerspective(img, H_dlt, (w,h))
+
+# Inverse: undo a simulated perspective distortion
+H_inv = np.linalg.inv(H_cv)
+restored = cv2.warpPerspective(warped_cv,H_inv,(w,h))
+
+fig,(a,b,c,d)=plt.subplots(1,4,figsize=(20,5))
+a.imshow(img_rgb); a.set_title("Original"); a.axis("off")
+b.imshow(cv2.cvtColor(warped_cv,cv2.COLOR_BGR2RGB)); b.set_title("Warped (OpenCV H)"); b.axis("off")
+c.imshow(cv2.cvtColor(warped_dlt,cv2.COLOR_BGR2RGB)); c.set_title("Warped (DLT H)"); c.axis("off")
+d.imshow(cv2.cvtColor(restored,cv2.COLOR_BGR2RGB)); d.set_title("Restored (H^-1)"); d.axis("off")
+plt.tight_layout(); plt.savefig("c24.png",dpi=150); plt.show()`,
+    complexity:"Time O(n) for DLT with n correspondences  SVD is O(n^2) (bounded by 8x9 matrix size)",
+    followup:"How does RANSAC make homography estimation robust to outlier correspondences? What is the minimum number of point pairs required (4) and why?" },
+
+  { id:"C25", difficulty:"Hard", tag:"Feature Matching", title:"SIFT Feature Matching and Image Stitching",
+    company:"Google Photos, DJI drones", points:30,
+    desc:`Detect SIFT keypoints in two overlapping images, match them using ratio test (Lowe's ratio test), estimate a homography with RANSAC, and warp one image onto the other to create a panorama.`,
+    example:`Two overlapping photos -> matched features -> RANSAC homography -> blended panorama`,
+    hint:"1. Detect SIFT. 2. Match with BFMatcher (k=2). 3. Ratio test: keep matches where best/second_best < 0.75. 4. cv2.findHomography with RANSAC. 5. cv2.warpPerspective to align.",
+    fullSolution:`# DETAILED SOLUTION
+# SIFT-based panorama stitching is the algorithm behind smartphone panorama mode,
+# Google Street View, aerial mosaic creation, and 3D reconstruction pipelines.
+
+import cv2, numpy as np, urllib.request, matplotlib.pyplot as plt
+
+def load_image(url):
+    raw = urllib.request.urlopen(url).read()
+    img = cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_COLOR)
+    return cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+
+# Use two slightly different crops of the same image to simulate overlap
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/640px-Bikesg.jpg"
+raw = urllib.request.urlopen(url).read()
+img_full = cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_COLOR)
+
+# Simulate two overlapping photos: left 70% and right 70% with 40% overlap
+h, w = img_full.shape[:2]
+img1 = img_full[:, :int(w*0.7)]
+img2 = img_full[:, int(w*0.3):]
+
+gray1 = cv2.cvtColor(img1,cv2.COLOR_BGR2GRAY)
+gray2 = cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY)
+
+# SIFT detection
+sift = cv2.SIFT_create(nfeatures=500)
+kp1, des1 = sift.detectAndCompute(gray1,None)
+kp2, des2 = sift.detectAndCompute(gray2,None)
+print(f"Image 1: {len(kp1)} keypoints  |  Image 2: {len(kp2)} keypoints")
+
+# BFMatcher with ratio test
+bf      = cv2.BFMatcher()
+matches = bf.knnMatch(des1,des2,k=2)
+good    = [m for m,n in matches if m.distance < 0.75*n.distance]
+print(f"Ratio-test matches: {len(good)} / {len(matches)}")
+
+# Homography with RANSAC
+src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1,1,2)
+dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1,1,2)
+H, mask = cv2.findHomography(src_pts,dst_pts,cv2.RANSAC,5.0)
+inliers = mask.ravel().sum()
+print(f"RANSAC inliers: {inliers} / {len(good)}")
+
+# Warp img1 to img2's coordinate frame
+h2, w2 = img2.shape[:2]
+result = cv2.warpPerspective(img1, H, (w2+w2, h2))
+result[:h2,:w2] = np.where(img2>0, img2, result[:h2,:w2])  # Simple blend
+
+# Visualise matches
+draw_params = dict(matchColor=(0,255,0), singlePointColor=None,
+                   matchesMask=mask.ravel().tolist(), flags=2)
+match_vis = cv2.drawMatchesKnn(img1,kp1,img2,kp2,
+    [[m] for m in good],None,**draw_params)
+
+fig,(a,b)=plt.subplots(2,1,figsize=(18,12))
+a.imshow(cv2.cvtColor(match_vis,cv2.COLOR_BGR2RGB)); a.set_title(f"SIFT Matches (RANSAC inliers={inliers})"); a.axis("off")
+b.imshow(cv2.cvtColor(result,cv2.COLOR_BGR2RGB)); b.set_title("Stitched Panorama"); b.axis("off")
+plt.tight_layout(); plt.savefig("c25.png",dpi=150); plt.show()`,
+    complexity:"SIFT detection O(m*n*log(m*n))  Matching O(k^2*d) with FLANN approximation",
+    followup:"What is the difference between SIFT, SURF, and ORB? How does multi-band blending (Laplacian pyramid blending) produce seamless panoramas without visible seams?" },
+
+  { id:"C26", difficulty:"Hard", tag:"GAN", title:"Train a DCGAN on MNIST from Scratch",
+    company:"Research / ML Engineer", points:30,
+    desc:`Implement and train a DCGAN (Deep Convolutional GAN) on MNIST from scratch using PyTorch. Visualise generated images every 5 epochs and plot the training loss curves.`,
+    example:`After 30 epochs, generator should produce recognisable handwritten digits.`,
+    hint:"Generator: noise z (100-d) -> ConvTranspose layers -> tanh output. Discriminator: Conv layers -> sigmoid output. Alternate update: train D to distinguish real/fake, train G to fool D.",
+    fullSolution:`# DETAILED SOLUTION
+# GANs are trained adversarially: D tries to distinguish real from fake,
+# G tries to fool D. This zero-sum game converges to realistic image generation.
+# DCGAN stabilised training with BatchNorm, RELU in G, LeakyReLU in D.
+
+import torch, torch.nn as nn
+import torchvision, torchvision.transforms as transforms
+import numpy as np, matplotlib.pyplot as plt
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Training on: {device}")
+
+# Hyperparameters
+Z_DIM=100; LR=2e-4; BATCH=64; EPOCHS=30; BETA=(0.5,0.999)
+
+class Generator(nn.Module):
+    def __init__(self,z=Z_DIM):
+        super().__init__()
+        def block(in_c,out_c,k=4,s=2,p=1,last=False):
+            layers=[nn.ConvTranspose2d(in_c,out_c,k,s,p,bias=False)]
+            if not last: layers+=[nn.BatchNorm2d(out_c),nn.ReLU(True)]
+            else: layers+=[nn.Tanh()]
+            return layers
+        self.net=nn.Sequential(
+            *block(z,256,4,1,0),     # 4x4
+            *block(256,128),          # 8x8
+            *block(128,64),           # 16x16
+            *block(64,1,last=True))   # 32x32 (MNIST padded)
+    def forward(self,z): return self.net(z)
+
+class Discriminator(nn.Module):
+    def __init__(self):
+        super().__init__()
+        def block(in_c,out_c,k=4,s=2,p=1,first=False):
+            layers=[nn.Conv2d(in_c,out_c,k,s,p,bias=False)]
+            if not first: layers+=[nn.BatchNorm2d(out_c)]
+            layers+=[nn.LeakyReLU(0.2,True)]
+            return layers
+        self.net=nn.Sequential(
+            *block(1,64,first=True),  # 16x16
+            *block(64,128),           # 8x8
+            *block(128,256),          # 4x4
+            nn.Conv2d(256,1,4,1,0),  # 1x1
+            nn.Sigmoid())
+    def forward(self,x): return self.net(x).view(-1)
+
+G = Generator().to(device); D = Discriminator().to(device)
+opt_G = torch.optim.Adam(G.parameters(),lr=LR,betas=BETA)
+opt_D = torch.optim.Adam(D.parameters(),lr=LR,betas=BETA)
+criterion = nn.BCELoss()
+
+tf = transforms.Compose([transforms.Resize(32),transforms.ToTensor(),
+                          transforms.Normalize([0.5],[0.5])])
+dataset = torchvision.datasets.MNIST("/tmp/mnist",download=True,transform=tf)
+loader  = torch.utils.data.DataLoader(dataset,batch_size=BATCH,shuffle=True)
+
+fixed_z = torch.randn(16,Z_DIM,1,1,device=device)
+G_losses=[]; D_losses=[]
+
+for epoch in range(EPOCHS):
+    g_ep=[]; d_ep=[]
+    for real,_ in loader:
+        real = real.to(device); bs=real.size(0)
+        real_label=torch.ones(bs,device=device)
+        fake_label=torch.zeros(bs,device=device)
+        # Train D
+        z    = torch.randn(bs,Z_DIM,1,1,device=device)
+        fake = G(z).detach()
+        loss_D = criterion(D(real),real_label) + criterion(D(fake),fake_label)
+        opt_D.zero_grad(); loss_D.backward(); opt_D.step()
+        # Train G
+        fake2  = G(torch.randn(bs,Z_DIM,1,1,device=device))
+        loss_G = criterion(D(fake2),real_label)  # G wants D to output 1
+        opt_G.zero_grad(); loss_G.backward(); opt_G.step()
+        g_ep.append(loss_G.item()); d_ep.append(loss_D.item())
+    G_losses.append(np.mean(g_ep)); D_losses.append(np.mean(d_ep))
+    if (epoch+1)%5==0 or epoch==0:
+        print(f"Epoch {epoch+1:3d}/{EPOCHS}  G={G_losses[-1]:.3f}  D={D_losses[-1]:.3f}")
+
+# Final samples
+G.eval()
+with torch.no_grad():
+    samples = G(fixed_z).cpu().numpy()
+fig,axes=plt.subplots(4,4,figsize=(8,8))
+for ax,im in zip(axes.flat,samples):
+    ax.imshow(im[0]*0.5+0.5,cmap="gray"); ax.axis("off")
+plt.suptitle(f"DCGAN Generated Digits (after {EPOCHS} epochs)")
+plt.tight_layout(); plt.savefig("c26_samples.png",dpi=150); plt.show()
+
+plt.figure(figsize=(10,4))
+plt.plot(G_losses,label="G loss",color=P.accent1); plt.plot(D_losses,label="D loss",color=P.accent4)
+plt.legend(); plt.xlabel("Epoch"); plt.title("GAN Training Losses"); plt.savefig("c26_loss.png",dpi=150); plt.show()`,
+    complexity:"Per epoch: O(dataset_size/batch * (G_fwd + D_fwd + G_bwd + D_bwd))",
+    followup:"What is mode collapse and how do you detect it from training curves? How does Wasserstein GAN (WGAN-GP) produce more stable training?" },
+
+  { id:"C27", difficulty:"Hard", tag:"U-Net Training", title:"Train U-Net for Binary Segmentation",
+    company:"Medical AI, Autonomous Driving", points:30,
+    desc:`Train a U-Net to segment foreground from background on the Oxford-IIIT Pet Dataset (pet silhouettes). Use binary cross-entropy + Dice loss. Report IoU on validation set.`,
+    example:`Train for 10 epochs on pet images + trimap masks. Target: IoU > 0.75 on validation set.`,
+    hint:"Download Oxford Pet from torchvision datasets. Map trimap (1=foreground,2=background,3=boundary) to binary (1=pet, 0=background). Use U-Net architecture from Module 4.",
+    fullSolution:`# DETAILED SOLUTION
+# Training U-Net on a real medical/segmentation dataset combines all key concepts:
+# data loading, preprocessing, loss functions, metrics, and visualisation.
+
+import torch, torch.nn as nn, torchvision, torchvision.transforms as T
+import numpy as np, matplotlib.pyplot as plt
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Training on: {device}")
+
+# Dice Loss (better than pure BCE for segmentation class imbalance)
+def dice_loss(pred, target, smooth=1.0):
+    pred   = pred.sigmoid(); flat_p=pred.view(-1); flat_t=target.view(-1).float()
+    inter  = (flat_p*flat_t).sum()
+    return 1 - (2*inter+smooth)/(flat_p.sum()+flat_t.sum()+smooth)
+
+def combined_loss(pred, target):
+    bce  = nn.functional.binary_cross_entropy_with_logits(pred,target.float())
+    dice = dice_loss(pred,target)
+    return 0.5*bce + 0.5*dice
+
+def iou_metric(pred_logits, target):
+    pred = (pred_logits.sigmoid()>0.5).bool()
+    tgt  = target.bool()
+    inter= (pred & tgt).float().sum((1,2,3))
+    union= (pred | tgt).float().sum((1,2,3))
+    return (inter/(union+1e-8)).mean().item()
+
+# U-Net (from Module 4)
 class DoubleConv(nn.Module):
     def __init__(self,i,o):
         super().__init__()
-        self.net=nn.Sequential(nn.Conv2d(i,o,3,padding=1),nn.BatchNorm2d(o),nn.ReLU(True),
-                               nn.Conv2d(o,o,3,padding=1),nn.BatchNorm2d(o),nn.ReLU(True))
+        self.net=nn.Sequential(nn.Conv2d(i,o,3,1,1),nn.BatchNorm2d(o),nn.ReLU(True),
+                               nn.Conv2d(o,o,3,1,1),nn.BatchNorm2d(o),nn.ReLU(True))
     def forward(self,x): return self.net(x)
 
 class UNet(nn.Module):
-    def __init__(self,in_c=3,out_c=2,base=32):
+    def __init__(self,b=32):
         super().__init__()
-        b=base
-        self.e1=DoubleConv(in_c,b); self.e2=DoubleConv(b,b*2)
-        self.e3=DoubleConv(b*2,b*4); self.e4=DoubleConv(b*4,b*8)
-        self.bn=DoubleConv(b*8,b*16); self.pool=nn.MaxPool2d(2)
-        self.up4=nn.ConvTranspose2d(b*16,b*8,2,2); self.d4=DoubleConv(b*16,b*8)
-        self.up3=nn.ConvTranspose2d(b*8, b*4,2,2); self.d3=DoubleConv(b*8, b*4)
-        self.up2=nn.ConvTranspose2d(b*4, b*2,2,2); self.d2=DoubleConv(b*4, b*2)
-        self.up1=nn.ConvTranspose2d(b*2, b,  2,2); self.d1=DoubleConv(b*2, b)
-        self.out=nn.Conv2d(b,out_c,1)
+        self.e1=DoubleConv(3,b);  self.p1=nn.MaxPool2d(2)
+        self.e2=DoubleConv(b,b*2);self.p2=nn.MaxPool2d(2)
+        self.e3=DoubleConv(b*2,b*4);self.p3=nn.MaxPool2d(2)
+        self.bn=DoubleConv(b*4,b*8)
+        self.u3=nn.ConvTranspose2d(b*8,b*4,2,2); self.d3=DoubleConv(b*8,b*4)
+        self.u2=nn.ConvTranspose2d(b*4,b*2,2,2); self.d2=DoubleConv(b*4,b*2)
+        self.u1=nn.ConvTranspose2d(b*2,b,2,2);   self.d1=DoubleConv(b*2,b)
+        self.head=nn.Conv2d(b,1,1)
     def forward(self,x):
-        s1=self.e1(x); s2=self.e2(self.pool(s1)); s3=self.e3(self.pool(s2)); s4=self.e4(self.pool(s3))
-        b=self.bn(self.pool(s4))
-        d=self.d4(torch.cat([self.up4(b),s4],1)); d=self.d3(torch.cat([self.up3(d),s3],1))
-        d=self.d2(torch.cat([self.up2(d),s2],1)); d=self.d1(torch.cat([self.up1(d),s1],1))
-        return self.out(d)
+        e1=self.e1(x); e2=self.e2(self.p1(e1)); e3=self.e3(self.p2(e2))
+        b=self.bn(self.p3(e3))
+        return self.head(self.d1(torch.cat([self.u1(self.d2(torch.cat([self.u2(self.d3(
+            torch.cat([self.u3(b),e3],1))),e2],1))),e1],1)))
 
-model=UNet(); device="cuda" if torch.cuda.is_available() else "cpu"; model=model.to(device)
-print(f"U-Net parameters: {sum(p.numel() for p in model.parameters()):,}")
-x=torch.randn(2,3,256,256).to(device); out=model(x)
-print(f"Input: {x.shape}  ->  Output: {out.shape}")
+# Dataset setup (Oxford Pet)
+img_tf  = T.Compose([T.Resize((128,128)),T.ToTensor(),T.Normalize([.485,.456,.406],[.229,.224,.225])])
+mask_tf = T.Compose([T.Resize((128,128),interpolation=T.InterpolationMode.NEAREST),T.PILToTensor()])
 
-# Dice score function
-def dice_score(pred, target, eps=1e-6):
-    pred=pred.float(); target=target.float()
-    inter=(pred*target).sum(); return (2*inter+eps)/(pred.sum()+target.sum()+eps)
-
-# Synthetic segmentation demo
-url="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg"
-raw=urllib.request.urlopen(url).read()
-img=cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_COLOR)
-gray=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY); img_rgb=cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
-_,mask_otsu=cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-contours,_=cv2.findContours(mask_otsu,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-vis=img_rgb.copy(); cv2.drawContours(vis,contours,-1,(0,255,0),2)
-fig,(a,b,c)=plt.subplots(1,3,figsize=(15,5))
-a.imshow(img_rgb); a.set_title("Input"); a.axis("off")
-b.imshow(mask_otsu,cmap="gray"); b.set_title("Otsu Mask"); b.axis("off")
-c.imshow(vis); c.set_title("Contours Overlay"); c.axis("off")
-plt.tight_layout(); plt.savefig("m4.png",dpi=150); plt.show()` },
-
-  { id:5, title:"Image Restoration: Denoising to Diffusion", level:"Intermediate", time:"45 min", color:P.accent6,
-    sections:[
-      { heading:"The Ill-Posed Inverse Problem", body:`Restoration solves y=Hx+n (y=observed, H=degradation, x=clean, n=noise) for x. Ill-posed because H may not be invertible and many x produce the same y. Classical methods used Total Variation regularisation or BM3D (block-matching 3D collaborative filtering). Deep learning reframes this as supervised regression: collect paired (degraded, clean) data, train network to map from degraded to clean. The residual learning trick (predict the noise, not the clean image) accelerates training significantly.` },
-      { heading:"DnCNN: Residual Denoising CNN", body:`DnCNN predicts the noise residual n: output = input - predicted_noise. Architecture: 17-layer CNN with batch normalisation throughout. Achieves state-of-the-art Gaussian denoising at any single noise level. FFDNet extends to blind denoising by taking the noise-level map as an additional input. Noise2Void trains on single noisy images without clean pairs, using blind-spot convolutions where the centre pixel is masked to prevent the network from learning the identity function.` },
-      { heading:"Restormer: Transformer Restoration", body:`Standard self-attention is O(N^2) in spatial positions, prohibitive for high-res images. Restormer uses Transposed Multi-Head Self-Attention (TMSA): attention computed across the channel dimension (small, resolution-independent) rather than spatial positions. Gated-Dconv Feed-Forward Networks add depthwise convolutions for local context. Hierarchical encoder-decoder with progressive learning. Achieves SOTA across Gaussian denoising, deraining, deblurring, and dehazing with one architecture.` },
-      { heading:"Diffusion-Based Restoration", body:`Diffusion models frame restoration as conditional generation: given degraded y, generate clean x consistent with y. SR3 (Image Restoration via Repeated Refinement) uses conditional DDPM where noisy x_t is denoised conditioned on the degraded y. Key advantage over discriminative methods: generates diverse high-frequency textures rather than blurry averages, producing perceptually superior results especially at high upscaling factors or heavy degradation. Drawback: 100-1000x slower than a single CNN forward pass.` },
-    ],
-    code:`# DnCNN residual denoiser trained from scratch
-import torch, torch.nn as nn, torch.optim as optim
-import numpy as np, urllib.request, cv2, matplotlib.pyplot as plt
-from skimage.metrics import peak_signal_noise_ratio as psnr_fn
-
-class DnCNN(nn.Module):
-    def __init__(self,depth=8,ch=32):
-        super().__init__()
-        ly=[nn.Conv2d(1,ch,3,padding=1),nn.ReLU(True)]
-        for _ in range(depth-2):
-            ly+=[nn.Conv2d(ch,ch,3,padding=1),nn.BatchNorm2d(ch),nn.ReLU(True)]
-        ly+=[nn.Conv2d(ch,1,3,padding=1)]
-        self.net=nn.Sequential(*ly)
-    def forward(self,x): return x-self.net(x)  # residual: input minus predicted noise
-
-device="cuda" if torch.cuda.is_available() else "cpu"
-model=DnCNN().to(device)
-opt=optim.Adam(model.parameters(),lr=1e-3); crit=nn.MSELoss()
-print(f"DnCNN parameters: {sum(p.numel() for p in model.parameters()):,}")
-
-url="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
-raw=urllib.request.urlopen(url).read()
-clean=cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_GRAYSCALE)
-clean=cv2.resize(clean,(256,256)).astype(np.float32)/255.0
-
-def make_batch(c,n=32,p=64):
-    rng=np.random.default_rng(); pc=[]; pn=[]
-    for _ in range(n):
-        sig=rng.uniform(5,50)/255.0; r,c2=rng.integers(0,c.shape[0]-p,2)
-        patch=c[r:r+p,c2:c2+p]; noisy=np.clip(patch+rng.normal(0,sig,(p,p)).astype(np.float32),0,1)
-        pc.append(patch[None,None]); pn.append(noisy[None,None])
-    return torch.from_numpy(np.concatenate(pn,0)), torch.from_numpy(np.concatenate(pc,0))
-
-for step in range(300):
-    nb,cb=make_batch(clean); nb,cb=nb.to(device),cb.to(device)
-    loss=crit(model(nb),cb); opt.zero_grad(); loss.backward(); opt.step()
-    if (step+1)%100==0: print(f"Step {step+1}  loss={loss.item():.5f}")
-
-model.eval(); rng2=np.random.default_rng(0); sig=25/255.0
-noisy=np.clip(clean+rng2.normal(0,sig,clean.shape).astype(np.float32),0,1)
-with torch.no_grad():
-    pred=model(torch.from_numpy(noisy[None,None]).to(device)).squeeze().cpu().numpy().clip(0,1)
-print(f"PSNR noisy:    {psnr_fn(clean,noisy,data_range=1):.2f} dB")
-print(f"PSNR denoised: {psnr_fn(clean,pred,data_range=1):.2f} dB")
-
-fig,axes=plt.subplots(1,3,figsize=(15,5))
-for ax,im,t in zip(axes,[clean,noisy,pred],["Clean","Noisy (sigma=25)","DnCNN denoised"]):
-    ax.imshow(im,cmap="gray"); ax.set_title(t); ax.axis("off")
-plt.tight_layout(); plt.savefig("m5.png",dpi=150); plt.show()` },
-
-  { id:6, title:"Vision Transformers and CLIP", level:"Advanced-Intermediate", time:"55 min", color:P.accent7,
-    sections:[
-      { heading:"Self-Attention for Images", body:`ViT divides 224x224 images into 16x16 patches -> 196 tokens. Each patch is linearly projected to D dimensions. A learnable [CLS] token is prepended. Positional embeddings are added. The sequence goes through L transformer blocks: LayerNorm -> Multi-Head Self-Attention -> residual -> LayerNorm -> FFN -> residual. MHA computes Attention(Q,K,V) = softmax(QK^T/sqrt(d_k))V, where Q,K,V are linear projections of the token sequence. The [CLS] token's final embedding is classified. ViT requires large-scale pretraining to outperform CNNs; with JFT-300M it sets new records.` },
-      { heading:"Efficient Variants: Swin and DeiT", body:`Swin Transformer uses shifted window attention: attention within non-overlapping 7x7 windows (linear O(N) complexity), with window shift between layers for cross-window communication. Hierarchical features enable detection and segmentation backbones. DeiT adds knowledge distillation from a CNN teacher using a distillation token, achieving competitive ImageNet results with only 1.2M training images. SegFormer uses overlapping patch merging and a lightweight all-MLP decoder for efficient segmentation.` },
-      { heading:"CLIP: Contrastive Language-Image Pretraining", body:`CLIP trains a vision encoder and text encoder jointly on 400M (image, text) pairs via InfoNCE contrastive loss: within each batch of N pairs, maximise the N correct (image, text) similarities while minimising the N^2-N incorrect ones. Creates a shared visual-language embedding space. Zero-shot classification: encode text descriptions of each class, find the closest text embedding to the image embedding. Achieves 76% top-1 on ImageNet zero-shot (matching ResNet-50) and generalises across 27 benchmarks.` },
-      { heading:"DINOv2: Self-Supervised Visual Features", body:`DINOv2 trains a ViT-g on 142M curated images using DINO + iBOT self-distillation objectives, without any labels. The student ViT is trained to match a momentum teacher ViT given differently augmented views. Key insight: DINO ViT attention heads spontaneously learn to segment objects without segmentation supervision. DINOv2 features enable depth estimation, segmentation, retrieval, and classification simply by attaching small linear probes, with no fine-tuning of the backbone.` },
-    ],
-    code:`# ViT from scratch + CLIP zero-shot classification
-import torch, torch.nn as nn, urllib.request, io
-from PIL import Image
-from transformers import CLIPProcessor, CLIPModel
-import numpy as np, matplotlib.pyplot as plt
-
-class PatchEmbed(nn.Module):
-    def __init__(self,img=224,patch=16,in_c=3,dim=192):
-        super().__init__()
-        self.n=(img//patch)**2; self.proj=nn.Conv2d(in_c,dim,patch,stride=patch)
-    def forward(self,x): return self.proj(x).flatten(2).transpose(1,2)
-
-class MHA(nn.Module):
-    def __init__(self,dim,heads=6):
-        super().__init__(); self.h=heads; self.sc=dim**-0.5
-        self.qkv=nn.Linear(dim,dim*3); self.out=nn.Linear(dim,dim)
-    def forward(self,x):
-        B,N,D=x.shape; h=self.h
-        qkv=self.qkv(x).reshape(B,N,3,h,D//h).permute(2,0,3,1,4)
-        q,k,v=qkv.unbind(0)
-        att=(q@k.transpose(-2,-1))*self.sc
-        return self.out((att.softmax(-1)@v).transpose(1,2).reshape(B,N,D))
-
-class Block(nn.Module):
-    def __init__(self,dim,heads=6,mlp=4):
-        super().__init__()
-        self.n1=nn.LayerNorm(dim); self.attn=MHA(dim,heads)
-        self.n2=nn.LayerNorm(dim)
-        self.ff=nn.Sequential(nn.Linear(dim,dim*mlp),nn.GELU(),nn.Linear(dim*mlp,dim))
-    def forward(self,x): return x+self.ff(self.n2(x+self.attn(self.n1(x))))
-
-class ViT(nn.Module):
-    def __init__(self,img=224,patch=16,nc=10,dim=192,depth=6,heads=6):
-        super().__init__()
-        self.pe=PatchEmbed(img,patch,3,dim); N=self.pe.n
-        self.cls=nn.Parameter(torch.zeros(1,1,dim))
-        self.pos=nn.Parameter(torch.randn(1,N+1,dim)*0.02)
-        self.blocks=nn.Sequential(*[Block(dim,heads) for _ in range(depth)])
-        self.norm=nn.LayerNorm(dim); self.head=nn.Linear(dim,nc)
-    def forward(self,x):
-        B=x.shape[0]; x=self.pe(x)
-        x=torch.cat([self.cls.expand(B,-1,-1),x],1)+self.pos
-        return self.head(self.norm(self.blocks(x))[:,0])
-
-vit=ViT(); x=torch.randn(2,3,224,224); out=vit(x)
-print(f"ViT output: {out.shape}  params: {sum(p.numel() for p in vit.parameters()):,}")
-
-# CLIP zero-shot
 try:
-    model=CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-    proc=CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
-    url="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg"
-    img=Image.open(io.BytesIO(urllib.request.urlopen(url).read())).convert("RGB")
-    candidates=["a photo of a dog","a photo of a cat","a photo of a car","a photo of a bird"]
-    inp=proc(text=candidates,images=img,return_tensors="pt",padding=True)
-    with torch.no_grad(): probs=model(**inp).logits_per_image.softmax(-1).squeeze()
-    for c,p in sorted(zip(candidates,probs.tolist()),key=lambda x:-x[1]):
-        print(f"  {c:40s} {p*100:.1f}%")
-except ImportError: print("pip install transformers")` },
+    train_ds = torchvision.datasets.OxfordIIITPet("/tmp/pet",split="trainval",
+        target_types="segmentation",transforms=None,download=True)
+    def pet_collate(item):
+        img,mask=item
+        img_t =img_tf(img)
+        m_t   =(mask_tf(mask).squeeze()-1).clamp(0,1).long()  # trimap 1->1(pet), others->0
+        return img_t,m_t
+    train_ds.transforms=None; # override
+    # Wrap with custom transform
+    from torch.utils.data import DataLoader
+    class PetWrap(torch.utils.data.Dataset):
+        def __init__(self,ds): self.ds=ds
+        def __len__(self): return len(self.ds)
+        def __getitem__(self,i):
+            img,mask=self.ds[i]; return pet_collate((img,mask))
+    ds = PetWrap(train_ds)
+    n_train=int(0.8*len(ds))
+    train_ds2,val_ds2=torch.utils.data.random_split(ds,[n_train,len(ds)-n_train])
+    train_loader=DataLoader(train_ds2,batch_size=8,shuffle=True)
+    val_loader  =DataLoader(val_ds2,  batch_size=8)
+    print(f"Train: {len(train_ds2)}  Val: {len(val_ds2)}")
+except Exception as e:
+    print(f"Dataset download issue: {e}"); print("Proceeding with synthetic demo...")
+    train_loader=val_loader=None
 
-  { id:7, title:"Generative Vision: GANs, VAEs, Diffusion", level:"Advanced", time:"60 min", color:P.accent8,
-    sections:[
-      { heading:"Variational Autoencoders", body:`A VAE encodes images into a distribution q(z|x)=N(mu(x), sigma^2(x)) in a low-dimensional latent space, then decodes z back to images. Reparameterisation trick: z = mu + eps*sigma (eps~N(0,I)) enables backpropagation through sampling. ELBO loss = reconstruction loss + beta*KL(q(z|x)||N(0,I)). The KL term regularises the latent space to be smooth and continuous, enabling interpolation between points. VQ-VAE replaces continuous latent with a discrete codebook, producing image tokens used by DALL-E and Stable Diffusion.` },
-      { heading:"GAN Training Dynamics", body:`GAN minimax: min_G max_D E[log D(x)] + E[log(1-D(G(z)))]. Failure modes: mode collapse (G produces few outputs); discriminator winning too easily (vanishing gradients for G). Solutions: WGAN-GP uses Wasserstein distance + gradient penalty; Progressive GAN grows both G and D from 4x4 to 1024x1024; spectral normalisation keeps Lipschitz constraint; minibatch discrimination exposes G to batch statistics. StyleGAN v2/3 produces photorealistic 1024x1024 faces with a disentangled latent space enabling semantic editing.` },
-      { heading:"Diffusion Process Mathematics", body:`Forward: x_t = sqrt(alpha_bar_t)*x_0 + sqrt(1-alpha_bar_t)*eps, eps~N(0,I). Network epsilon_theta is trained to predict the noise eps given x_t and timestep t. Reverse: x_{t-1} = (1/sqrt(alpha_t))*(x_t - beta_t/sqrt(1-alpha_bar_t)*eps_theta(x_t,t)) + sigma_t*z. DDIM uses deterministic sampling trajectories, enabling 10-50 step generation. Classifier-free guidance: eps_guided = (1+w)*eps_cond - w*eps_uncond, with w controlling text adherence strength.` },
-      { heading:"Latent Diffusion and ControlNet", body:`Latent Diffusion compresses images 8x or 64x with VQ-VAE, running diffusion in latent space to reduce computation dramatically. CLIP text encoder conditions the U-Net via cross-attention. ControlNet adds spatial conditioning (edges, depth, pose, seg maps) via duplicate U-Net encoder with zero-convolution adapters, enabling precise layout control without disrupting pretrained weights. DiT (Diffusion Transformer) replaces the U-Net with a transformer using AdaLN (adaptive layer norm) for timestep/class conditioning, scaling better with parameters and data.` },
-    ],
-    code:`# VAE on MNIST from scratch
-import torch, torch.nn as nn, torch.optim as optim
-import torchvision, torchvision.transforms as T
-import matplotlib.pyplot as plt, numpy as np
+model  = UNet(b=32).to(device)
+opt    = torch.optim.Adam(model.parameters(),lr=1e-3)
+n_params=sum(p.numel() for p in model.parameters())
+print(f"U-Net parameters: {n_params:,}")
 
-class VAE(nn.Module):
-    def __init__(self,lat=16):
+if train_loader:
+    EPOCHS=10; best_iou=0
+    for ep in range(EPOCHS):
+        model.train(); losses=[]
+        for imgs,masks in train_loader:
+            imgs,masks=imgs.to(device),masks.to(device)
+            pred=model(imgs).squeeze(1)
+            loss=combined_loss(pred,masks)
+            opt.zero_grad(); loss.backward(); opt.step()
+            losses.append(loss.item())
+        model.eval(); ious=[]
+        with torch.no_grad():
+            for imgs,masks in val_loader:
+                imgs,masks=imgs.to(device),masks.to(device)
+                ious.append(iou_metric(model(imgs).squeeze(1),masks))
+        val_iou=np.mean(ious)
+        print(f"Ep {ep+1:2d}: loss={np.mean(losses):.4f}  val_IoU={val_iou:.4f}")
+        if val_iou>best_iou: best_iou=val_iou; torch.save(model.state_dict(),"/tmp/best_unet.pt")
+    print(f"Best val IoU: {best_iou:.4f}")`,
+    complexity:"Per epoch: O(dataset_size/batch * O(U-Net forward+backward))",
+    followup:"How does the Dice loss help with class imbalance compared to pure BCE? What is the Lovász-Softmax loss and why does it directly optimise IoU?" },
+
+  { id:"C28", difficulty:"Hard", tag:"Attention / Vision", title:"Implement Multi-Head Self-Attention for Image Patches",
+    company:"Google Brain, Meta AI", points:30,
+    desc:`Implement a complete multi-head self-attention (MHSA) block for image patches as used in Vision Transformers (ViT). Include layer normalisation, residual connection, and an MLP feed-forward network. Validate forward pass against PyTorch's nn.MultiheadAttention.`,
+    example:`Input: (B, N, D) patch embeddings where N=196 patches, D=768 embedding dimension for ViT-B/16
+Output: (B, N, D) updated patch embeddings`,
+    hint:"MHSA: Q=xW_Q, K=xW_K, V=xW_V, split into h heads, compute attention per head, concat, project. TransformerBlock = LN -> MHSA + residual -> LN -> MLP + residual.",
+    fullSolution:`# DETAILED SOLUTION
+# This is the core building block of ViT, Swin, BERT, and all modern transformers.
+# Understanding MHSA from scratch is essential for CV research and ML engineering interviews.
+
+import numpy as np, torch, torch.nn as nn, torch.nn.functional as F
+import matplotlib.pyplot as plt
+
+class MHSA(nn.Module):
+    """Multi-Head Self-Attention (qkv projection version, like ViT)."""
+    def __init__(self, dim, n_heads=8, attn_drop=0., proj_drop=0.):
         super().__init__()
-        self.enc=nn.Sequential(nn.Flatten(),nn.Linear(784,512),nn.ReLU(),nn.Linear(512,256),nn.ReLU())
-        self.mu=nn.Linear(256,lat); self.lv=nn.Linear(256,lat)
-        self.dec=nn.Sequential(nn.Linear(lat,256),nn.ReLU(),nn.Linear(256,512),nn.ReLU(),
-                               nn.Linear(512,784),nn.Sigmoid())
-    def reparameterise(self,mu,lv): return mu+torch.randn_like(mu)*torch.exp(0.5*lv)
+        assert dim % n_heads == 0
+        self.n_heads = n_heads
+        self.head_dim= dim // n_heads
+        self.scale   = self.head_dim ** -0.5
+        # Combined QKV projection (more efficient than 3 separate Linear layers)
+        self.qkv     = nn.Linear(dim, dim*3, bias=False)
+        self.proj    = nn.Linear(dim, dim)
+        self.attn_drop= nn.Dropout(attn_drop)
+        self.proj_drop= nn.Dropout(proj_drop)
+
+    def forward(self, x):
+        B, N, D = x.shape
+        # Project to Q,K,V and split into heads
+        qkv = self.qkv(x).reshape(B, N, 3, self.n_heads, self.head_dim)
+        qkv = qkv.permute(2,0,3,1,4)           # (3, B, H, N, head_dim)
+        Q, K, V = qkv.unbind(0)                 # Each: (B, H, N, head_dim)
+        # Scaled dot-product attention
+        attn = (Q @ K.transpose(-2,-1)) * self.scale   # (B,H,N,N)
+        attn = attn.softmax(dim=-1)
+        attn = self.attn_drop(attn)
+        x    = (attn @ V).transpose(1,2).reshape(B, N, D)  # (B,N,D)
+        return self.proj_drop(self.proj(x)), attn
+
+class MLP(nn.Module):
+    def __init__(self,dim,mlp_ratio=4.,drop=0.):
+        super().__init__()
+        hidden=int(dim*mlp_ratio)
+        self.net=nn.Sequential(nn.Linear(dim,hidden),nn.GELU(),nn.Dropout(drop),
+                               nn.Linear(hidden,dim),nn.Dropout(drop))
+    def forward(self,x): return self.net(x)
+
+class TransformerBlock(nn.Module):
+    """Pre-norm ViT transformer block: LN -> MHSA -> Add, LN -> MLP -> Add."""
+    def __init__(self,dim,n_heads=8,mlp_ratio=4.,attn_drop=0.,drop=0.):
+        super().__init__()
+        self.norm1=nn.LayerNorm(dim); self.norm2=nn.LayerNorm(dim)
+        self.attn =MHSA(dim,n_heads,attn_drop)
+        self.mlp  =MLP(dim,mlp_ratio,drop)
     def forward(self,x):
-        h=self.enc(x); mu,lv=self.mu(h),self.lv(h); z=self.reparameterise(mu,lv)
-        return self.dec(z),mu,lv
+        attn_out,weights=self.attn(self.norm1(x))
+        x = x + attn_out          # Residual 1
+        x = x + self.mlp(self.norm2(x))  # Residual 2
+        return x, weights
 
-def vae_loss(recon,x,mu,lv,beta=0.5):
-    bce=nn.functional.binary_cross_entropy(recon,x.view(-1,784),reduction="sum")
-    kld=-0.5*torch.sum(1+lv-mu**2-lv.exp())
-    return (bce+beta*kld)/x.shape[0]
+# Simulate ViT-S/16 dimensions: 196 patches (14x14), D=384, 6 heads
+B, N, D, H = 2, 196, 384, 6
+block = TransformerBlock(dim=D, n_heads=H)
+x     = torch.randn(B, N, D)
 
-device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model=VAE(16).to(device); opt=optim.Adam(model.parameters(),lr=1e-3)
-loader=torch.utils.data.DataLoader(
-    torchvision.datasets.MNIST("/tmp/mn",True,download=True,transform=T.ToTensor()),
-    batch_size=256,shuffle=True)
+out, attn_weights = block(x)
+print(f"Input:  {x.shape}")
+print(f"Output: {out.shape}")
+print(f"Attention weights: {attn_weights.shape}  (B,H,N,N)")
+print(f"Parameters: {sum(p.numel() for p in block.parameters()):,}")
 
-for ep in range(6):
-    tot=0
-    for x,_ in loader:
-        x=x.to(device); r,mu,lv=model(x); l=vae_loss(r,x,mu,lv)
-        opt.zero_grad(); l.backward(); opt.step(); tot+=l.item()
-    print(f"Epoch {ep+1}  loss={tot/len(loader):.2f}")
+# Visualise attention maps from first head
+fig,axes=plt.subplots(2,3,figsize=(18,12))
+for h in range(6):
+    ax = axes[h//3,h%3]
+    # Reshape to 2D spatial (CLS token removed for visual clarity)
+    attn_map = attn_weights[0,h].detach().numpy()   # (196,196)
+    # Show attention from patch 98 (centre) to all patches
+    centre_attn = attn_map[98].reshape(14,14)
+    im=ax.imshow(centre_attn,cmap="viridis")
+    ax.set_title(f"Head {h}: Attention from patch(7,7)")
+    ax.axis("off")
+plt.suptitle("ViT Multi-Head Attention Maps (random weights, 14x14 patch grid)",fontsize=13)
+plt.tight_layout(); plt.savefig("c28.png",dpi=150); plt.show()`,
+    complexity:"MHSA: O(B*H*N^2*head_dim)  MLP: O(B*N*D*mlp_ratio*D)",
+    followup:"What is the computational bottleneck of standard MHSA for high-resolution images? How do Shifted Window (Swin) and Deformable Attention address it?" },
 
-model.eval()
-with torch.no_grad():
-    z=torch.randn(64,16).to(device); imgs=model.dec(z).view(64,1,28,28).cpu()
-fig,axes=plt.subplots(8,8,figsize=(8,8))
-for ax,im in zip(axes.flat,imgs): ax.imshow(im.squeeze(),cmap="gray"); ax.axis("off")
-plt.suptitle("VAE Generated Digits"); plt.tight_layout(); plt.savefig("m7.png",dpi=150); plt.show()` },
+  { id:"C29", difficulty:"Hard", tag:"NeRF / Rendering", title:"Implement Volume Rendering for NeRF",
+    company:"NVIDIA, Meta Reality Labs", points:30,
+    desc:`Implement the differentiable volume rendering equation used in NeRF: C(r) = sum of T_i * alpha_i * c_i, where T_i is accumulated transmittance and alpha_i is opacity. Given per-sample colour and density, compute the rendered pixel colour and compute gradients.`,
+    example:`Given 64 sample points along a ray with their colours [c_1,...,c_N] and densities [sigma_1,...,sigma_N], compute the ray's rendered RGB colour.`,
+    hint:"alpha_i = 1 - exp(-sigma_i * delta_i), T_i = prod(1 - alpha_j for j<i). Use exclusive cumulative product for T.",
+    fullSolution:`# DETAILED SOLUTION
+# NeRF volume rendering integrates colour along a ray using the alpha compositing
+# model from classical graphics. The key is that it is DIFFERENTIABLE, allowing
+# backpropagation through the rendering to train the scene MLP.
 
-  { id:8, title:"3D Vision: NeRF and Gaussian Splatting", level:"Advanced", time:"60 min", color:P.accent9,
-    sections:[
-      { heading:"3D Representations", body:`Voxel grids: regular 3D grid, easy to process but O(N^3) memory. Point clouds: unordered 3D points, memory-efficient, directly from LiDAR but lack connectivity. Meshes: vertices + edges + faces, compact and graphics-compatible but hard to optimise end-to-end. Implicit representations (NeRF, SDF): continuous functions evaluated anywhere, flexible but expensive. 3D Gaussian Splatting: explicit Gaussians with position, covariance, opacity, colour; fast rasterisation and differentiable.` },
-      { heading:"PointNet: Learning on Unordered Sets", body:`PointNet applies a shared MLP independently to each point (permutation equivariant), then global max-pooling produces a permutation-invariant feature (the same result regardless of point order). T-Net predicts a 3x3 rotation matrix to canonicalise alignment. PointNet++ adds hierarchical local feature learning via farthest point sampling and ball query grouping, analogous to CNN receptive fields. DGCNN dynamically constructs local k-NN graphs in feature space, applying EdgeConv for relational learning.` },
-      { heading:"Neural Radiance Fields (NeRF)", body:`NeRF represents a scene as F_theta: (x,y,z,theta,phi) -> (r,g,b,sigma). Volume rendering: C = sum_i T_i*(1-exp(-sigma_i*delta_i))*c_i, where T_i is accumulated transmittance. Positional encoding (sinusoidal functions) enables MLP to represent high-frequency detail. Limitations: hours of training, seconds per image inference. Instant-NGP uses multi-resolution hash encoding: training in seconds. TensoRF uses CP/VM tensor decomposition for compact scenes. Zip-NeRF combines hash encoding with mip-NeRF anti-aliasing for large-scale scenes.` },
-      { heading:"3D Gaussian Splatting", body:`3DGS represents scenes as millions of 3D Gaussians: position mu, covariance Sigma (from scale s and quaternion rotation q), opacity alpha, and spherical harmonics for view-dependent colour. Rendering: sort by depth, project each Gaussian to 2D, alpha-composite front-to-back. Training: optimise Gaussian params via photometric gradient descent, plus adaptive density control (split large Gaussians, remove transparent ones). Results: 30-minute training on consumer GPU, 100+ FPS rendering at 1080p. Beats NeRF in speed while matching quality.` },
-    ],
-    code:`# PointNet architecture + NeRF volume rendering concept
-import torch, torch.nn as nn, numpy as np, matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+import torch, numpy as np, matplotlib.pyplot as plt
 
-class PointNet(nn.Module):
-    def __init__(self,nc=40):
-        super().__init__()
-        self.shared=nn.Sequential(
-            nn.Conv1d(3,64,1),nn.BatchNorm1d(64),nn.ReLU(),
-            nn.Conv1d(64,128,1),nn.BatchNorm1d(128),nn.ReLU(),
-            nn.Conv1d(128,1024,1),nn.BatchNorm1d(1024),nn.ReLU())
-        self.fc=nn.Sequential(
-            nn.Linear(1024,512),nn.BatchNorm1d(512),nn.ReLU(),nn.Dropout(0.3),
-            nn.Linear(512,256),nn.BatchNorm1d(256),nn.ReLU(),nn.Dropout(0.3),
-            nn.Linear(256,nc))
-    def forward(self,x): return self.fc(self.shared(x).max(2)[0])
+def volume_render(rgb, sigma, t_vals, white_bg=True):
+    """
+    Differentiable volume rendering (NeRF equation).
+    rgb:    (B, N, 3) colour per sample
+    sigma:  (B, N)    density per sample
+    t_vals: (B, N)    sample positions along ray
+    Returns: (B, 3) rendered pixel colour, (B, N) weights
+    """
+    # Step sizes delta_i = t_{i+1} - t_i
+    deltas = torch.cat([t_vals[:,1:]-t_vals[:,:-1],
+                         torch.full_like(t_vals[:,:1],1e10)],dim=-1)   # (B,N)
+    # Alpha (probability of being absorbed at this sample)
+    alpha  = 1.0 - torch.exp(-sigma * deltas)                          # (B,N)
+    # Transmittance: probability of reaching this sample
+    # T_i = prod(1-alpha_j for j<i) = exclusive cumprod(1-alpha)
+    T = torch.cumprod(torch.cat([torch.ones_like(alpha[:,:1]),
+                                  1.-alpha[:,:-1]+1e-10],dim=-1),dim=-1) # (B,N)
+    # Per-sample weight: how much does this sample contribute?
+    weights = T * alpha                                                  # (B,N)
+    # Composite colour
+    rgb_map = (weights.unsqueeze(-1) * rgb).sum(dim=1)                  # (B,3)
+    if white_bg:
+        # Add background: remaining transmittance fills with white
+        acc     = weights.sum(dim=-1, keepdim=True)
+        rgb_map = rgb_map + (1 - acc)
+    return rgb_map, weights
 
-pn=PointNet(); x=torch.randn(4,3,1024); print(f"PointNet out: {pn(x).shape}")
-print(f"Params: {sum(p.numel() for p in pn.parameters()):,}")
+# Simulate rendering a single sphere (density=100 inside sphere, 0 outside)
+def sphere_density(pts, centre=0.5, radius=0.15):
+    dist = torch.norm(pts - centre, dim=-1)
+    return torch.where(dist < radius, torch.tensor(100.0), torch.tensor(0.01))
 
-# Minimal NeRF forward pass concept
-class TinyNeRF(nn.Module):
-    def __init__(self,pos_enc=6):
-        super().__init__()
-        in_dim=3+3*2*pos_enc  # (x,y,z) + sin/cos positional encoding
-        self.net=nn.Sequential(
-            nn.Linear(in_dim,256),nn.ReLU(),nn.Linear(256,256),nn.ReLU(),
-            nn.Linear(256,256),nn.ReLU(),nn.Linear(256,4))  # -> (r,g,b,sigma)
-        self.L=pos_enc
-    def pos_encode(self,x):
-        freqs=2**torch.arange(self.L,dtype=x.dtype)
-        enc=[x]+[f(x*freq*np.pi) for freq in freqs for f in [torch.sin,torch.cos]]
-        return torch.cat(enc,-1)
-    def forward(self,xyz): return self.net(self.pos_encode(xyz))
+B   = 200   # Number of rays (one horizontal scanline)
+N   = 128   # Samples per ray
+t   = torch.linspace(0., 1., N).unsqueeze(0).expand(B, -1)   # (B,N)
 
-nerf=TinyNeRF(); pts=torch.randn(100,3); out=nerf(pts)
-print(f"TinyNeRF out: {out.shape}  (N, 4=[rgb, density])")
+# Ray: horizontal line at y=0.5 through a sphere at centre (0.5,0.5)
+x_coords = t   # x goes from 0 to 1 along ray
+y_coords  = torch.full_like(t, 0.5)   # All rays at y=0.5
+sigma     = sphere_density(torch.stack([x_coords,y_coords],dim=-1))
 
-# Volume rendering
-def volume_render(rgb, sigma, deltas):
-    alpha=1-torch.exp(-sigma*deltas)
-    T=torch.cumprod(torch.cat([torch.ones(alpha.shape[0],1),1-alpha+1e-10],-1),-1)[:,:-1]
-    weights=(T*alpha); return (weights.unsqueeze(-1)*rgb).sum(1)
+# Colour: red sphere on blue background
+colour_sphere = torch.tensor([1.0,0.2,0.2])
+colour_bg     = torch.tensor([0.2,0.4,1.0])
+rgb = torch.where(sigma.unsqueeze(-1)>1,
+                  colour_sphere.view(1,1,3).expand(B,N,3),
+                  colour_bg.view(1,1,3).expand(B,N,3))
 
-N_rays,N_samples=16,64
-rgb=torch.rand(N_rays,N_samples,3); sigma=torch.relu(torch.randn(N_rays,N_samples))
-deltas=torch.full((N_rays,N_samples),0.02)
-rendered_rgb=volume_render(rgb,sigma,deltas)
-print(f"Rendered colour: {rendered_rgb.shape}  (N_rays, 3)")
+rgb_map, weights = volume_render(rgb, sigma, t, white_bg=False)
 
-# Visualise synthetic point cloud
-rng=np.random.default_rng(0)
-t=rng.uniform(0,2*np.pi,2000); p=rng.uniform(0,np.pi,2000)
-pts_np=np.stack([np.sin(p)*np.cos(t),np.sin(p)*np.sin(t),np.cos(p)],1)
-col=plt.cm.cool((pts_np[:,2]+1)/2)
-fig=plt.figure(figsize=(8,8)); ax=fig.add_subplot(111,projection="3d")
-ax.scatter(pts_np[:,0],pts_np[:,1],pts_np[:,2],c=col,s=2,alpha=0.6)
-ax.set_title("Unit Sphere Point Cloud"); plt.tight_layout()
-plt.savefig("m8.png",dpi=150); plt.show()` },
+# Test with autograd
+sigma_diff = sigma.detach().requires_grad_(True)
+rgb_diff   = rgb.detach().requires_grad_(True)
+rgb_map_diff,_ = volume_render(rgb_diff, sigma_diff, t.detach())
+rgb_map_diff.sum().backward()
+print(f"Gradient flows: d_sigma shape={sigma_diff.grad.shape}, d_rgb shape={rgb_diff.grad.shape}")
 
-  { id:9, title:"Deployment: From Research to Production", level:"Advanced", time:"50 min", color:P.accent1,
-    sections:[
-      { heading:"The Research-to-Production Gap", body:`A model achieving 95% benchmark accuracy may perform poorly in production due to: distribution shift (real images differ from training data); latency constraints (autonomous driving needs <50ms, cloud APIs tolerate 500ms); hardware constraints on edge devices; reliability requirements (medical AI must be safe on out-of-distribution inputs); and explainability demands from regulators. Bridging this gap requires real-world dataset curation, systematic evaluation beyond accuracy (calibration, fairness, edge cases), model compression, and monitoring infrastructure.` },
-      { heading:"Model Compression Techniques", body:`Quantisation: reduce float32 to int8 or int4, shrinking model 4-8x and accelerating inference (integer ops faster on most hardware). Post-training quantisation (PTQ) needs only a calibration dataset. Quantisation-aware training (QAT) simulates quantisation during training for minimal accuracy loss. Pruning: remove weights or channels below a threshold; structured pruning (removing full channels) is hardware-friendly. Knowledge distillation: train small student to mimic large teacher's soft logits, transferring rich inter-class knowledge beyond hard labels.` },
-      { heading:"Export: ONNX, TensorRT, TFLite", body:`Export pipeline: PyTorch model -> torch.onnx.export() -> onnx.checker -> runtime optimisation. ONNX Runtime (ORT) provides vendor-neutral efficient inference across CPUs, GPUs, and accelerators. TensorRT (NVIDIA) applies layer fusion, precision calibration (FP32->FP16/INT8), and generates an optimised engine for NVIDIA GPUs, typically achieving 2-5x speedup over PyTorch. TFLite targets mobile and embedded Linux. CoreML targets Apple devices. OpenVINO optimises for Intel CPUs and VPUs.` },
-      { heading:"MLOps and Monitoring", body:`After deployment, performance silently degrades due to data drift or concept drift. A robust pipeline includes: input monitoring (flag inputs far from training distribution); output monitoring (track prediction distribution shifts); human-in-the-loop review for uncertain predictions; automated retraining triggers; A/B testing for safe rollout; model versioning and reproducible training (MLflow, DVC, Weights and Biases); and canary deployments routing small traffic percentage to new models. Tools: Triton Inference Server, TorchServe, Ray Serve, BentoML.` },
-    ],
-    code:`# Model compression and benchmarking pipeline
-import torch, torch.nn as nn, torchvision.models as models
-import numpy as np, time, urllib.request, io, os
+fig,(a,b,c)=plt.subplots(1,3,figsize=(15,5))
+a.imshow(sigma.numpy()[::-1],cmap="gray",aspect="auto"); a.set_title("Density (sigma)"); a.axis("off")
+a.set_xlabel("t (along ray)"); a.set_ylabel("Ray index")
+b.imshow(weights.detach().numpy()[::-1],cmap="hot",aspect="auto"); b.set_title("Weights (contribution)"); b.axis("off")
+c.imshow(rgb_map.detach().numpy()[::-1].reshape(-1,1,3).repeat(30,1)/rgb_map.max().item())
+c.set_title("Rendered Colour (scanline)"); c.axis("off")
+plt.tight_layout(); plt.savefig("c29.png",dpi=150); plt.show()`,
+    complexity:"Time O(B*N) per rendering pass  Space O(B*N)",
+    followup:"How does Instant-NGP's multi-resolution hash encoding make NeRF training 1000x faster? What is the difference between NeRF and 3D Gaussian Splatting's rendering model?" },
+
+  { id:"C30", difficulty:"Hard", tag:"Diffusion", title:"Implement DDPM Noise Schedule and Denoising Step",
+    company:"Stability AI, OpenAI, Google", points:30,
+    desc:`Implement the full DDPM forward (noise addition) and backward (denoising step) processes from scratch. Given a clean image x_0, compute x_t at any timestep t. Given x_t and the predicted noise, compute x_{t-1}.`,
+    example:`1. Forward: x_t = sqrt(alpha_bar_t)*x_0 + sqrt(1-alpha_bar_t)*epsilon
+2. Backward: x_{t-1} = (x_t - beta_t/sqrt(1-alpha_bar_t)*epsilon_pred) / sqrt(alpha_t) + sigma_t*z`,
+    hint:"alpha_bar_t = product(1-beta_i for i=1..t). Precompute all alpha_bar values. The backward step uses the posterior mean formula from the DDPM paper.",
+    fullSolution:`# DETAILED SOLUTION
+# This is the mathematical core of all diffusion models (DDPM, DDIM, Stable Diffusion).
+# Understanding this enables you to implement and modify diffusion models from scratch.
+
+import torch, numpy as np, matplotlib.pyplot as plt, urllib.request, io
 from PIL import Image
-from torchvision import transforms
 
-model_fp32=models.mobilenet_v3_small(weights=models.MobileNet_V3_Small_Weights.IMAGENET1K_V1)
-model_fp32.eval()
-print(f"MobileNetV3-Small: {sum(p.numel() for p in model_fp32.parameters())/1e6:.2f}M params")
+class DDPMScheduler:
+    """DDPM noise schedule with forward and backward sampling."""
+    def __init__(self, T=1000, beta_start=1e-4, beta_end=0.02, schedule="linear"):
+        self.T = T
+        if schedule == "linear":
+            self.beta = torch.linspace(beta_start, beta_end, T)
+        elif schedule == "cosine":
+            # Cosine schedule (Nichol & Dhariwal, 2021) - smoother decay
+            s = 0.008
+            steps = torch.arange(T+1, dtype=torch.float)
+            f     = torch.cos((steps/T + s)/(1+s) * torch.pi/2)**2
+            ab    = f/f[0]
+            self.beta = (1 - ab[1:]/ab[:-1]).clamp(0, 0.999)
+        
+        self.alpha     = 1.0 - self.beta
+        self.alpha_bar = torch.cumprod(self.alpha, dim=0)
+        # Precompute useful quantities
+        self.sqrt_ab       = self.alpha_bar.sqrt()
+        self.sqrt_one_m_ab = (1-self.alpha_bar).sqrt()
+        self.posterior_var = self.beta * (1-torch.cat([self.alpha_bar[:1],self.alpha_bar[:-1]]))\
+                             / (1-self.alpha_bar)   # sigma_t^2
 
-# Post-training quantisation
-model_int8=models.mobilenet_v3_small(weights=models.MobileNet_V3_Small_Weights.IMAGENET1K_V1)
-model_int8.eval()
-model_int8.qconfig=torch.quantization.get_default_qconfig("fbgemm")
-model_int8=torch.quantization.prepare(model_int8)
+    def forward(self, x0, t, noise=None):
+        """Sample x_t from x_0 and timestep t. Closed-form in one step."""
+        if noise is None: noise = torch.randn_like(x0)
+        ab  = self.alpha_bar[t].view(-1,1,1,1) if x0.ndim==4 else self.alpha_bar[t]
+        return self.sqrt_ab[t].view(*ab.shape)*x0 + self.sqrt_one_m_ab[t].view(*ab.shape)*noise, noise
 
-tf=transforms.Compose([transforms.Resize(256),transforms.CenterCrop(224),transforms.ToTensor(),
-    transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225])])
-url="https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg"
-img=Image.open(io.BytesIO(urllib.request.urlopen(url).read())).convert("RGB")
-calib=tf(img).unsqueeze(0).repeat(8,1,1,1)
-with torch.no_grad(): model_int8(calib)
-model_int8=torch.quantization.convert(model_int8)
+    def backward_step(self, xt, eps_pred, t):
+        """
+        One DDPM denoising step: x_t -> x_{t-1}.
+        eps_pred: the noise predicted by the U-Net at timestep t.
+        """
+        beta_t   = self.beta[t]
+        alpha_t  = self.alpha[t]
+        alpha_bar_t = self.alpha_bar[t]
+        # Posterior mean coefficient
+        coef     = beta_t / self.sqrt_one_m_ab[t]
+        mean     = (xt - coef * eps_pred) / alpha_t.sqrt()
+        # Add noise (except at t=0)
+        sigma_t  = self.posterior_var[t].sqrt() if t > 0 else 0.
+        z        = torch.randn_like(xt) if t > 0 else torch.zeros_like(xt)
+        return mean + sigma_t * z
 
-# ONNX export
-dummy=torch.randn(1,3,224,224)
-torch.onnx.export(model_fp32,dummy,"/tmp/mv3.onnx",
-    input_names=["image"],output_names=["logits"],
-    dynamic_axes={"image":{0:"batch"}},opset_version=13)
-print("ONNX exported")
+# Load and process a real image
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/128px-Cute_dog.jpg"
+img = Image.open(io.BytesIO(urllib.request.urlopen(url).read())).convert("RGB").resize((64,64))
+x0  = (torch.tensor(np.array(img)).float()/127.5 - 1.0).permute(2,0,1).unsqueeze(0)
 
-# Latency benchmark
-def bench(m,x,n=200,warmup=20):
-    with torch.no_grad():
-        for _ in range(warmup): m(x)
-        t=time.perf_counter()
-        for _ in range(n): m(x)
-        return (time.perf_counter()-t)/n*1000
+scheduler = DDPMScheduler(T=1000)
 
-x=tf(img).unsqueeze(0)
-fp=bench(model_fp32,x); i8=bench(model_int8,x)
-print(f"FP32: {fp:.2f} ms  ({1000/fp:.0f} FPS)")
-print(f"INT8: {i8:.2f} ms  ({1000/i8:.0f} FPS)  Speedup: {fp/i8:.2f}x")
+# Show forward process at multiple timesteps
+timesteps = [0, 50, 100, 250, 500, 750, 999]
+fig, axes = plt.subplots(2, len(timesteps), figsize=(24,8))
+eps = torch.randn_like(x0)
+for col, t in enumerate(timesteps):
+    xt, _ = scheduler.forward(x0, t, eps)
+    im = (xt.squeeze().permute(1,2,0).numpy()*0.5+0.5).clip(0,1)
+    axes[0,col].imshow(im); axes[0,col].set_title(f"t={t}")
+    axes[0,col].axis("off")
+    # Plot alpha_bar curve
+    if col==0:
+        axes[1,0].plot(scheduler.alpha_bar.numpy(),color=P.accent1,label="alpha_bar")
+        axes[1,0].plot(scheduler.sqrt_ab.numpy(),color=P.accent3,label="sqrt(alpha_bar)")
+        axes[1,0].plot(scheduler.sqrt_one_m_ab.numpy(),color=P.accent4,label="sqrt(1-alpha_bar)")
+        axes[1,0].legend(facecolor="#111"); axes[1,0].set_title("Noise Schedule")
+        axes[1,0].set_xlabel("Timestep t"); axes[1,0].set_facecolor("#0d1529")
+    elif col>0:
+        axes[1,col].axis("off")
 
-torch.save(model_fp32.state_dict(),"/tmp/fp32.pt")
-torch.save(model_int8.state_dict(),"/tmp/int8.pt")
-s32=os.path.getsize("/tmp/fp32.pt")/1e6; s8=os.path.getsize("/tmp/int8.pt")/1e6
-print(f"FP32 size: {s32:.1f} MB  |  INT8 size: {s8:.1f} MB  ({s8/s32*100:.0f}%)")
+plt.suptitle("DDPM Forward Process: x_0 (clean) -> x_T (pure noise)",fontsize=14)
+plt.tight_layout(); plt.savefig("c30.png",dpi=150); plt.show()
+print(f"alpha_bar at t=1000: {scheduler.alpha_bar[-1]:.4f}  (close to 0 = pure noise)")
+print(f"alpha_bar at t=0:    {scheduler.alpha_bar[0]:.4f}   (close to 1 = mostly clean)")`,
+    complexity:"Forward: O(1) per sample (closed-form). Backward: O(1) per step, O(T) for full denoising.",
+    followup:"How does DDIM's deterministic sampling allow 10-50 steps instead of 1000? What is the DDIM sampling equation and when is stochasticity (eta) useful?" },
 
-LABELS=urllib.request.urlopen(
-    "https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt"
-).read().decode().splitlines()
-with torch.no_grad(): probs=model_fp32(x).softmax(1).squeeze()
-for p,i in zip(*probs.topk(3)):
-    print(f"  {LABELS[i]:35s} {p.item()*100:.2f}%")` },
-];
-/* ==========================================================
-   100 CODING CHALLENGES
-   ========================================================== */
-const ALL_CHALLENGES = [
-  {
-    "id": "C01",
-    "difficulty": "Easy",
-    "tag": "Arrays / Pixels",
-    "points": 10,
-    "title": "Flip and Invert Binary Image",
-    "company": "Google, Meta",
-    "desc": "Given a binary image (2D list of 0s and 1s), horizontally flip each row, then invert every bit (0->1, 1->0). This simulates a common preprocessing step in binary document image pipelines.",
-    "example": "Input: [[1,1,0],[1,0,1],[0,0,0]]\nOutput: [[1,0,0],[0,1,0],[1,1,1]]",
-    "hint": "Reverse each row with [::-1], then XOR every element with 1. Both steps combine into a single list comprehension.",
-    "fullSolution": "# Flip and Invert Binary Image\nimport urllib.request, numpy as np, cv2\nimport matplotlib.pyplot as plt\n\ndef flipAndInvert(image):\n    return [[x^1 for x in row[::-1]] for row in image]\n\n# Test on example\nexample = [[1,1,0],[1,0,1],[0,0,0]]\nresult = flipAndInvert([row[:] for row in example])\nassert result == [[1,0,0],[0,1,0],[1,1,1]], f'Got {result}'\nprint('Example passed:', result)\n\n# Apply to a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/License_plate_2.jpg/320px-License_plate_2.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw,np.uint8), cv2.IMREAD_GRAYSCALE)\nimg = cv2.resize(img,(160,80))\n_, binary = cv2.threshold(img,127,1,cv2.THRESH_BINARY)\nresult_np = np.array(flipAndInvert(binary.tolist()),dtype=np.uint8)\n\nfig,(a,b,c) = plt.subplots(1,3,figsize=(15,5))\na.imshow(binary,cmap='gray',vmin=0,vmax=1); a.set_title('Original Binary'); a.axis('off')\nb.imshow(binary[:,::-1],cmap='gray'); b.set_title('After H-Flip'); b.axis('off')\nc.imshow(result_np,cmap='gray',vmin=0,vmax=1); c.set_title('Flip+Invert'); c.axis('off')\nplt.tight_layout(); plt.savefig('c01.png',dpi=150); plt.show()",
-    "complexity": "Time O(m*n)  Space O(m*n) for output",
-    "followup": "How would you extend this to an RGB image where invert means 255-pixel?"
-  },
-  {
-    "id": "C02",
-    "difficulty": "Easy",
-    "tag": "2D Prefix Sum",
-    "points": 10,
-    "title": "Count Black Pixels in Rectangles",
-    "company": "Amazon, Bloomberg",
-    "desc": "Given a binary image matrix and rectangle queries [r1,c1,r2,c2], return the count of 1s inside each rectangle in O(1) per query after O(m*n) preprocessing. This is the Integral Image technique used in Haar Cascade face detection.",
-    "example": "Matrix: [[1,0,1],[0,1,0],[1,1,1]]  Query [0,0,2,2] -> 6",
-    "hint": "Build a 2D prefix sum table. Answer = pre[r2+1][c2+1] - pre[r1][c2+1] - pre[r2+1][c1] + pre[r1][c1]",
-    "fullSolution": "# 2D Prefix Sum (Integral Image)\nimport numpy as np, urllib.request, cv2\nimport matplotlib.pyplot as plt, time\n\ndef build_prefix(mat):\n    m,n=len(mat),len(mat[0])\n    pre=[[0]*(n+1) for _ in range(m+1)]\n    for i in range(m):\n        for j in range(n):\n            pre[i+1][j+1]=mat[i][j]+pre[i][j+1]+pre[i+1][j]-pre[i][j]\n    return pre\n\ndef query(pre,r1,c1,r2,c2):\n    return pre[r2+1][c2+1]-pre[r1][c2+1]-pre[r2+1][c1]+pre[r1][c1]\n\nmat=[[1,0,1],[0,1,0],[1,1,1]]\npre=build_prefix(mat)\nprint('Query [0,0,2,2]:', query(pre,0,0,2,2))  # expected 6\nassert query(pre,0,0,2,2)==6",
-    "complexity": "O(m*n) build + O(1) per query  Space O(m*n)",
-    "followup": "This is the Viola-Jones Integral Image. How is it used to compute Haar features in constant time?"
-  },
-  {
-    "id": "C03",
-    "difficulty": "Easy",
-    "tag": "BFS",
-    "points": 10,
-    "title": "Flood Fill (Paint Bucket)",
-    "company": "Amazon, Google",
-    "desc": "Implement the flood-fill algorithm (paint bucket tool in image editors). Given a binary/colour image, a starting pixel (sr,sc), and a new colour, repaint all 4-connected pixels of the same original colour.",
-    "example": "image=[[1,1,1],[1,1,0],[1,0,1]] sr=1 sc=1 color=2 -> [[2,2,2],[2,2,0],[2,0,1]]",
-    "hint": "BFS or DFS from (sr,sc). Store the original colour. Do not revisit already-painted pixels.",
-    "fullSolution": "# Flood Fill with BFS\nimport numpy as np, cv2, urllib.request\nimport matplotlib.pyplot as plt\nfrom collections import deque\n\ndef flood_fill(image, sr, sc, new_color):\n    orig = image[sr][sc]\n    if orig == new_color: return image\n    m,n = len(image),len(image[0])\n    q = deque([(sr,sc)]); image[sr][sc] = new_color\n    while q:\n        r,c = q.popleft()\n        for dr,dc in [(-1,0),(1,0),(0,-1),(0,1)]:\n            nr,nc = r+dr,c+dc\n            if 0<=nr<m and 0<=nc<n and image[nr][nc]==orig:\n                image[nr][nc] = new_color; q.append((nr,nc))\n    return image\n\nimg = [[1,1,1],[1,1,0],[1,0,1]]\nresult = flood_fill([row[:] for row in img],1,1,2)\nassert result == [[2,2,2],[2,2,0],[2,0,1]], f'Got {result}'\nprint('Passed:', result)",
-    "complexity": "Time O(m*n)  Space O(m*n) for queue",
-    "followup": "How would you handle 8-connectivity (diagonals)? How does this relate to connected component labelling?"
-  },
-  {
-    "id": "C04",
-    "difficulty": "Easy",
-    "tag": "Convolution",
-    "points": 10,
-    "title": "Image Smoother (3x3 Mean Filter)",
-    "company": "Microsoft, Apple",
-    "desc": "Apply a 3x3 mean filter to a grayscale image. Each output pixel is the floor of the average of all valid neighbours, excluding out-of-bounds cells. Implement WITHOUT NumPy convolution helpers.",
-    "example": "Input: [[1,1,1],[1,0,1],[1,1,1]]\nAll output pixels floor to 0 (border cells average fewer neighbours).",
-    "hint": "For each cell, gather all valid neighbours within the 3x3 window (clip to image bounds), then compute floor(mean).",
-    "fullSolution": "# 3x3 Mean Filter from scratch\nimport math, numpy as np, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\ndef mean_filter_3x3(img):\n    m,n = len(img),len(img[0])\n    out = [[0]*n for _ in range(m)]\n    for i in range(m):\n        for j in range(n):\n            nbrs = [img[i+di][j+dj] for di in range(-1,2) for dj in range(-1,2)\n                    if 0<=i+di<m and 0<=j+dj<n]\n            out[i][j] = math.floor(sum(nbrs)/len(nbrs))\n    return out\n\nexample = [[1,1,1],[1,0,1],[1,1,1]]\nprint('Result:', mean_filter_3x3(example))\n\nurl='https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw=urllib.request.urlopen(url).read()\nimg=cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_GRAYSCALE)\nimg=cv2.resize(img,(160,120))\nsmooth=np.array(mean_filter_3x3(img.tolist()),dtype=np.uint8)\ncv_smooth=cv2.blur(img,(3,3))\nprint('Max diff from cv2:', np.abs(smooth.astype(int)-cv_smooth.astype(int)).max())",
-    "complexity": "Time O(m*n*9)=O(m*n)  Space O(m*n)",
-    "followup": "What is the difference between mean and Gaussian filtering? When would you prefer each?"
-  },
-  {
-    "id": "C05",
-    "difficulty": "Easy",
-    "tag": "BFS / Connected Components",
-    "points": 10,
-    "title": "Count Connected Components",
-    "company": "Facebook, LinkedIn",
-    "desc": "Given a binary image, count the number of connected components (regions of 1s connected by 4-connectivity). Fundamental to object counting in satellite imagery, cell counting in microscopy, and blob detection.",
-    "example": "[[1,1,0,0],[0,1,0,0],[0,0,1,1],[0,0,0,1]] -> 2 components",
-    "hint": "BFS/DFS from each unvisited 1. Increment a component counter. Mark all reachable pixels as visited before moving to the next unvisited 1.",
-    "fullSolution": "# Connected Components via BFS\nimport numpy as np, cv2, urllib.request\nimport matplotlib.pyplot as plt\nfrom collections import deque\n\ndef count_cc(grid):\n    m,n=len(grid),len(grid[0])\n    visited=[[False]*n for _ in range(m)]\n    labels=[[0]*n for _ in range(m)]\n    count=0\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j]==1 and not visited[i][j]:\n                count+=1; q=deque([(i,j)]); visited[i][j]=True; labels[i][j]=count\n                while q:\n                    r,c=q.popleft()\n                    for dr,dc in [(-1,0),(1,0),(0,-1),(0,1)]:\n                        nr,nc=r+dr,c+dc\n                        if 0<=nr<m and 0<=nc<n and grid[nr][nc]==1 and not visited[nr][nc]:\n                            visited[nr][nc]=True; labels[nr][nc]=count; q.append((nr,nc))\n    return count, labels\n\ngrid=[[1,1,0,0],[0,1,0,0],[0,0,1,1],[0,0,0,1]]\ncount,labels=count_cc(grid)\nassert count==2, f'Expected 2, got {count}'\nprint('Components:', count)\nprint('Labels:', labels)",
-    "complexity": "Time O(m*n)  Space O(m*n)",
-    "followup": "How would you adapt this to 8-connectivity? What changes in the neighbour iteration?"
-  },
-  {
-    "id": "C06",
-    "difficulty": "Easy",
-    "tag": "Histogram",
-    "points": 10,
-    "title": "Histogram Equalisation from Scratch",
-    "company": "Adobe, Qualcomm",
-    "desc": "Implement global histogram equalisation on a grayscale image without using cv2.equalizeHist(). This enhances contrast by spreading intensity values uniformly across [0,255].",
-    "example": "Dark image concentrated around low intensities -> equalised image with uniform histogram.",
-    "hint": "Compute histogram, compute CDF, normalise CDF to [0,255], use as lookup table.",
-    "fullSolution": "# Histogram Equalisation\nimport numpy as np, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\ndef hist_eq(img):\n    hist=np.zeros(256,dtype=int)\n    for v in img.flatten(): hist[v]+=1\n    cdf=np.cumsum(hist)\n    cdf_min=cdf[cdf>0].min()\n    lut=np.round((cdf-cdf_min)/(img.size-cdf_min)*255).astype(np.uint8)\n    return lut[img]\n\nurl='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Camponotus_flavomarginatus_ant.jpg/320px-Camponotus_flavomarginatus_ant.jpg'\nraw=urllib.request.urlopen(url).read()\nimg=cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_GRAYSCALE)\ndark=np.clip(img//4,0,255).astype(np.uint8)\nour_eq=hist_eq(dark); cv2_eq=cv2.equalizeHist(dark)\nprint('Max diff from cv2:', np.abs(our_eq.astype(int)-cv2_eq.astype(int)).max())\nfig,axes=plt.subplots(1,3,figsize=(12,4))\nfor ax,im,t in zip(axes,[dark,our_eq,cv2_eq],['Dark','Our HE','cv2 HE']):\n    ax.imshow(im,cmap='gray'); ax.set_title(t); ax.axis('off')\nplt.tight_layout(); plt.show()",
-    "complexity": "Time O(m*n + 256)  Space O(256) for LUT",
-    "followup": "What is CLAHE (Contrast Limited Adaptive Histogram Equalisation) and why is it preferred for medical images?"
-  },
-  {
-    "id": "C07",
-    "difficulty": "Easy",
-    "tag": "Morphology",
-    "points": 10,
-    "title": "Erosion and Dilation from Scratch",
-    "company": "Qualcomm, Texas Instruments",
-    "desc": "Implement binary erosion and dilation from scratch. Erosion shrinks bright regions; dilation expands them. These are the building blocks of all morphological operations.",
-    "example": "Erosion removes pixels where the 3x3 structuring element extends outside the object boundary.",
-    "hint": "Erosion: output=1 only if ALL kernel-covered pixels in input are 1. Dilation: output=1 if ANY kernel-covered pixel is 1.",
-    "fullSolution": "# Erosion and Dilation from scratch\nimport numpy as np, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\ndef erode(img,k):\n    kh,kw=k.shape; ph,pw=kh//2,kw//2; m,n=img.shape\n    out=np.zeros_like(img)\n    for i in range(m):\n        for j in range(n):\n            ok=True\n            for di in range(kh):\n                for dj in range(kw):\n                    if k[di,dj]==0: continue\n                    ni,nj=i+di-ph,j+dj-pw\n                    if not(0<=ni<m and 0<=nj<n) or img[ni,nj]==0: ok=False; break\n                if not ok: break\n            out[i,j]=1 if ok else 0\n    return out\n\ndef dilate(img,k):\n    kh,kw=k.shape; ph,pw=kh//2,kw//2; m,n=img.shape\n    out=np.zeros_like(img)\n    for i in range(m):\n        for j in range(n):\n            for di in range(kh):\n                for dj in range(kw):\n                    if k[di,dj]==0: continue\n                    ni,nj=i+di-ph,j+dj-pw\n                    if 0<=ni<m and 0<=nj<n and img[ni,nj]==1: out[i,j]=1; break\n                if out[i,j]: break\n    return out\n\nurl='https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw=urllib.request.urlopen(url).read()\nimg=cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_GRAYSCALE)\nimg=cv2.resize(img,(80,60))\n_,bw=cv2.threshold(img,127,1,cv2.THRESH_BINARY)\nk3=np.ones((3,3),np.uint8)\ner=erode(bw,k3); di=dilate(bw,k3)\nprint('Erosion matches cv2:', np.array_equal(er,cv2.erode(bw.astype(np.uint8),k3)))\nprint('Dilation matches cv2:', np.array_equal(di,cv2.dilate(bw.astype(np.uint8),k3)))",
-    "complexity": "Time O(m*n*k^2)  Space O(m*n)",
-    "followup": "What is Opening (erosion then dilation) and Closing? What artifacts does each remove?"
-  },
-  {
-    "id": "C08",
-    "difficulty": "Easy",
-    "tag": "Interpolation",
-    "points": 10,
-    "title": "Image Rotation via Bilinear Interpolation",
-    "company": "Adobe, Pixar",
-    "desc": "Rotate an image by an arbitrary angle (degrees) using inverse mapping and bilinear interpolation. Implement from scratch without cv2.warpAffine(). Fundamental to understanding affine transformations.",
-    "example": "Rotate a 100x100 image by 45 degrees around its centre.",
-    "hint": "For each output pixel (x,y), apply the inverse rotation matrix to find the source pixel. Blend the 4 surrounding source pixels bilinearly.",
-    "fullSolution": "# Rotation with bilinear interpolation\nimport numpy as np, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\ndef rotate_bilinear(img,angle_deg):\n    h,w=img.shape[:2]; cx,cy=w/2,h/2\n    a=np.radians(angle_deg); ca,sa=np.cos(a),np.sin(a)\n    out=np.zeros_like(img)\n    for yo in range(h):\n        for xo in range(w):\n            dx,dy=xo-cx,yo-cy\n            xs=ca*dx+sa*dy+cx; ys=-sa*dx+ca*dy+cy\n            x0,y0=int(xs),int(ys); x1,y1=x0+1,y0+1\n            if 0<=x0<w-1 and 0<=y0<h-1:\n                tx,ty=xs-x0,ys-y0\n                if img.ndim==3:\n                    out[yo,xo]=((1-tx)*(1-ty)*img[y0,x0]+tx*(1-ty)*img[y0,x1]+(1-tx)*ty*img[y1,x0]+tx*ty*img[y1,x1]).astype(np.uint8)\n                else:\n                    out[yo,xo]=int((1-tx)*(1-ty)*img[y0,x0]+tx*(1-ty)*img[y0,x1]+(1-tx)*ty*img[y1,x0]+tx*ty*img[y1,x1])\n    return out\n\nurl='https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg'\nraw=urllib.request.urlopen(url).read()\nimg=cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_COLOR)\nsmall=cv2.resize(cv2.cvtColor(img,cv2.COLOR_BGR2RGB),(80,80))\nrot=rotate_bilinear(small,45)\nM=cv2.getRotationMatrix2D((40,40),45,1.0)\ncv_rot=cv2.warpAffine(small,M,(80,80))\nfig,(a,b,c)=plt.subplots(1,3,figsize=(12,4))\nfor ax,im,t in zip([a,b,c],[small,rot,cv_rot],['Original','Our Rotation','cv2 Rotation']):\n    ax.imshow(im); ax.set_title(t); ax.axis('off')\nplt.tight_layout(); plt.show()",
-    "complexity": "Time O(m*n)  Space O(m*n)",
-    "followup": "Why do we use inverse mapping rather than forward mapping? What artifacts does forward mapping produce?"
-  },
-  {
-    "id": "C09",
-    "difficulty": "Easy",
-    "tag": "Metrics",
-    "points": 10,
-    "title": "PSNR and SSIM from Scratch",
-    "company": "Netflix, YouTube",
-    "desc": "Implement PSNR (Peak Signal-to-Noise Ratio) and SSIM (Structural Similarity Index) from scratch. These are the two most widely used metrics for evaluating image restoration, compression, and generation quality.",
-    "example": "PSNR = 10*log10(255^2 / MSE). SSIM measures luminance, contrast, and structural similarity jointly.",
-    "hint": "PSNR: compute MSE then apply the log formula. SSIM: compute local means and variances with Gaussian filtering, then apply the SSIM formula per window and average.",
-    "fullSolution": "# PSNR and SSIM from scratch\nimport numpy as np, cv2, urllib.request\nimport matplotlib.pyplot as plt\nfrom skimage.metrics import peak_signal_noise_ratio as sk_psnr, structural_similarity as sk_ssim\n\ndef my_psnr(a,b,max_val=255.0):\n    mse=np.mean((a.astype(float)-b.astype(float))**2)\n    return float('inf') if mse==0 else 10*np.log10(max_val**2/mse)\n\ndef my_ssim(a,b,max_val=255.0,k1=0.01,k2=0.03):\n    af,bf=a.astype(float),b.astype(float)\n    C1,C2=(k1*max_val)**2,(k2*max_val)**2\n    mu1,mu2=af.mean(),bf.mean()\n    s1,s2=af.std(),bf.std()\n    s12=np.mean((af-mu1)*(bf-mu2))\n    return ((2*mu1*mu2+C1)*(2*s12+C2))/((mu1**2+mu2**2+C1)*(s1**2+s2**2+C2))\n\nurl='https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw=urllib.request.urlopen(url).read()\nclean=cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_GRAYSCALE)\nclean=cv2.resize(clean,(256,256))\nrng=np.random.default_rng(0)\nfor sigma in [5,15,30,50]:\n    noisy=np.clip(clean.astype(int)+rng.normal(0,sigma,clean.shape).astype(int),0,255).astype(np.uint8)\n    print(f'sigma={sigma:2d}: PSNR={my_psnr(clean,noisy):.2f}dB (sk={sk_psnr(clean,noisy,data_range=255):.2f}) SSIM={my_ssim(clean,noisy):.4f}')",
-    "complexity": "PSNR: O(m*n)  SSIM windowed: O(m*n*win^2)",
-    "followup": "Why does SSIM correlate better with human perception than PSNR? What does each component (luminance, contrast, structure) measure?"
-  },
-  {
-    "id": "C10",
-    "difficulty": "Easy",
-    "tag": "Template Matching",
-    "points": 10,
-    "title": "Template Matching (Normalised Cross-Correlation)",
-    "company": "OpenCV, Robotics",
-    "desc": "Given a source image and a template patch, find the best-match location using Normalised Cross-Correlation (NCC). NCC is invariant to additive brightness changes and used in optical flow, stereo matching, and feature tracking.",
-    "example": "Find a small eye-patch template in a portrait image using NCC sliding window.",
-    "hint": "For each window position, compute NCC = dot(norm(patch), norm(T)) / (th*tw) where norm means subtract mean and divide by std. Maximum = best match.",
-    "fullSolution": "# Template Matching with NCC\nimport numpy as np, cv2, urllib.request\nimport matplotlib.pyplot as plt, matplotlib.patches as patches\n\ndef ncc_match(img,tmpl):\n    ih,iw=img.shape; th,tw=tmpl.shape\n    oh,ow=ih-th+1,iw-tw+1; score=np.zeros((oh,ow))\n    tn=tmpl.astype(float)-tmpl.mean(); ts=tn.std()\n    if ts<1e-8: return score,(0,0)\n    tn/=ts\n    for i in range(oh):\n        for j in range(ow):\n            p=img[i:i+th,j:j+tw].astype(float); p-=p.mean(); ps=p.std()\n            if ps>1e-8: score[i,j]=np.sum(p/ps*tn)/(th*tw)\n    best=np.unravel_index(score.argmax(),score.shape)\n    return score,best\n\nurl='https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Bill_Nye_2017.jpg/240px-Bill_Nye_2017.jpg'\nraw=urllib.request.urlopen(url).read()\nimg=cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_GRAYSCALE)\nimg=cv2.resize(img,(200,240))\ntemplate=img[70:110,60:110]\nprint('Running NCC...')\nscore,(br,bc)=ncc_match(img,template)\nprint(f'Best match at ({br},{bc}) score={score.max():.4f}')\nres_cv=cv2.matchTemplate(img,template,cv2.TM_CCOEFF_NORMED)\n_,_,_,(bc2,br2)=cv2.minMaxLoc(res_cv)\nprint(f'cv2 match at ({br2},{bc2})')",
-    "complexity": "Time O((m-th)*(n-tw)*th*tw). Use FFT for O(m*n*log(m*n)).",
-    "followup": "How can FFT cross-correlation speed this up from O(m*n*k^2) to O(m*n*log(m*n))?"
-  },
-  {
-    "id": "C11",
-    "difficulty": "Medium",
-    "tag": "NMS",
-    "points": 20,
-    "title": "Implement Soft-NMS",
-    "company": "Google, Waymo",
-    "desc": "Standard NMS removes overlapping detections with IoU > threshold, causing recall drops in crowded scenes. Soft-NMS decays confidence scores of overlapping boxes using a Gaussian penalty rather than hard removal. Implement both variants and compare.",
-    "example": "Soft-NMS: score_j = score_j * exp(-IoU(i,j)^2 / sigma) for each remaining box j.",
-    "hint": "Sort by score, pick the top box, apply Gaussian decay to all remaining boxes based on their IoU with the top box, re-sort. Repeat until score threshold is breached.",
-    "fullSolution": "# Hard NMS vs Soft-NMS comparison\nimport numpy as np, matplotlib.pyplot as plt, matplotlib.patches as patches\n\ndef box_iou(a,b):\n    ix1,iy1=max(a[0],b[0]),max(a[1],b[1])\n    ix2,iy2=min(a[2],b[2]),min(a[3],b[3])\n    inter=max(0,ix2-ix1)*max(0,iy2-iy1)\n    return inter/((a[2]-a[0])*(a[3]-a[1])+(b[2]-b[0])*(b[3]-b[1])-inter+1e-7)\n\ndef hard_nms(boxes,scores,iou_thresh=0.5,score_thresh=0.05):\n    order=np.argsort(scores)[::-1].tolist(); keep=[]\n    while order:\n        i=order.pop(0); keep.append(i)\n        order=[j for j in order if box_iou(boxes[i],boxes[j])<=iou_thresh]\n    return [k for k in keep if scores[k]>=score_thresh]\n\ndef soft_nms(boxes,scores,sigma=0.5,score_thresh=0.05):\n    scores=scores.copy(); n=len(scores); keep=[]\n    for _ in range(n):\n        i=np.argmax(scores)\n        if scores[i]<score_thresh: break\n        keep.append(i); scores[i]=-1\n        for j in range(n):\n            if scores[j]<0: continue\n            scores[j]*=np.exp(-box_iou(boxes[i],boxes[j])**2/sigma)\n    return keep\n\nnp.random.seed(42); n=20\nboxes=[]; \nfor _ in range(n):\n    cx,cy=np.random.uniform(50,200,2); w,h=np.random.uniform(20,60,2)\n    boxes.append([cx-w/2,cy-h/2,cx+w/2,cy+h/2])\nboxes=np.array(boxes); scores=np.random.uniform(0.3,0.95,n)\nprint(f'Before NMS: {n} boxes')\nprint(f'Hard NMS:   {len(hard_nms(boxes,scores.copy()))} kept')\nprint(f'Soft-NMS:   {len(soft_nms(boxes,scores.copy()))} kept')",
-    "complexity": "Both O(n^2) naive, O(n log n) with priority queue",
-    "followup": "What is DIoU-NMS? How does incorporating center-point distance improve crowded pedestrian detection?"
-  },
-  {
-    "id": "C12",
-    "difficulty": "Medium",
-    "tag": "Thresholding",
-    "points": 20,
-    "title": "Otsu's Global Threshold from Scratch",
-    "company": "Medical Imaging, Document AI",
-    "desc": "Implement Otsu's method to automatically find the optimal global threshold T that maximises inter-class variance between foreground and background pixels. Used in document binarisation and medical image preprocessing.",
-    "example": "Input: grayscale image with bimodal histogram. Output: optimal threshold T cleanly separating the two modes.",
-    "hint": "For each candidate threshold t in [0,255], compute w0*w1*(mu0-mu1)^2 using cumulative sums. Return the t that maximises this inter-class variance.",
-    "fullSolution": "# Otsu's thresholding from scratch\nimport numpy as np, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\ndef otsu_fast(img):\n    hist,_=np.histogram(img.flatten(),256,[0,256])\n    total=img.size\n    w=np.cumsum(hist)/total\n    mu=np.cumsum(np.arange(256)*hist)/total\n    mu_total=mu[-1]\n    var_b=np.where(w*(1-w)>0,(mu_total*w-mu)**2/(w*(1-w)),0)\n    return int(np.argmax(var_b))\n\nurl='https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/License_plate_2.jpg/320px-License_plate_2.jpg'\nraw=urllib.request.urlopen(url).read()\nimg=cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_GRAYSCALE)\nimg=cv2.resize(img,(256,128))\nt_ours=otsu_fast(img)\n_,bw_ours=cv2.threshold(img,t_ours,255,cv2.THRESH_BINARY)\nret,bw_cv2=cv2.threshold(img,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)\nprint(f'Our T={t_ours}, cv2 T={int(ret)}')\nassert abs(t_ours-int(ret))<=1, 'Threshold mismatch!'\nprint('Match!')",
-    "complexity": "Time O(m*n + 256)  Space O(256)",
-    "followup": "When does Otsu's method fail? What is multi-level Otsu and when is it needed?"
-  },
-  {
-    "id": "C13",
-    "difficulty": "Medium",
-    "tag": "Dynamic Programming",
-    "points": 20,
-    "title": "Seam Carving for Content-Aware Image Resizing",
-    "company": "Adobe, Figma",
-    "desc": "Find and remove vertical seams of minimum energy to shrink an image while preserving important content. The energy is the gradient magnitude; a seam is a connected top-to-bottom path through the image.",
-    "example": "Remove 20 vertical seams from a landscape photo narrowing it without distorting faces or objects.",
-    "hint": "Step 1: compute energy (gradient magnitude). Step 2: DP table filling top-down. Step 3: backtrack to find seam. Step 4: remove seam pixels. Repeat.",
-    "fullSolution": "# Seam Carving\nimport numpy as np, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\ndef energy(img):\n    g=cv2.cvtColor(img,cv2.COLOR_RGB2GRAY).astype(float)\n    return np.abs(np.gradient(g,axis=1))+np.abs(np.gradient(g,axis=0))\n\ndef find_seam(e):\n    h,w=e.shape; dp=e.copy()\n    for i in range(1,h):\n        for j in range(w):\n            dp[i,j]+=min(dp[i-1,j-1] if j>0 else 1e9, dp[i-1,j], dp[i-1,j+1] if j<w-1 else 1e9)\n    seam=np.zeros(h,dtype=int); seam[-1]=dp[-1].argmin()\n    for i in range(h-2,-1,-1):\n        j=seam[i+1]; opts={}\n        if j>0: opts[j-1]=dp[i,j-1]\n        opts[j]=dp[i,j]\n        if j<w-1: opts[j+1]=dp[i,j+1]\n        seam[i]=min(opts,key=opts.get)\n    return seam\n\ndef remove_seam(img,seam):\n    h,w=img.shape[:2]; out=np.zeros((h,w-1,3),dtype=img.dtype)\n    for i in range(h): out[i,:seam[i]]=img[i,:seam[i]]; out[i,seam[i]:]=img[i,seam[i]+1:]\n    return out\n\nurl='https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw=urllib.request.urlopen(url).read()\nimg=cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_COLOR)\nimg_rgb=cv2.cvtColor(cv2.resize(img,(160,120)),cv2.COLOR_BGR2RGB)\ncarved=img_rgb.copy()\nfor _ in range(20): carved=remove_seam(carved,find_seam(energy(carved)))\nprint(f'{img_rgb.shape[1]}px -> {carved.shape[1]}px')\nfig,(a,b)=plt.subplots(1,2,figsize=(12,5))\na.imshow(img_rgb); a.set_title('Original'); a.axis('off')\nb.imshow(carved); b.set_title('Seam Carved (-20 cols)'); b.axis('off')\nplt.tight_layout(); plt.show()",
-    "complexity": "Per seam: O(m*n). Total for k seams: O(k*m*n).",
-    "followup": "How would you protect specific regions (faces) from being carved using a protection mask?"
-  },
-  {
-    "id": "C14",
-    "difficulty": "Medium",
-    "tag": "Hashing",
-    "points": 20,
-    "title": "Perceptual Hash (pHash) for Near-Duplicate Detection",
-    "company": "Google Photos, Pinterest",
-    "desc": "Implement perceptual hash (pHash) using DCT for near-duplicate image detection. pHash produces similar binary hashes for visually similar images and distant hashes for different images, enabling efficient image deduplication at scale.",
-    "example": "Two slightly different versions of the same photo: Hamming distance < 10. Completely different images: Hamming distance > 40.",
-    "hint": "Resize to 32x32, convert to grayscale, compute 2D DCT, take the top-left 8x8 low-frequency block, binarise values above the block mean.",
-    "fullSolution": "# Perceptual Hash (pHash)\nimport numpy as np, cv2, urllib.request\nfrom scipy.fft import dct\n\ndef phash(img,hash_size=8,hf=32):\n    gray=cv2.cvtColor(cv2.resize(img,(hf,hf)),cv2.COLOR_BGR2GRAY).astype(float)\n    d=dct(dct(gray,axis=0,norm='ortho'),axis=1,norm='ortho')\n    low=d[:hash_size,:hash_size]\n    return (low>low.mean()).flatten()\n\ndef hamming(h1,h2): return int((h1!=h2).sum())\n\nurl='https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/320px-Cute_dog.jpg'\nraw=urllib.request.urlopen(url).read()\nimg=cv2.imdecode(np.frombuffer(raw,np.uint8),cv2.IMREAD_COLOR)\nbright=np.clip(img.astype(int)+40,0,255).astype(np.uint8)\nnoisy=np.clip(img.astype(int)+np.random.normal(0,20,img.shape).astype(int),0,255).astype(np.uint8)\nurl2='https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\ndiff=cv2.imdecode(np.frombuffer(urllib.request.urlopen(url2).read(),np.uint8),cv2.IMREAD_COLOR)\ndiff=cv2.resize(diff,img.shape[:2][::-1])\nh0=phash(img)\nfor name,other in [('Brightened',bright),('Noisy',noisy),('Different',diff)]:\n    d=hamming(h0,phash(other))\n    print(f'{name:15s}: Hamming={d:2d} [{\"SIMILAR\" if d<15 else \"DIFFERENT\"}]')",
-    "complexity": "O(N^2 log N) for 2D DCT where N=high_freq. Space O(N^2).",
-    "followup": "What is the difference between aHash (average hash), dHash (difference hash), and pHash? When would you choose each?"
-  },
-  {
-    "id": "C15",
-    "difficulty": "Medium",
-    "tag": "Deep Learning Math",
-    "points": 20,
-    "title": "Conv2D Forward Pass + im2col from Scratch",
-    "company": "NVIDIA, Meta AI",
-    "desc": "Implement a 2D convolution forward pass using only NumPy: first as naive nested loops, then as an efficient im2col (image-to-column) vectorised version. Verify both match PyTorch to within floating-point tolerance.",
-    "example": "Input (2,3,8,8), Kernel (4,3,3,3), Stride=1, Padding=1 -> Output (2,4,8,8)",
-    "hint": "im2col flattens each receptive field into a column, stacks all columns into a matrix, then performs a single matrix multiplication with the reshaped weight matrix.",
-    "fullSolution": "# Conv2D forward: naive + im2col\nimport numpy as np, torch, torch.nn as nn\n\ndef conv2d_naive(x,W,b,s=1,p=0):\n    N,C,H,Wi=x.shape; F,_,kH,kW=W.shape\n    Hp=(H+2*p-kH)//s+1; Wp=(Wi+2*p-kW)//s+1\n    if p: x=np.pad(x,((0,0),(0,0),(p,p),(p,p)))\n    out=np.zeros((N,F,Hp,Wp))\n    for n in range(N):\n        for f in range(F):\n            for i in range(Hp):\n                for j in range(Wp):\n                    out[n,f,i,j]=np.sum(x[n,:,i*s:i*s+kH,j*s:j*s+kW]*W[f])+b[f]\n    return out\n\ndef conv2d_im2col(x,W,b,s=1,p=0):\n    N,C,H,Wi=x.shape; F,_,kH,kW=W.shape\n    Hp=(H+2*p-kH)//s+1; Wp=(Wi+2*p-kW)//s+1\n    if p: x=np.pad(x,((0,0),(0,0),(p,p),(p,p)))\n    cols=np.zeros((N,C,kH,kW,Hp,Wp))\n    for i in range(kH):\n        for j in range(kW):\n            cols[:,:,i,j,:,:]=x[:,:,i:i+s*Hp:s,j:j+s*Wp:s]\n    cols=cols.reshape(N,C*kH*kW,Hp*Wp)\n    return (W.reshape(F,C*kH*kW)@cols+b[:,None]).reshape(N,F,Hp,Wp)\n\nnp.random.seed(0)\nx=np.random.randn(2,3,8,8).astype(np.float32)\nW=np.random.randn(4,3,3,3).astype(np.float32)\nb=np.random.randn(4).astype(np.float32)\nout_n=conv2d_naive(x.copy(),W,b,s=1,p=1)\nout_i=conv2d_im2col(x.copy(),W,b,s=1,p=1)\nconv=nn.Conv2d(3,4,3,padding=1,bias=True)\nconv.weight.data=torch.from_numpy(W); conv.bias.data=torch.from_numpy(b)\nwith torch.no_grad(): out_pt=conv(torch.from_numpy(x)).numpy()\nprint('Naive  vs PyTorch max diff:', np.abs(out_n-out_pt).max())\nprint('im2col vs PyTorch max diff:', np.abs(out_i-out_pt).max())",
-    "complexity": "Naive: O(N*F*C*kH*kW*Hp*Wp). im2col: same ops but cache-friendly matrix multiply.",
-    "followup": "What is depthwise separable convolution and why does it reduce parameters by a factor of k^2 / (1 + k^2/C_out)?"
-  },
-  {
-    "id": "C16",
-    "difficulty": "Medium",
-    "tag": "Optimisation",
-    "points": 20,
-    "title": "Total Variation Denoising",
-    "company": "Research / Industry",
-    "desc": "Implement Total Variation Denoising from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C16: Total Variation Denoising\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Total Variation Denoising\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C16: Total Variation Denoising'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Total Variation Denoising to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C17",
-    "difficulty": "Hard",
-    "tag": "Backprop",
-    "points": 30,
-    "title": "Conv2D Backward Pass",
-    "company": "Research / Industry",
-    "desc": "Implement Conv2D Backward Pass from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C17: Conv2D Backward Pass\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Conv2D Backward Pass\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C17: Conv2D Backward Pass'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Conv2D Backward Pass to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C18",
-    "difficulty": "Medium",
-    "tag": "Graph Search",
-    "points": 20,
-    "title": "Dijkstra Shortest Path on Grid",
-    "company": "Research / Industry",
-    "desc": "Implement Dijkstra Shortest Path on Grid from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C18: Dijkstra Shortest Path on Grid\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Dijkstra Shortest Path on Grid\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C18: Dijkstra Shortest Path on Grid'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Dijkstra Shortest Path on Grid to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C19",
-    "difficulty": "Hard",
-    "tag": "Transformers",
-    "points": 30,
-    "title": "Scaled Dot-Product Attention",
-    "company": "Research / Industry",
-    "desc": "Implement Scaled Dot-Product Attention from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C19: Scaled Dot-Product Attention\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Scaled Dot-Product Attention\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C19: Scaled Dot-Product Attention'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Scaled Dot-Product Attention to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C20",
-    "difficulty": "Medium",
-    "tag": "Feature Detection",
-    "points": 20,
-    "title": "Harris Corner Detector",
-    "company": "Research / Industry",
-    "desc": "Implement Harris Corner Detector from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C20: Harris Corner Detector\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Harris Corner Detector\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C20: Harris Corner Detector'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Harris Corner Detector to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C21",
-    "difficulty": "Medium",
-    "tag": "Clustering",
-    "points": 20,
-    "title": "K-Means Image Segmentation",
-    "company": "Research / Industry",
-    "desc": "Implement K-Means Image Segmentation from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C21: K-Means Image Segmentation\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement K-Means Image Segmentation\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C21: K-Means Image Segmentation'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend K-Means Image Segmentation to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C22",
-    "difficulty": "Hard",
-    "tag": "Conv Math",
-    "points": 30,
-    "title": "Depthwise Separable Conv Forward",
-    "company": "Research / Industry",
-    "desc": "Implement Depthwise Separable Conv Forward from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C22: Depthwise Separable Conv Forward\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Depthwise Separable Conv Forward\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C22: Depthwise Separable Conv Forward'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Depthwise Separable Conv Forward to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C23",
-    "difficulty": "Medium",
-    "tag": "Loss Functions",
-    "points": 20,
-    "title": "Focal Loss Implementation",
-    "company": "Research / Industry",
-    "desc": "Implement Focal Loss Implementation from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C23: Focal Loss Implementation\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Focal Loss Implementation\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C23: Focal Loss Implementation'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Focal Loss Implementation to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C24",
-    "difficulty": "Hard",
-    "tag": "Geometry",
-    "points": 30,
-    "title": "Homography DLT Algorithm",
-    "company": "Research / Industry",
-    "desc": "Implement Homography DLT Algorithm from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C24: Homography DLT Algorithm\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Homography DLT Algorithm\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C24: Homography DLT Algorithm'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Homography DLT Algorithm to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C25",
-    "difficulty": "Medium",
-    "tag": "Feature Matching",
-    "points": 20,
-    "title": "SIFT Feature Matching",
-    "company": "Research / Industry",
-    "desc": "Implement SIFT Feature Matching from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C25: SIFT Feature Matching\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement SIFT Feature Matching\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C25: SIFT Feature Matching'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend SIFT Feature Matching to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C26",
-    "difficulty": "Medium",
-    "tag": "Generative",
-    "points": 20,
-    "title": "DCGAN on MNIST",
-    "company": "Research / Industry",
-    "desc": "Implement DCGAN on MNIST from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C26: DCGAN on MNIST\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement DCGAN on MNIST\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C26: DCGAN on MNIST'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend DCGAN on MNIST to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C27",
-    "difficulty": "Hard",
-    "tag": "Segmentation",
-    "points": 30,
-    "title": "U-Net with Dice Loss",
-    "company": "Research / Industry",
-    "desc": "Implement U-Net with Dice Loss from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C27: U-Net with Dice Loss\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement U-Net with Dice Loss\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C27: U-Net with Dice Loss'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend U-Net with Dice Loss to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C28",
-    "difficulty": "Medium",
-    "tag": "Attention",
-    "points": 20,
-    "title": "Multi-Head Attention Full",
-    "company": "Research / Industry",
-    "desc": "Implement Multi-Head Attention Full from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C28: Multi-Head Attention Full\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Multi-Head Attention Full\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C28: Multi-Head Attention Full'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Multi-Head Attention Full to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C29",
-    "difficulty": "Hard",
-    "tag": "3D Rendering",
-    "points": 30,
-    "title": "NeRF Volume Rendering",
-    "company": "Research / Industry",
-    "desc": "Implement NeRF Volume Rendering from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C29: NeRF Volume Rendering\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement NeRF Volume Rendering\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C29: NeRF Volume Rendering'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend NeRF Volume Rendering to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C30",
-    "difficulty": "Medium",
-    "tag": "Diffusion",
-    "points": 20,
-    "title": "DDPM Noise Schedule",
-    "company": "Research / Industry",
-    "desc": "Implement DDPM Noise Schedule from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C30: DDPM Noise Schedule\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement DDPM Noise Schedule\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C30: DDPM Noise Schedule'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend DDPM Noise Schedule to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C31",
-    "difficulty": "Medium",
-    "tag": "Flow",
-    "points": 20,
-    "title": "Dense Optical Flow (Lucas-Kanade)",
-    "company": "Research / Industry",
-    "desc": "Implement Dense Optical Flow (Lucas-Kanade) from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C31: Dense Optical Flow (Lucas-Kanade)\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Dense Optical Flow (Lucas-Kanade)\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C31: Dense Optical Flow (Lucas-Kanade)'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Dense Optical Flow (Lucas-Kanade) to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C32",
-    "difficulty": "Hard",
-    "tag": "Tracking",
-    "points": 30,
-    "title": "ByteTrack Association",
-    "company": "Research / Industry",
-    "desc": "Implement ByteTrack Association from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C32: ByteTrack Association\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement ByteTrack Association\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C32: ByteTrack Association'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend ByteTrack Association to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C33",
-    "difficulty": "Medium",
-    "tag": "Calibration",
-    "points": 20,
-    "title": "Camera Calibration (DLT)",
-    "company": "Research / Industry",
-    "desc": "Implement Camera Calibration (DLT) from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C33: Camera Calibration (DLT)\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Camera Calibration (DLT)\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C33: Camera Calibration (DLT)'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Camera Calibration (DLT) to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C34",
-    "difficulty": "Hard",
-    "tag": "SSL",
-    "points": 30,
-    "title": "SimCLR Contrastive Loss",
-    "company": "Research / Industry",
-    "desc": "Implement SimCLR Contrastive Loss from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C34: SimCLR Contrastive Loss\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement SimCLR Contrastive Loss\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C34: SimCLR Contrastive Loss'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend SimCLR Contrastive Loss to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C35",
-    "difficulty": "Medium",
-    "tag": "Quantisation",
-    "points": 20,
-    "title": "INT8 Quantisation from Scratch",
-    "company": "Research / Industry",
-    "desc": "Implement INT8 Quantisation from Scratch from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C35: INT8 Quantisation from Scratch\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement INT8 Quantisation from Scratch\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C35: INT8 Quantisation from Scratch'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend INT8 Quantisation from Scratch to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C36",
-    "difficulty": "Medium",
-    "tag": "Optimisation",
-    "points": 20,
-    "title": "Magnitude Pruning",
-    "company": "Research / Industry",
-    "desc": "Implement Magnitude Pruning from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C36: Magnitude Pruning\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Magnitude Pruning\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C36: Magnitude Pruning'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Magnitude Pruning to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C37",
-    "difficulty": "Hard",
-    "tag": "Backprop",
-    "points": 30,
-    "title": "Response-Based Distillation",
-    "company": "Research / Industry",
-    "desc": "Implement Response-Based Distillation from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C37: Response-Based Distillation\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Response-Based Distillation\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C37: Response-Based Distillation'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Response-Based Distillation to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C38",
-    "difficulty": "Medium",
-    "tag": "Graph Search",
-    "points": 20,
-    "title": "GCN Node Classification",
-    "company": "Research / Industry",
-    "desc": "Implement GCN Node Classification from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C38: GCN Node Classification\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement GCN Node Classification\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C38: GCN Node Classification'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend GCN Node Classification to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C39",
-    "difficulty": "Hard",
-    "tag": "Transformers",
-    "points": 30,
-    "title": "RealNVP Normalising Flow",
-    "company": "Research / Industry",
-    "desc": "Implement RealNVP Normalising Flow from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C39: RealNVP Normalising Flow\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement RealNVP Normalising Flow\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C39: RealNVP Normalising Flow'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend RealNVP Normalising Flow to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C40",
-    "difficulty": "Medium",
-    "tag": "Feature Detection",
-    "points": 20,
-    "title": "Score Matching Loss",
-    "company": "Research / Industry",
-    "desc": "Implement Score Matching Loss from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C40: Score Matching Loss\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Score Matching Loss\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C40: Score Matching Loss'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Score Matching Loss to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C41",
-    "difficulty": "Medium",
-    "tag": "Clustering",
-    "points": 20,
-    "title": "CLIP Fine-tuning Loop",
-    "company": "Research / Industry",
-    "desc": "Implement CLIP Fine-tuning Loop from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C41: CLIP Fine-tuning Loop\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement CLIP Fine-tuning Loop\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C41: CLIP Fine-tuning Loop'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend CLIP Fine-tuning Loop to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C42",
-    "difficulty": "Hard",
-    "tag": "Conv Math",
-    "points": 30,
-    "title": "DeiT Distillation Token",
-    "company": "Research / Industry",
-    "desc": "Implement DeiT Distillation Token from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C42: DeiT Distillation Token\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement DeiT Distillation Token\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C42: DeiT Distillation Token'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend DeiT Distillation Token to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C43",
-    "difficulty": "Medium",
-    "tag": "Loss Functions",
-    "points": 20,
-    "title": "DINO Self-Distillation Loss",
-    "company": "Research / Industry",
-    "desc": "Implement DINO Self-Distillation Loss from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C43: DINO Self-Distillation Loss\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement DINO Self-Distillation Loss\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C43: DINO Self-Distillation Loss'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend DINO Self-Distillation Loss to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C44",
-    "difficulty": "Hard",
-    "tag": "Geometry",
-    "points": 30,
-    "title": "Laplacian Pyramid Blending",
-    "company": "Research / Industry",
-    "desc": "Implement Laplacian Pyramid Blending from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C44: Laplacian Pyramid Blending\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Laplacian Pyramid Blending\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C44: Laplacian Pyramid Blending'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Laplacian Pyramid Blending to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C45",
-    "difficulty": "Medium",
-    "tag": "Feature Matching",
-    "points": 20,
-    "title": "SSIM Windowed Map",
-    "company": "Research / Industry",
-    "desc": "Implement SSIM Windowed Map from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C45: SSIM Windowed Map\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement SSIM Windowed Map\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C45: SSIM Windowed Map'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend SSIM Windowed Map to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C46",
-    "difficulty": "Medium",
-    "tag": "Generative",
-    "points": 20,
-    "title": "Perceptual Loss (VGG Features)",
-    "company": "Research / Industry",
-    "desc": "Implement Perceptual Loss (VGG Features) from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C46: Perceptual Loss (VGG Features)\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Perceptual Loss (VGG Features)\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C46: Perceptual Loss (VGG Features)'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Perceptual Loss (VGG Features) to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C47",
-    "difficulty": "Hard",
-    "tag": "Segmentation",
-    "points": 30,
-    "title": "CycleGAN Loss Functions",
-    "company": "Research / Industry",
-    "desc": "Implement CycleGAN Loss Functions from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C47: CycleGAN Loss Functions\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement CycleGAN Loss Functions\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C47: CycleGAN Loss Functions'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend CycleGAN Loss Functions to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C48",
-    "difficulty": "Medium",
-    "tag": "Attention",
-    "points": 20,
-    "title": "StyleGAN Truncation Trick",
-    "company": "Research / Industry",
-    "desc": "Implement StyleGAN Truncation Trick from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C48: StyleGAN Truncation Trick\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement StyleGAN Truncation Trick\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C48: StyleGAN Truncation Trick'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend StyleGAN Truncation Trick to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C49",
-    "difficulty": "Hard",
-    "tag": "3D Rendering",
-    "points": 30,
-    "title": "VQVAE Codebook Learning",
-    "company": "Research / Industry",
-    "desc": "Implement VQVAE Codebook Learning from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C49: VQVAE Codebook Learning\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement VQVAE Codebook Learning\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C49: VQVAE Codebook Learning'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend VQVAE Codebook Learning to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C50",
-    "difficulty": "Medium",
-    "tag": "Diffusion",
-    "points": 20,
-    "title": "Rectified Flow Sampling",
-    "company": "Research / Industry",
-    "desc": "Implement Rectified Flow Sampling from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C50: Rectified Flow Sampling\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Rectified Flow Sampling\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C50: Rectified Flow Sampling'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Rectified Flow Sampling to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C51",
-    "difficulty": "Medium",
-    "tag": "Flow",
-    "points": 20,
-    "title": "SDXL Text Conditioning",
-    "company": "Research / Industry",
-    "desc": "Implement SDXL Text Conditioning from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C51: SDXL Text Conditioning\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement SDXL Text Conditioning\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C51: SDXL Text Conditioning'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend SDXL Text Conditioning to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C52",
-    "difficulty": "Hard",
-    "tag": "Tracking",
-    "points": 30,
-    "title": "IP-Adapter Cross-Attention",
-    "company": "Research / Industry",
-    "desc": "Implement IP-Adapter Cross-Attention from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C52: IP-Adapter Cross-Attention\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement IP-Adapter Cross-Attention\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C52: IP-Adapter Cross-Attention'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend IP-Adapter Cross-Attention to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C53",
-    "difficulty": "Medium",
-    "tag": "Calibration",
-    "points": 20,
-    "title": "ControlNet Zero-Convolution",
-    "company": "Research / Industry",
-    "desc": "Implement ControlNet Zero-Convolution from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C53: ControlNet Zero-Convolution\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement ControlNet Zero-Convolution\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C53: ControlNet Zero-Convolution'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend ControlNet Zero-Convolution to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C54",
-    "difficulty": "Hard",
-    "tag": "SSL",
-    "points": 30,
-    "title": "Affine-Invariant Depth Loss",
-    "company": "Research / Industry",
-    "desc": "Implement Affine-Invariant Depth Loss from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C54: Affine-Invariant Depth Loss\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Affine-Invariant Depth Loss\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C54: Affine-Invariant Depth Loss'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Affine-Invariant Depth Loss to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C55",
-    "difficulty": "Medium",
-    "tag": "Quantisation",
-    "points": 20,
-    "title": "Multi-Dataset Depth Training",
-    "company": "Research / Industry",
-    "desc": "Implement Multi-Dataset Depth Training from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C55: Multi-Dataset Depth Training\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Multi-Dataset Depth Training\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C55: Multi-Dataset Depth Training'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Multi-Dataset Depth Training to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C56",
-    "difficulty": "Medium",
-    "tag": "Optimisation",
-    "points": 20,
-    "title": "Panoptic Quality Metric",
-    "company": "Research / Industry",
-    "desc": "Implement Panoptic Quality Metric from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C56: Panoptic Quality Metric\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Panoptic Quality Metric\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C56: Panoptic Quality Metric'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Panoptic Quality Metric to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C57",
-    "difficulty": "Hard",
-    "tag": "Backprop",
-    "points": 30,
-    "title": "Boundary F1 Score",
-    "company": "Research / Industry",
-    "desc": "Implement Boundary F1 Score from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C57: Boundary F1 Score\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Boundary F1 Score\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C57: Boundary F1 Score'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Boundary F1 Score to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C58",
-    "difficulty": "Medium",
-    "tag": "Graph Search",
-    "points": 20,
-    "title": "Video Instance Segmentation",
-    "company": "Research / Industry",
-    "desc": "Implement Video Instance Segmentation from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C58: Video Instance Segmentation\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Video Instance Segmentation\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C58: Video Instance Segmentation'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Video Instance Segmentation to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C59",
-    "difficulty": "Hard",
-    "tag": "Transformers",
-    "points": 30,
-    "title": "4D Gaussian Splatting Deformation",
-    "company": "Research / Industry",
-    "desc": "Implement 4D Gaussian Splatting Deformation from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C59: 4D Gaussian Splatting Deformation\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement 4D Gaussian Splatting Deformation\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C59: 4D Gaussian Splatting Deformation'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend 4D Gaussian Splatting Deformation to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C60",
-    "difficulty": "Medium",
-    "tag": "Feature Detection",
-    "points": 20,
-    "title": "Scene Text Cropper Pipeline",
-    "company": "Research / Industry",
-    "desc": "Implement Scene Text Cropper Pipeline from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C60: Scene Text Cropper Pipeline\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Scene Text Cropper Pipeline\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C60: Scene Text Cropper Pipeline'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Scene Text Cropper Pipeline to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C61",
-    "difficulty": "Medium",
-    "tag": "Clustering",
-    "points": 20,
-    "title": "Table Structure Recognition",
-    "company": "Research / Industry",
-    "desc": "Implement Table Structure Recognition from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C61: Table Structure Recognition\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Table Structure Recognition\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C61: Table Structure Recognition'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Table Structure Recognition to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C62",
-    "difficulty": "Hard",
-    "tag": "Conv Math",
-    "points": 30,
-    "title": "DocVQA ANLS Metric",
-    "company": "Research / Industry",
-    "desc": "Implement DocVQA ANLS Metric from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C62: DocVQA ANLS Metric\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement DocVQA ANLS Metric\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C62: DocVQA ANLS Metric'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend DocVQA ANLS Metric to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C63",
-    "difficulty": "Medium",
-    "tag": "Loss Functions",
-    "points": 20,
-    "title": "MedSAM Prompt Encoding",
-    "company": "Research / Industry",
-    "desc": "Implement MedSAM Prompt Encoding from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C63: MedSAM Prompt Encoding\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement MedSAM Prompt Encoding\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C63: MedSAM Prompt Encoding'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend MedSAM Prompt Encoding to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C64",
-    "difficulty": "Hard",
-    "tag": "Geometry",
-    "points": 30,
-    "title": "SAR Image Despeckling",
-    "company": "Research / Industry",
-    "desc": "Implement SAR Image Despeckling from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C64: SAR Image Despeckling\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement SAR Image Despeckling\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C64: SAR Image Despeckling'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend SAR Image Despeckling to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C65",
-    "difficulty": "Medium",
-    "tag": "Feature Matching",
-    "points": 20,
-    "title": "Siamese Change Detection",
-    "company": "Research / Industry",
-    "desc": "Implement Siamese Change Detection from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C65: Siamese Change Detection\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Siamese Change Detection\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C65: Siamese Change Detection'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Siamese Change Detection to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C66",
-    "difficulty": "Medium",
-    "tag": "Generative",
-    "points": 20,
-    "title": "CenterPoint 3D Heatmap Head",
-    "company": "Research / Industry",
-    "desc": "Implement CenterPoint 3D Heatmap Head from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C66: CenterPoint 3D Heatmap Head\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement CenterPoint 3D Heatmap Head\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C66: CenterPoint 3D Heatmap Head'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend CenterPoint 3D Heatmap Head to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C67",
-    "difficulty": "Hard",
-    "tag": "Segmentation",
-    "points": 30,
-    "title": "Lane Polynomial Fitting",
-    "company": "Research / Industry",
-    "desc": "Implement Lane Polynomial Fitting from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C67: Lane Polynomial Fitting\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Lane Polynomial Fitting\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C67: Lane Polynomial Fitting'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Lane Polynomial Fitting to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C68",
-    "difficulty": "Medium",
-    "tag": "Attention",
-    "points": 20,
-    "title": "Occupancy Voxel Grid BEV",
-    "company": "Research / Industry",
-    "desc": "Implement Occupancy Voxel Grid BEV from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C68: Occupancy Voxel Grid BEV\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Occupancy Voxel Grid BEV\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C68: Occupancy Voxel Grid BEV'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Occupancy Voxel Grid BEV to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C69",
-    "difficulty": "Hard",
-    "tag": "3D Rendering",
-    "points": 30,
-    "title": "BEV Feature Lifting (LSS)",
-    "company": "Research / Industry",
-    "desc": "Implement BEV Feature Lifting (LSS) from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C69: BEV Feature Lifting (LSS)\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement BEV Feature Lifting (LSS)\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C69: BEV Feature Lifting (LSS)'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend BEV Feature Lifting (LSS) to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C70",
-    "difficulty": "Medium",
-    "tag": "Diffusion",
-    "points": 20,
-    "title": "Kalman Filter MOT",
-    "company": "Research / Industry",
-    "desc": "Implement Kalman Filter MOT from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C70: Kalman Filter MOT\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Kalman Filter MOT\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C70: Kalman Filter MOT'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Kalman Filter MOT to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C71",
-    "difficulty": "Medium",
-    "tag": "Flow",
-    "points": 20,
-    "title": "ReID Feature Bank",
-    "company": "Research / Industry",
-    "desc": "Implement ReID Feature Bank from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C71: ReID Feature Bank\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement ReID Feature Bank\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C71: ReID Feature Bank'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend ReID Feature Bank to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C72",
-    "difficulty": "Hard",
-    "tag": "Tracking",
-    "points": 30,
-    "title": "ArcFace Margin Loss",
-    "company": "Research / Industry",
-    "desc": "Implement ArcFace Margin Loss from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C72: ArcFace Margin Loss\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement ArcFace Margin Loss\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C72: ArcFace Margin Loss'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend ArcFace Margin Loss to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C73",
-    "difficulty": "Medium",
-    "tag": "Calibration",
-    "points": 20,
-    "title": "Dynamic Capsule Routing",
-    "company": "Research / Industry",
-    "desc": "Implement Dynamic Capsule Routing from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C73: Dynamic Capsule Routing\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Dynamic Capsule Routing\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C73: Dynamic Capsule Routing'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Dynamic Capsule Routing to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C74",
-    "difficulty": "Hard",
-    "tag": "SSL",
-    "points": 30,
-    "title": "Sparse Convolution Inference",
-    "company": "Research / Industry",
-    "desc": "Implement Sparse Convolution Inference from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C74: Sparse Convolution Inference\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Sparse Convolution Inference\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C74: Sparse Convolution Inference'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Sparse Convolution Inference to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C75",
-    "difficulty": "Medium",
-    "tag": "Quantisation",
-    "points": 20,
-    "title": "Knowledge Graph VQA",
-    "company": "Research / Industry",
-    "desc": "Implement Knowledge Graph VQA from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C75: Knowledge Graph VQA\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Knowledge Graph VQA\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C75: Knowledge Graph VQA'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Knowledge Graph VQA to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C76",
-    "difficulty": "Medium",
-    "tag": "Optimisation",
-    "points": 20,
-    "title": "Cross-Modal Retrieval FAISS",
-    "company": "Research / Industry",
-    "desc": "Implement Cross-Modal Retrieval FAISS from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C76: Cross-Modal Retrieval FAISS\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Cross-Modal Retrieval FAISS\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C76: Cross-Modal Retrieval FAISS'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Cross-Modal Retrieval FAISS to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C77",
-    "difficulty": "Hard",
-    "tag": "Backprop",
-    "points": 30,
-    "title": "Open-Vocabulary Detection",
-    "company": "Research / Industry",
-    "desc": "Implement Open-Vocabulary Detection from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C77: Open-Vocabulary Detection\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Open-Vocabulary Detection\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C77: Open-Vocabulary Detection'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Open-Vocabulary Detection to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C78",
-    "difficulty": "Medium",
-    "tag": "Graph Search",
-    "points": 20,
-    "title": "Grounded SAM Pipeline",
-    "company": "Research / Industry",
-    "desc": "Implement Grounded SAM Pipeline from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C78: Grounded SAM Pipeline\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Grounded SAM Pipeline\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C78: Grounded SAM Pipeline'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Grounded SAM Pipeline to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C79",
-    "difficulty": "Hard",
-    "tag": "Transformers",
-    "points": 30,
-    "title": "Referring Image Segmentation",
-    "company": "Research / Industry",
-    "desc": "Implement Referring Image Segmentation from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C79: Referring Image Segmentation\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Referring Image Segmentation\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C79: Referring Image Segmentation'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Referring Image Segmentation to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C80",
-    "difficulty": "Medium",
-    "tag": "Feature Detection",
-    "points": 20,
-    "title": "Video-Text Contrastive Loss",
-    "company": "Research / Industry",
-    "desc": "Implement Video-Text Contrastive Loss from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C80: Video-Text Contrastive Loss\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Video-Text Contrastive Loss\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C80: Video-Text Contrastive Loss'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Video-Text Contrastive Loss to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C81",
-    "difficulty": "Medium",
-    "tag": "Clustering",
-    "points": 20,
-    "title": "Audio-Visual Segmentation",
-    "company": "Research / Industry",
-    "desc": "Implement Audio-Visual Segmentation from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C81: Audio-Visual Segmentation\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Audio-Visual Segmentation\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C81: Audio-Visual Segmentation'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Audio-Visual Segmentation to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C82",
-    "difficulty": "Hard",
-    "tag": "Conv Math",
-    "points": 30,
-    "title": "Multi-Scale Feature Alignment",
-    "company": "Research / Industry",
-    "desc": "Implement Multi-Scale Feature Alignment from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C82: Multi-Scale Feature Alignment\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Multi-Scale Feature Alignment\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C82: Multi-Scale Feature Alignment'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Multi-Scale Feature Alignment to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C83",
-    "difficulty": "Medium",
-    "tag": "Loss Functions",
-    "points": 20,
-    "title": "Deformable Attention Sampling",
-    "company": "Research / Industry",
-    "desc": "Implement Deformable Attention Sampling from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C83: Deformable Attention Sampling\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Deformable Attention Sampling\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C83: Deformable Attention Sampling'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Deformable Attention Sampling to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C84",
-    "difficulty": "Hard",
-    "tag": "Geometry",
-    "points": 30,
-    "title": "FlashAttention Memory Tiling",
-    "company": "Research / Industry",
-    "desc": "Implement FlashAttention Memory Tiling from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C84: FlashAttention Memory Tiling\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement FlashAttention Memory Tiling\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C84: FlashAttention Memory Tiling'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend FlashAttention Memory Tiling to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C85",
-    "difficulty": "Medium",
-    "tag": "Feature Matching",
-    "points": 20,
-    "title": "Mamba SSM for Vision",
-    "company": "Research / Industry",
-    "desc": "Implement Mamba SSM for Vision from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C85: Mamba SSM for Vision\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Mamba SSM for Vision\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C85: Mamba SSM for Vision'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Mamba SSM for Vision to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C86",
-    "difficulty": "Medium",
-    "tag": "Generative",
-    "points": 20,
-    "title": "MoE Gating for Vision",
-    "company": "Research / Industry",
-    "desc": "Implement MoE Gating for Vision from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C86: MoE Gating for Vision\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement MoE Gating for Vision\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C86: MoE Gating for Vision'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend MoE Gating for Vision to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C87",
-    "difficulty": "Hard",
-    "tag": "Segmentation",
-    "points": 30,
-    "title": "Ring Attention for Long Context",
-    "company": "Research / Industry",
-    "desc": "Implement Ring Attention for Long Context from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C87: Ring Attention for Long Context\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Ring Attention for Long Context\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C87: Ring Attention for Long Context'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Ring Attention for Long Context to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C88",
-    "difficulty": "Medium",
-    "tag": "Attention",
-    "points": 20,
-    "title": "Test-Time Augmentation",
-    "company": "Research / Industry",
-    "desc": "Implement Test-Time Augmentation from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C88: Test-Time Augmentation\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Test-Time Augmentation\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C88: Test-Time Augmentation'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Test-Time Augmentation to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C89",
-    "difficulty": "Hard",
-    "tag": "3D Rendering",
-    "points": 30,
-    "title": "EMA Weight Averaging",
-    "company": "Research / Industry",
-    "desc": "Implement EMA Weight Averaging from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C89: EMA Weight Averaging\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement EMA Weight Averaging\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C89: EMA Weight Averaging'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend EMA Weight Averaging to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C90",
-    "difficulty": "Medium",
-    "tag": "Diffusion",
-    "points": 20,
-    "title": "Label Smoothing Cross-Entropy",
-    "company": "Research / Industry",
-    "desc": "Implement Label Smoothing Cross-Entropy from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C90: Label Smoothing Cross-Entropy\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Label Smoothing Cross-Entropy\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C90: Label Smoothing Cross-Entropy'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Label Smoothing Cross-Entropy to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C91",
-    "difficulty": "Medium",
-    "tag": "Flow",
-    "points": 20,
-    "title": "Mixup and CutMix Augmentation",
-    "company": "Research / Industry",
-    "desc": "Implement Mixup and CutMix Augmentation from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C91: Mixup and CutMix Augmentation\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Mixup and CutMix Augmentation\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C91: Mixup and CutMix Augmentation'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Mixup and CutMix Augmentation to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C92",
-    "difficulty": "Hard",
-    "tag": "Tracking",
-    "points": 30,
-    "title": "RandAugment Policy Search",
-    "company": "Research / Industry",
-    "desc": "Implement RandAugment Policy Search from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C92: RandAugment Policy Search\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement RandAugment Policy Search\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C92: RandAugment Policy Search'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend RandAugment Policy Search to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C93",
-    "difficulty": "Medium",
-    "tag": "Calibration",
-    "points": 20,
-    "title": "AugMax Adversarial Augmentation",
-    "company": "Research / Industry",
-    "desc": "Implement AugMax Adversarial Augmentation from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C93: AugMax Adversarial Augmentation\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement AugMax Adversarial Augmentation\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C93: AugMax Adversarial Augmentation'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend AugMax Adversarial Augmentation to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C94",
-    "difficulty": "Hard",
-    "tag": "SSL",
-    "points": 30,
-    "title": "Self-Training Pseudo-Labels",
-    "company": "Research / Industry",
-    "desc": "Implement Self-Training Pseudo-Labels from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C94: Self-Training Pseudo-Labels\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Self-Training Pseudo-Labels\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C94: Self-Training Pseudo-Labels'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Self-Training Pseudo-Labels to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C95",
-    "difficulty": "Medium",
-    "tag": "Quantisation",
-    "points": 20,
-    "title": "Mean Teacher Semi-Supervised",
-    "company": "Research / Industry",
-    "desc": "Implement Mean Teacher Semi-Supervised from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C95: Mean Teacher Semi-Supervised\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement Mean Teacher Semi-Supervised\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C95: Mean Teacher Semi-Supervised'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend Mean Teacher Semi-Supervised to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C96",
-    "difficulty": "Medium",
-    "tag": "Optimisation",
-    "points": 20,
-    "title": "FixMatch Threshold Scheduling",
-    "company": "Research / Industry",
-    "desc": "Implement FixMatch Threshold Scheduling from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C96: FixMatch Threshold Scheduling\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement FixMatch Threshold Scheduling\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C96: FixMatch Threshold Scheduling'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend FixMatch Threshold Scheduling to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C97",
-    "difficulty": "Hard",
-    "tag": "Backprop",
-    "points": 30,
-    "title": "DataComp Curation Filter",
-    "company": "Research / Industry",
-    "desc": "Implement DataComp Curation Filter from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C97: DataComp Curation Filter\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement DataComp Curation Filter\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C97: DataComp Curation Filter'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend DataComp Curation Filter to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C98",
-    "difficulty": "Medium",
-    "tag": "Graph Search",
-    "points": 20,
-    "title": "LAION Quality Filtering",
-    "company": "Research / Industry",
-    "desc": "Implement LAION Quality Filtering from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C98: LAION Quality Filtering\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement LAION Quality Filtering\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C98: LAION Quality Filtering'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend LAION Quality Filtering to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  },
-  {
-    "id": "C99",
-    "difficulty": "Hard",
-    "tag": "Transformers",
-    "points": 30,
-    "title": "CLIP Score Image-Text Alignment",
-    "company": "Research / Industry",
-    "desc": "Implement CLIP Score Image-Text Alignment from scratch. Study the key equations, understand the intuition, then code a working solution that processes real images and produces visualisable output. Verify against a reference implementation.",
-    "example": "See full solution below. Each step is annotated with the mathematical insight behind it.",
-    "hint": "Break the problem into sub-steps: data preparation, core algorithm implementation, metric computation, and visualisation. Verify each step against a reference.",
-    "fullSolution": "# C99: CLIP Score Image-Text Alignment\nimport numpy as np, torch, cv2, urllib.request\nimport matplotlib.pyplot as plt\n\n# Starter: load a real image\nurl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg'\nraw = urllib.request.urlopen(url).read()\nimg = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_COLOR)\nimg_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)\nprint(f'Image shape: {img_rgb.shape}')\n\n# TODO: Implement CLIP Score Image-Text Alignment\n# Step 1: Preprocess / setup\n# Step 2: Core algorithm\n# Step 3: Evaluate / visualise\nplt.imshow(img_rgb); plt.axis('off')\nplt.title('C99: CLIP Score Image-Text Alignment'); plt.show()",
-    "complexity": "Varies by sub-step. Analyse time and space complexity for each component.",
-    "followup": "How would you extend CLIP Score Image-Text Alignment to video? What are the key bottlenecks for real-time deployment on edge hardware?"
-  }
+  // ─── Additional challenges C31-C100 (condensed format) ────────
+  ...Array.from({length:70},(_,i)=>{
+    const idx=i+31;
+    const difficulties=idx<=50?"Medium":idx<=70?"Medium":"Hard";
+    const pointsMap={"Easy":10,"Medium":20,"Hard":30};
+    const pts=pointsMap[difficulties];
+    const topics=[
+      ["C31","Medium","Augmentation","AutoAugment Policy Search","Google Brain","Implement RandAugment: randomly sample 2 transforms from a pool (rotation, shear, colour jitter, posterize, solarize, equalize, translate) and apply with random magnitude."],
+      ["C32","Medium","Contrastive Learning","SimCLR Loss (NT-Xent)","Google","Implement the normalised temperature-scaled cross-entropy loss for SimCLR self-supervised learning. Given embeddings of augmented pairs, maximise agreement."],
+      ["C33","Medium","Normalisation","Batch, Layer, Group, and Instance Norm","PyTorch","Implement all four normalisation variants from scratch and compare their behaviour on a feature map batch."],
+      ["C34","Medium","Detection","Anchor Box Generation for FPN","NVIDIA","Given an image and feature pyramid levels (P3,P4,P5,P6,P7), generate all anchor boxes at each level with 3 scales and 3 aspect ratios."],
+      ["C35","Medium","Optical Flow","Lucas-Kanade Optical Flow from Scratch","SLAM","Implement the Lucas-Kanade optical flow equations using Sobel gradients and solve the 2x2 linear system for (u,v) per feature point."],
+      ["C36","Medium","Super-Resolution","Pixel Shuffle (Sub-Pixel Convolution)","Sony","Implement the pixel shuffle operation that rearranges (B,C*r^2,H,W) to (B,C,H*r,W*r) for efficient super-resolution upsampling."],
+      ["C37","Medium","3D Vision","Point Cloud FPS and kNN","Waymo","Implement farthest point sampling (FPS) and ball query / k-nearest-neighbours on a 3D point cloud, the core of PointNet++."],
+      ["C38","Medium","Metrics","Mean Average Precision (mAP) for Detection","COCO eval","Compute mAP@0.5 from scratch given a list of predicted and ground-truth bounding boxes, implementing the precision-recall curve and AP calculation."],
+      ["C39","Medium","Image Processing","Laplacian Pyramid Image Blending","Adobe","Blend two images seamlessly using Laplacian pyramid decomposition and reconstruction. Build the Gaussian and Laplacian pyramids, swap the high-frequency bands, and reconstruct."],
+      ["C40","Medium","Stereo Vision","Disparity Map with SGBM from Scratch","Robotics","Understand and visualise Semi-Global Block Matching (SGBM) by computing a dense disparity map from a stereo pair and converting to a depth map."],
+      ["C41","Hard","Transformer","Position Encodings: Sinusoidal vs Learnable vs RoPE","Meta","Implement sinusoidal 2D position encoding, learnable position embeddings, and RoPE (Rotary Position Embedding) for a ViT. Compare their attention patterns."],
+      ["C42","Hard","Segmentation","Mask R-CNN RoIAlign from Scratch","Facebook AI","Implement the RoIAlign operation that bilinearly samples a feature map at arbitrary positions defined by RoI bounding boxes, without grid quantisation."],
+      ["C43","Hard","Contrastive","CLIP Training Loop (Mini-Scale)","OpenAI","Train a mini-CLIP model on 1000 image-caption pairs: image encoder (ResNet-18) + text encoder (transformer), contrastive loss with learnable temperature."],
+      ["C44","Hard","GAN","Progressive GAN: Fade-In Mechanism","NVIDIA","Implement the fade-in mechanism for progressive growing of GANs: linearly blend new high-resolution layers from alpha=0 to alpha=1 over training iterations."],
+      ["C45","Hard","Tracking","SORT: Simple Online and Realtime Tracking","DeepSORT paper","Implement the SORT algorithm: Kalman filter for motion prediction, IoU-based Hungarian algorithm for data association across frames."],
+      ["C46","Hard","Depth","Self-Supervised Monocular Depth (Monodepth concept)","Niantic","Implement the left-right consistency photometric loss for self-supervised depth estimation: warp right image to left using predicted disparity, minimise photometric error."],
+      ["C47","Hard","Medical","3D U-Net for Volumetric Segmentation","MICCAI","Implement a 3D U-Net with 3D convolutions, process a volumetric NIfTI MRI scan slice-by-slice, and run inference on synthetic 3D data."],
+      ["C48","Hard","Diffusion","DDIM Deterministic Sampling","Stability AI","Implement DDIM sampling that uses a deterministic reverse trajectory, enabling generation in 50 steps by skipping timesteps."],
+      ["C49","Hard","Calibration","Expected Calibration Error and Reliability Diagrams","Deployment","Compute ECE from model predictions and ground-truth labels. Implement temperature scaling to calibrate the model and plot reliability diagrams before/after."],
+      ["C50","Hard","Deployment","TorchScript and ONNX Export with Dynamic Axes","Production ML","Export a ResNet model to TorchScript (torch.jit.script) and ONNX with dynamic batch size. Benchmark both vs eager PyTorch on CPU."],
+    ].slice(0,idx-30<=20?idx-30:20);
+
+    const topicData=topics[Math.min(i,topics.length-1)];
+    if(!topicData) return null;
+    const [id,diff,tag,title,company,descText]=topicData;
+    return {
+      id,difficulty:diff,tag,title,company,points:pointsMap[diff],
+      desc:descText,
+      example:`See the full solution code for a working example with real images.`,
+      hint:`Key algorithmic insight: implement the mathematical definition step-by-step, verify against a library function or known output, then apply to a real image.`,
+      fullSolution:`# ${title}
+# ${descText}
+# Full implementation left as an exercise with these steps:
+# 1. Understand the mathematical formulation from the paper
+# 2. Implement from scratch with NumPy or PyTorch
+# 3. Validate against a library reference
+# 4. Apply to a real CV image and visualise
+
+print("Implementing: ${title}")
+print("Reference: ${company}")
+
+# Starter template:
+import numpy as np, torch, cv2, urllib.request, matplotlib.pyplot as plt
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bikesg.jpg/320px-Bikesg.jpg"
+raw = urllib.request.urlopen(url).read()
+img = cv2.imdecode(np.frombuffer(raw,np.uint8), cv2.IMREAD_COLOR)
+img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+# TODO: Implement ${title} here
+# Refer to Module ${Math.floor(idx/10)} for theoretical background
+print("Challenge ${id} starter code - implement the algorithm above!")`,
+      complexity:"Varies by algorithm. See description.",
+      followup:`Research the original paper for ${title}. How does this algorithm relate to others in the same domain?`
+    };
+  }).filter(Boolean),
 ];
 
 /* ================================================================
-   150 QUIZ QUESTIONS (6 sections × 25 questions)
+   150 QUIZ QUESTIONS  (6 sections, 25 each)
 ================================================================ */
 const QUIZ_SECTIONS = [
   {
-    title:"Section 1: Foundations of Computer Vision",
+    id:"Q1", title:"Foundations of Computer Vision", color:P.accent1,
     questions:[
-      {q:"What does a pixel value of 0 represent in a grayscale image?",options:["White","Black","Red","Transparent"],answer:1},
-      {q:"What shape does a 640x480 RGB image have as a numpy array?",options:["(640,480)","(480,640)","(480,640,3)","(3,480,640)"],answer:2},
-      {q:"Which colour space separates luminance from chrominance?",options:["RGB","BGR","LAB","HSV"],answer:2},
-      {q:"What does CLAHE stand for?",options:["Contrast Limited Adaptive Histogram Equalisation","Colour Layered Automatic HE","Channel Linear Adaptive HE","Contrast Luminance Adaptive HE"],answer:0},
-      {q:"Which edge detector uses two threshold values (hysteresis)?",options:["Sobel","Laplacian","Canny","Prewitt"],answer:2},
-      {q:"Morphological erosion on a binary image:",options:["Expands white regions","Shrinks white regions","Detects edges","Fills holes"],answer:1},
-      {q:"The Viola-Jones face detector relies on which image structure for speed?",options:["Gradient histogram","Integral image","Fourier transform","Wavelet"],answer:1},
-      {q:"SIFT descriptors have how many dimensions?",options:["32","64","128","256"],answer:2},
-      {q:"Which interpolation method is most accurate for image rotation?",options:["Nearest neighbour","Bilinear","Bicubic","Box filter"],answer:2},
-      {q:"Gaussian blur in the spatial domain is equivalent to what in the frequency domain?",options:["High-pass filter","Band-pass filter","Low-pass filter","Notch filter"],answer:2},
-      {q:"The Sobel operator computes:",options:["Second-order derivative","First-order derivative (gradient)","Laplacian","Hessian"],answer:1},
-      {q:"What is the main advantage of ORB over SIFT?",options:["Higher accuracy","Much faster (binary descriptor)","Scale invariant","Patent-free and fast"],answer:3},
-      {q:"In the morphological operation 'opening', what is the correct order?",options:["Dilation then erosion","Erosion then dilation","Erosion twice","Dilation twice"],answer:1},
-      {q:"What does a 2D Discrete Fourier Transform represent?",options:["Pixel values over time","Spatial frequency content","Edge map","Colour histogram"],answer:1},
-      {q:"Which metric measures the overlap between two bounding boxes?",options:["L2 distance","IoU","Dice","SSIM"],answer:1},
-      {q:"PSNR is computed using which error measure?",options:["MAE","MSE","Huber","Cross-entropy"],answer:1},
-      {q:"SSIM measures image similarity along which three dimensions?",options:["Hue, saturation, brightness","Luminance, contrast, structure","Frequency, amplitude, phase","Red, green, blue"],answer:1},
-      {q:"What is the purpose of image normalisation (subtracting mean, dividing by std)?",options:["Increase brightness","Stabilise training and improve convergence","Remove noise","Detect edges"],answer:1},
-      {q:"Connected components analysis is used for:",options:["Counting separate objects in a binary image","Computing image gradients","Detecting colours","Measuring blur"],answer:0},
-      {q:"The Dark Channel Prior is used for:",options:["Face detection","Image dehazing","Super-resolution","Depth estimation"],answer:1},
-      {q:"Template matching via Normalised Cross-Correlation (NCC) returns values in the range:",options:["[0, infinity)","[0, 255]","[-1, 1]","[0, 1]"],answer:2},
-      {q:"Total Variation (TV) denoising promotes which type of solution?",options:["Smooth everywhere","Piecewise constant with sharp edges","Blurry edges","High frequency detail"],answer:1},
-      {q:"Seam carving for content-aware resizing removes which type of seam?",options:["Horizontal seam with maximum energy","Vertical seam with minimum energy","Random pixel path","Highest-gradient path"],answer:1},
-      {q:"Perceptual hashing (pHash) is based on which transform?",options:["DFT","DCT","Wavelet","SVD"],answer:1},
-      {q:"Flood fill (paint bucket) uses which graph traversal algorithm?",options:["Dijkstra","A*","BFS or DFS","Bellman-Ford"],answer:2},
+      { q:"What does a pixel value of (0,0,0) represent in an RGB image?", options:["White","Black","Transparent","Red"], answer:1 },
+      { q:"Which colour space separates luminance from chrominance, making it useful for compression?", options:["RGB","HSV","YCbCr","LAB"], answer:2 },
+      { q:"The Canny edge detector performs which step to produce thin, clean edges?", options:["Gaussian blur","Non-maximum suppression","Histogram equalisation","Bilateral filtering"], answer:1 },
+      { q:"What does HOG stand for in the context of feature descriptors?", options:["High Order Gradients","Histogram of Oriented Gradients","Hierarchical Object Graph","Hessian Oriented Gaussian"], answer:1 },
+      { q:"Which metric measures the ratio of correctly classified pixels to total pixels in segmentation?", options:["mIoU","Pixel Accuracy","Dice Score","F1 Score"], answer:1 },
+      { q:"The SIFT descriptor is invariant to which transformations?", options:["Rotation and scale only","Scale only","Rotation, scale, and illumination","All affine transforms"], answer:2 },
+      { q:"What is the primary purpose of max pooling in a CNN?", options:["Add non-linearity","Reduce spatial dimensions and provide translation invariance","Normalise feature maps","Increase receptive field without reducing resolution"], answer:1 },
+      { q:"Which formula correctly defines IoU for bounding boxes?", options:["Area(A∩B)/Area(A)","Area(A∪B)/Area(A∩B)","Area(A∩B)/Area(A∪B)","Area(A)+Area(B)-Area(A∩B)"], answer:2 },
+      { q:"In image histogram equalisation, the output pixel value is determined by:", options:["The raw pixel value","The normalised CDF value at that intensity","The derivative of the histogram","The median of surrounding pixels"], answer:1 },
+      { q:"What is the receptive field of two stacked 3x3 convolution layers?", options:["3x3","5x5","6x6","9x9"], answer:1 },
+      { q:"Which algorithm is used in Viola-Jones face detection for fast feature computation?", options:["SIFT","Integral images (2D prefix sum)","SURF","Gabor filters"], answer:1 },
+      { q:"The LAB colour space is designed so that Euclidean distances approximate:", options:["Monitor colour gamut","Human-perceived colour difference","RGB device response","Printer ink coverage"], answer:1 },
+      { q:"Gaussian blur is separable, meaning a 2D Gaussian can be computed as:", options:["Two sequential 1D Gaussian convolutions","One 2D matrix multiply","A recursive filter","An FFT-based operation only"], answer:0 },
+      { q:"What does 'stride=2' mean in a convolutional layer?", options:["The kernel size is 2","The filter moves 2 pixels at a time, halving spatial resolution","2 filters are applied","Padding of 2 is added"], answer:1 },
+      { q:"The Sobel operator computes image gradients along which axes?", options:["Diagonal and anti-diagonal","Horizontal and vertical","Radial and angular","None of the above"], answer:1 },
+      { q:"Which morphological operation removes small foreground noise blobs?", options:["Dilation","Closing","Opening (erosion then dilation)","Top-hat transform"], answer:2 },
+      { q:"In template matching, Normalised Cross-Correlation (NCC) values range from:", options:["0 to 255","0 to infinity","-1 to 1","0 to 1"], answer:2 },
+      { q:"The HSV Hue channel in OpenCV ranges from:", options:["0 to 255","0 to 360","0 to 179","0 to 100"], answer:2 },
+      { q:"PSNR is expressed in decibels (dB). A higher PSNR means:", options:["More noise","Better image quality (less distortion)","Higher resolution","More compression"], answer:1 },
+      { q:"What is the output shape of a Conv2D with input (1,3,224,224), 64 filters, 3x3 kernel, padding=1, stride=1?", options:["(1,64,224,224)","(1,64,222,222)","(1,3,64,64)","(64,3,224,224)"], answer:0 },
+      { q:"Which of these is NOT a benefit of batch normalisation?", options:["Allows higher learning rates","Acts as a regulariser","Eliminates the need for dropout in all cases","Reduces sensitivity to weight initialisation"], answer:2 },
+      { q:"The Laplacian of an image highlights:", options:["Smooth regions","Zero-crossings corresponding to edges and fine detail","Colour boundaries only","Regions with high saturation"], answer:1 },
+      { q:"Bilinear interpolation during image rotation samples from:", options:["The nearest single pixel","A 4-pixel neighbourhood using weighted average","A 16-pixel neighbourhood (bicubic)","The mode of a 3x3 neighbourhood"], answer:1 },
+      { q:"Which distance metric is used by k-NN in colour-space k-means segmentation?", options:["Cosine distance","L1 (Manhattan) distance","L2 (Euclidean) distance","KL divergence"], answer:2 },
+      { q:"What is SSIM primarily designed to measure compared to MSE?", options:["Speed of computation","Perceptually meaningful structural similarity","Colour accuracy","Spatial frequency content"], answer:1 },
     ]
   },
   {
-    title:"Section 2: Deep Learning for Vision",
+    id:"Q2", title:"Deep Learning for Computer Vision", color:P.accent2,
     questions:[
-      {q:"What property does max-pooling provide that is useful for classification?",options:["Exact position","Translation invariance","Scale invariance","Rotation invariance"],answer:1},
-      {q:"Batch Normalisation normalises over which dimensions?",options:["Channels for each spatial position","The batch and spatial dimensions","Only the channel dimension","Only spatial dimensions"],answer:1},
-      {q:"The skip connections in ResNet allow training of very deep networks because they solve:",options:["Overfitting","Vanishing gradient problem","Data imbalance","Mode collapse"],answer:1},
-      {q:"Which activation function is most commonly used in hidden CNN layers today?",options:["Sigmoid","Tanh","ReLU/GELU","Softmax"],answer:2},
-      {q:"Cross-entropy loss for classification is: -sum(",options:["y * log(p)","(y-p)^2","y * p","log(1-p)"],answer:0},
-      {q:"The Adam optimiser maintains:",options:["Only gradient magnitude","First and second moment estimates of gradients","Learning rate only","Momentum only"],answer:1},
-      {q:"Weight sharing in CNNs provides what major advantage?",options:["Higher accuracy","Translation equivariance and massive parameter reduction","Faster inference only","Better calibration"],answer:1},
-      {q:"Dropout is applied during:",options:["Inference only","Training only","Both training and inference","Neither"],answer:1},
-      {q:"Which pooling operation does EfficientNet use instead of max-pooling in the final layer?",options:["Average pooling","Max pooling","Stochastic pooling","Global average pooling"],answer:3},
-      {q:"DepthWise Separable Convolution (MobileNet) reduces computation by approximately:",options:["2x","4x","8-9x","100x"],answer:2},
-      {q:"What is the role of the softmax function in the output layer of a classifier?",options:["Compute gradients","Convert logits to probabilities summing to 1","Normalise features","Apply non-linearity"],answer:1},
-      {q:"Transfer learning pre-trains a model on which dataset before fine-tuning?",options:["MNIST","COCO","ImageNet (or similar large dataset)","CIFAR-10"],answer:2},
-      {q:"Data augmentation is primarily used to:",options:["Speed up training","Prevent overfitting by increasing effective dataset size","Improve validation speed","Reduce model size"],answer:1},
-      {q:"Which normalisation works best with very small batch sizes?",options:["Batch Norm","Layer Norm","Instance Norm","Group Norm"],answer:1},
-      {q:"The receptive field of a 5-layer CNN with 3x3 kernels (stride 1, no padding) is:",options:["3x3","5x5","9x9","11x11"],answer:3},
-      {q:"MixUp augmentation creates training samples by:",options:["Random cropping","Linearly interpolating two images and their labels","Colour jitter","Random erasing"],answer:1},
-      {q:"Label smoothing prevents models from becoming:",options:["Underfitted","Overconfident (overfitted to hard labels)","Too slow","Too small"],answer:1},
-      {q:"Knowledge distillation trains a student by matching:",options:["Hard labels only","Soft probability outputs of a teacher model","The teacher's architecture","Only the final layer"],answer:1},
-      {q:"Cosine annealing as a learning rate schedule:",options:["Increases LR linearly","Decreases LR following a cosine curve","Keeps LR constant","Randomly varies LR"],answer:1},
-      {q:"The purpose of the 1x1 convolution (pointwise conv) in MobileNet is:",options:["Spatial feature extraction","Cross-channel mixing (change number of channels)","Downsampling","Upsampling"],answer:1},
-      {q:"Which loss function is standard for multi-label classification (multiple classes can be true)?",options:["Softmax + CE","Sigmoid + Binary CE per class","Triplet loss","Dice loss"],answer:1},
-      {q:"Dilated convolution with rate r=2 on a 3x3 kernel has what effective kernel size?",options:["3x3","5x5","7x7","9x9"],answer:1},
-      {q:"Gradient clipping prevents:",options:["Vanishing gradients","Exploding gradients","Data imbalance","Overfitting"],answer:1},
-      {q:"The ELU activation function advantage over ReLU is:",options:["Faster computation","Non-zero mean activations, smoother gradient for negatives","Uses less memory","No hyperparameters"],answer:1},
-      {q:"In the context of object detection, what does 'anchor-free' mean?",options:["No bounding boxes predicted","No predefined anchor boxes used as reference","No backbone needed","No NMS needed"],answer:1},
+      { q:"What problem did ResNet's skip connections primarily solve?", options:["Overfitting on small datasets","Degradation problem (training accuracy degrading with depth)","Slow inference on GPU","High memory usage"], answer:1 },
+      { q:"In transfer learning, 'fine-tuning' means:", options:["Replacing the entire model","Training only a new classification head","Initialising with pretrained weights and training all (or selected) layers","Pruning the pretrained model"], answer:2 },
+      { q:"The 'reparameterisation trick' in VAEs enables:", options:["Faster inference","Backpropagation through stochastic sampling","Larger latent spaces","Better image quality"], answer:1 },
+      { q:"Focal Loss was designed to solve which problem in object detection?", options:["Slow inference","Extreme foreground-background class imbalance","Small object detection","Multi-scale feature extraction"], answer:1 },
+      { q:"In a GAN, mode collapse refers to:", options:["The discriminator collapsing to a random classifier","The generator producing only a few similar outputs instead of diverse samples","Both networks converging to identical weights","Training loss becoming negative"], answer:1 },
+      { q:"Which loss function does DDPM minimise to train the noise prediction network?", options:["Adversarial loss (binary cross entropy)","Contrastive loss","MSE between true noise and predicted noise","Perceptual (VGG feature) loss"], answer:2 },
+      { q:"What is the purpose of the 'temperature' parameter in the softmax of contrastive learning (e.g. SimCLR)?", options:["Controls learning rate","Scales the similarity scores, affecting sharpness of the distribution","Determines the number of negatives","Sets the embedding dimension"], answer:1 },
+      { q:"Knowledge distillation trains a student model to match:", options:["The teacher's architecture exactly","The teacher's soft output probabilities (logits)","The teacher's training dataset distribution","The teacher's gradient magnitudes"], answer:1 },
+      { q:"Depthwise separable convolution reduces parameters by approximately what factor for a 3x3 kernel?", options:["2x","4x","8-9x","16x"], answer:2 },
+      { q:"Which activation function avoids the 'dying ReLU' problem?", options:["Sigmoid","ReLU","LeakyReLU","Softmax"], answer:2 },
+      { q:"In DCGAN, what does 'DC' stand for?", options:["Distributed Computing","Deep Convolutional","Deterministic Conditional","Dual Critic"], answer:1 },
+      { q:"The WGAN (Wasserstein GAN) improves training stability by:", options:["Adding gradient penalty on the discriminator","Replacing JS divergence with Wasserstein-1 distance","Using a larger generator","Adding batch normalisation to the discriminator"], answer:1 },
+      { q:"What is the output of Global Average Pooling applied to a feature map of shape (B,C,H,W)?", options:["(B,C,H,W)","(B,C,1,1)","(B,1,H,W)","(B,H*W,C)"], answer:1 },
+      { q:"EfficientNet scales model size via compound scaling. Which three dimensions are scaled?", options:["Width, height, and depth (layers)","Depth, width, and resolution","Batch size, depth, and channels","Kernel size, stride, and padding"], answer:1 },
+      { q:"In Vision Transformers (ViT), image patches are treated as:", options:["Pixels in a grid","Tokens in a sequence (analogous to words in NLP)","3D voxels","Frequency components"], answer:1 },
+      { q:"The KL divergence term in the VAE ELBO acts as:", options:["Reconstruction loss","Regulariser pushing the posterior toward a standard Gaussian prior","Discriminator loss","Perceptual loss"], answer:1 },
+      { q:"What does the 'h' in 'multi-head' attention refer to?", options:["Height of the input","Number of parallel attention computations with different projections","Hidden dimension of the MLP","Number of transformer layers"], answer:1 },
+      { q:"Batch normalisation normalises over which dimensions?", options:["All spatial and channel dimensions together","The batch and spatial dimensions (H,W) per channel","The channel dimension only","The batch dimension only"], answer:1 },
+      { q:"For INT8 quantisation of a neural network, the expected accuracy drop is typically:", options:["None, exactly equivalent","Less than 1-2% with proper calibration","5-10%","More than 10%"], answer:1 },
+      { q:"Which scheduler is used in DALL-E 3 / Stable Diffusion 3 instead of linear beta scheduling?", options:["Polynomial decay","Cosine schedule","Exponential schedule","Uniform schedule"], answer:1 },
+      { q:"In ConvNeXt, which aspect of the Swin Transformer is adapted into a pure convolutional design?", options:["Shifted window attention","Depthwise 7x7 convolutions replacing 3x3","Patch merging","Cross-attention layers"], answer:1 },
+      { q:"What is the primary purpose of the [CLS] token in ViT?", options:["Start-of-sequence marker","A learnable token whose final representation is used for classification","Padding","Positional anchor"], answer:1 },
+      { q:"Gradient clipping (clip_grad_norm_) prevents:", options:["Underfitting","Exploding gradients that destabilise training","Overfitting","Slow convergence"], answer:1 },
+      { q:"In CLIP, the training signal comes from:", options:["Cross-entropy classification labels","Contrastive loss between matched vs mismatched image-text pairs","MSE pixel reconstruction","Perceptual feature matching"], answer:1 },
+      { q:"The 'perceptual loss' uses features from which pretrained network?", options:["ResNet for classification","VGG-16 or VGG-19 for image generation quality","CLIP for text-image alignment","U-Net for segmentation"], answer:1 },
     ]
   },
   {
-    title:"Section 3: Detection, Segmentation and Tracking",
+    id:"Q3", title:"Detection, Segmentation, and Tracking", color:P.accent3,
     questions:[
-      {q:"What does IoU stand for in object detection?",options:["Index of Uniformity","Intersection over Union","Integral of Uncertainty","Index of Utility"],answer:1},
-      {q:"Non-Maximum Suppression (NMS) is used to:",options:["Find missing objects","Remove duplicate overlapping detections","Improve segmentation","Speed up inference"],answer:1},
-      {q:"Faster R-CNN uses which module to generate region proposals?",options:["FPN","RPN","NMS","ROI head"],answer:1},
-      {q:"YOLO stands for:",options:["You Only Learn Once","You Only Look Once","Your Object Localisation Output","Your Only Linear Output"],answer:1},
-      {q:"Focal Loss in RetinaNet addresses which problem?",options:["Mode collapse","Extreme class imbalance between foreground and background","Vanishing gradient","Mode collapse"],answer:1},
-      {q:"RoIAlign (vs RoIPool) prevents which issue?",options:["Slow inference","Misalignment caused by quantisation of spatial coordinates","High memory usage","Gradient explosion"],answer:1},
-      {q:"DETR eliminates which two traditional detection components?",options:["Backbone and FPN","Anchor boxes and NMS","Loss function and optimizer","Batch norm and dropout"],answer:1},
-      {q:"In Mask R-CNN, the mask branch predicts:",options:["Class probabilities","A binary segmentation mask for each detected region","Bounding box offsets","Keypoints"],answer:1},
-      {q:"Semantic segmentation differs from instance segmentation in that it:",options:["Is faster","Does not distinguish individual instances","Requires no training data","Uses no neural network"],answer:1},
-      {q:"Panoptic segmentation assigns which two types of labels?",options:["Class and confidence","Instance ID (for things) and semantic class (for stuff)","Depth and class","Box and mask"],answer:1},
-      {q:"The U-Net architecture is known for its:",options:["Attention mechanism","Encoder-decoder with skip connections","Dilated convolutions","Residual blocks"],answer:1},
-      {q:"Dilated convolutions in DeepLab expand the receptive field while:",options:["Increasing resolution","Maintaining spatial resolution","Reducing parameters","Adding attention"],answer:1},
-      {q:"ASPP in DeepLab uses:",options:["Anchors at multiple scales","Parallel dilated convolutions at multiple rates + global pooling","Multiple backbones","Attention across channels"],answer:1},
-      {q:"SAM (Segment Anything Model) uses which type of prompt for segmentation?",options:["Only text","Only boxes","Points, boxes, or text","Only images"],answer:2},
-      {q:"What does mIoU measure in segmentation?",options:["Mean image quality","Mean Intersection over Union across all classes","Max IoU","Median per-image IoU"],answer:1},
-      {q:"SORT (Simple Online and Realtime Tracking) uses which two components?",options:["Deep features + Hungarian","Kalman filter + Hungarian algorithm","Optical flow + NMS","RNN + attention"],answer:1},
-      {q:"ByteTrack improves over SORT by:",options:["Using a better backbone","Also associating low-confidence detections in a second pass","Using larger anchors","Training on more data"],answer:1},
-      {q:"The Dice coefficient is equivalent to:",options:["IoU","F1 score on pixel masks","Precision","Recall"],answer:1},
-      {q:"CRF (Conditional Random Field) post-processing in DeepLab was used to:",options:["Speed up training","Refine segment boundaries using pixel pairwise potentials","Reduce model size","Handle class imbalance"],answer:1},
-      {q:"In instance segmentation, the mask resolution output by Mask R-CNN is typically:",options:["Full image resolution","28x28 per RoI","256x256","Same as input"],answer:1},
-      {q:"FPN (Feature Pyramid Network) improves detection by:",options:["Using more anchors","Building a multi-scale feature hierarchy for objects of different sizes","Faster NMS","Better backbone"],answer:1},
-      {q:"CondInst produces instance masks by:",options:["Fixed prototype masks","Dynamically generated filters conditioned on each instance","Copying from backbone","Template matching"],answer:1},
-      {q:"SOLOv2 predicts instance masks without:",options:["A backbone","RoI operations or bounding boxes","A decoder","Any loss function"],answer:1},
-      {q:"The Panoptic Quality (PQ) metric is the product of:",options:["IoU and AP","Recognition Quality (RQ) and Segmentation Quality (SQ)","Dice and precision","mIoU and accuracy"],answer:1},
-      {q:"ByteTrack achieves state-of-the-art MOT by:",options:["Using heavier backbones","A two-stage association that rescues low-confidence detections via appearance","3D sensing","Graph neural networks"],answer:1},
+      { q:"What is the minimum number of point correspondences needed to compute a homography?", options:["2","3","4","5"], answer:2 },
+      { q:"YOLO's one-stage design differs from Faster R-CNN because it:", options:["Uses only RGB input","Predicts boxes and classes simultaneously in a single pass (no RPN)","Requires less training data","Uses attention mechanisms"], answer:1 },
+      { q:"In Faster R-CNN, the Region Proposal Network (RPN) is trained with:", options:["Only classification loss","Only regression loss","Both classification (objectness) and regression (box offset) losses","Focal loss only"], answer:2 },
+      { q:"Panoptic Quality (PQ) is the product of which two quantities?", options:["Precision and recall","Segmentation Quality (SQ) and Recognition Quality (RQ)","IoU and F1","mAP and Dice score"], answer:1 },
+      { q:"Why does RoIAlign outperform RoIPool in Mask R-CNN?", options:["It is faster","It avoids quantisation errors by using bilinear interpolation at exact spatial locations","It handles variable-size inputs better","It requires fewer parameters"], answer:1 },
+      { q:"The 'anchor-free' design in CenterNet predicts bounding boxes as:", options:["Offsets from anchor boxes","Offsets from the object centre point plus width/height","Class probability maps only","Polygon vertex coordinates"], answer:1 },
+      { q:"DETR uses bipartite matching during training. What does this achieve?", options:["Faster training","One-to-one assignment of predictions to ground-truth objects, eliminating NMS","Better small object detection","Lower memory usage"], answer:1 },
+      { q:"In semantic segmentation, dilated (atrous) convolutions are used to:", options:["Increase filter count","Expand receptive field without reducing spatial resolution","Reduce parameters","Increase depth"], answer:1 },
+      { q:"Skip connections in U-Net help by:", options:["Reducing overfitting","Passing high-resolution encoder features directly to the decoder for precise localisation","Adding non-linearity","Reducing depth"], answer:1 },
+      { q:"The OKS (Object Keypoint Similarity) metric in pose estimation is analogous to:", options:["Pixel accuracy","IoU for bounding boxes (measures how well keypoint locations match)","Dice score","PSNR"], answer:1 },
+      { q:"ByteTrack improves over SORT by:", options:["Using a deeper ReID network","Associating even low-confidence detections in a two-stage assignment (reduces missed tracks during occlusion)","Adding 3D tracking","Using transformer-based matching"], answer:1 },
+      { q:"SAM (Segment Anything Model) accepts which types of prompts?", options:["Text only","Image patches only","Points, boxes, masks, or combinations","Audio signals"], answer:2 },
+      { q:"In instance segmentation, YOLACT generates masks using:", options:["A separate mask head per detected object","Linear combination of a small set of prototype masks with per-instance coefficients","Pixel-wise binary classification","Semantic labels dilated from detection boxes"], answer:1 },
+      { q:"The mAP@0.5:0.95 metric (COCO-style) is harder than mAP@0.5 because:", options:["It uses more classes","It averages precision over IoU thresholds from 0.5 to 0.95 (requires tighter box localisation)","It includes crowded scenes only","It penalises false negatives more"], answer:1 },
+      { q:"What does 'BEV' stand for in autonomous driving perception?", options:["Binary Encoder-Decoder View","Bird's Eye View","Bi-directional Encoder Vector","Bounding Box Estimation Value"], answer:1 },
+      { q:"In multi-object tracking, IDF1 measures:", options:["Detection accuracy only","Identity preservation: how well identities are maintained across frames","Optical flow accuracy","Scene understanding"], answer:1 },
+      { q:"SOLO (Segmenting Objects by Locations) avoids bounding boxes by:", options:["Using 3D features","Assigning each instance a unique grid cell location in a spatial grid","Using attention pooling","Predicting keypoints instead"], answer:1 },
+      { q:"The Kalman filter in SORT predicts:", options:["Object class probabilities","Object location in the next frame based on a constant velocity motion model","Optical flow vectors","Depth values"], answer:1 },
+      { q:"NMS threshold controls:", options:["The confidence cutoff for keeping boxes","The IoU overlap level above which two overlapping boxes are suppressed to one","The number of detections per class","The number of anchor scales"], answer:1 },
+      { q:"Which operation in CenterPoint (LiDAR detection) produces a BEV feature map from pillar features?", options:["3D convolution","Scatter operation: aggregate pillar features back to their (x,y) grid positions","RoIAlign","Multi-scale fusion"], answer:1 },
+      { q:"In lane detection with Hough transform, what does rho represent?", options:["The angle of the line","The perpendicular distance from the origin to the line","The slope of the line","The line confidence score"], answer:1 },
+      { q:"Panoptic segmentation assigns a 'stuff' label to pixels that:", options:["Belong to individual object instances","Belong to amorphous background regions (sky, road, grass) without instance distinction","Have uncertain class","Belong to multiple overlapping objects"], answer:1 },
+      { q:"PointPillars converts a 3D LiDAR point cloud to which representation for fast processing?", options:["Voxel grid","Pillar-based pseudo-image: column pillars aggregated into 2D BEV feature map","Point-by-point processing","Spherical coordinates"], answer:1 },
+      { q:"HOTA (Higher Order Tracking Accuracy) is designed to balance:", options:["Precision and recall of detections only","Detection accuracy (DetA) and association accuracy (AssA) jointly","Speed and accuracy","Single-object and multi-object tracking"], answer:1 },
+      { q:"The FPN (Feature Pyramid Network) lateral connections combine:", options:["Only bottom-up pathway features","Top-down upsampled features with bottom-up high-resolution features at each scale","Adjacent scale features only","All scales in a single weighted sum"], answer:1 },
     ]
   },
   {
-    title:"Section 4: Restoration, Generation and Diffusion",
+    id:"Q4", title:"Image Restoration and Generative Models", color:P.accent4,
     questions:[
-      {q:"Image restoration is considered ill-posed because:",options:["It requires too much compute","Multiple clean images can produce the same degraded observation","Labels are hard to obtain","The domain shifts often"],answer:1},
-      {q:"DnCNN uses which learning strategy to simplify the denoising task?",options:["Direct image reconstruction","Residual learning (predict noise, subtract from input)","GAN adversarial training","Attention-based weighting"],answer:1},
-      {q:"PSNR in dB is computed as:",options:["10*log10(MAX^2 / MSE)","20*log10(MAX / MSE)","MSE / MAX","log(MSE)"],answer:0},
-      {q:"SSIM measures image quality along three dimensions:",options:["RGB channels","Luminance, contrast, structure","Low/mid/high frequency","Spatial/temporal/spectral"],answer:1},
-      {q:"Real-ESRGAN extends ESRGAN to handle:",options:["Only bicubic downsampling","Real-world complex degradations (blur+noise+JPEG chaining)","Video super-resolution","3D super-resolution"],answer:1},
-      {q:"SRGAN produces sharper results than MSE-based SR because:",options:["It uses a larger network","Perceptual and adversarial losses encourage realistic high-frequency detail","It uses more training data","It upsamples more gradually"],answer:1},
-      {q:"The atmospheric scattering model for haze is:",options:["I = J + A","I = J*t + A*(1-t)","I = J*A","I = J - t"],answer:1},
-      {q:"The Dark Channel Prior states that in haze-free images:",options:["All channels are bright","At least one channel is very dark in most local patches","Brightness is uniform","Edges are sharp"],answer:1},
-      {q:"Which loss function in GANs replaces JS divergence with Wasserstein distance?",options:["Standard GAN loss","WGAN-GP","Least-squares GAN","Hinge loss"],answer:1},
-      {q:"StyleGAN's mapping network produces which vector space?",options:["Z space","W space (disentangled latent)","Style space","Noise space"],answer:1},
-      {q:"The reparameterisation trick in VAEs allows:",options:["Better reconstruction","Backpropagation through stochastic sampling","Faster inference","More stable training"],answer:1},
-      {q:"In DDPM, the forward process:",options:["Removes noise","Gradually adds Gaussian noise over T steps","Learns to denoise","Applies adversarial training"],answer:1},
-      {q:"DDIM speeds up diffusion sampling by:",options:["Using a smaller U-Net","Using deterministic non-Markovian trajectories","Reducing image resolution","Using distillation"],answer:1},
-      {q:"Classifier-Free Guidance in diffusion models scales:",options:["Only the conditioned prediction","The interpolation between conditioned and unconditioned predictions","The noise schedule","The learning rate"],answer:1},
-      {q:"Latent Diffusion Models (Stable Diffusion) run diffusion in:",options:["Pixel space at full resolution","A compressed latent space from a VQ-VAE","Frequency domain","A GAN latent space"],answer:1},
-      {q:"ControlNet adds spatial conditioning to diffusion via:",options:["Fine-tuning the full U-Net","Zero-convolution adapters on a copied encoder","Attention layers","Cross-entropy fine-tuning"],answer:1},
-      {q:"FID (Frechet Inception Distance) measures:",options:["Image sharpness","Distance between real and generated image feature distributions","Training speed","Resolution"],answer:1},
-      {q:"CycleGAN enables image-to-image translation:",options:["With paired data only","Without paired data, using cycle consistency loss","With text supervision","Using only discriminators"],answer:1},
-      {q:"VQ-VAE uses a discrete codebook instead of a continuous latent space, enabling:",options:["Better gradients","Tokenised image representation for autoregressive generation","Faster training","Smaller models"],answer:1},
-      {q:"Progressive GAN trains by:",options:["Full resolution from the start","Starting at low resolution and progressively adding layers","Using multiple discriminators","Training with paired data"],answer:1},
-      {q:"Which metric is specifically designed for perceptual image quality using deep features?",options:["PSNR","SSIM","LPIPS","FID"],answer:2},
-      {q:"Inpainting with LaMa uses which convolution type to achieve global context from layer 1?",options:["Dilated conv","Partial conv","Fast Fourier Convolution (global receptive field)","Deformable conv"],answer:2},
-      {q:"Noise2Void trains a denoiser without clean target images by:",options:["Paired noisy images","Blind-spot convolutions that mask the centre pixel during training","Using a teacher model","Adversarial training"],answer:1},
-      {q:"The DiT architecture (Diffusion Transformer) replaces the U-Net backbone with:",options:["A GAN discriminator","A Vision Transformer","An RNN","A ResNet"],answer:1},
-      {q:"Score distillation sampling (SDS) allows:",options:["Faster DPM training","Using a pretrained diffusion model as a prior for 3D or other optimisation tasks","Training with no data","Better FID scores"],answer:1},
+      { q:"The atmospheric scattering model for image haze is: I(x) = J(x)*t(x) + A*(1-t(x)). What does 't(x)' represent?", options:["The haze density","The transmission map (fraction of scene radiance reaching the camera)","The atmospheric light","The pixel intensity"], answer:1 },
+      { q:"DnCNN trains to predict the noise residual rather than the clean image directly. This is called:", options:["Direct regression","Residual learning","Adversarial training","Self-supervised learning"], answer:1 },
+      { q:"LPIPS (Learned Perceptual Image Patch Similarity) uses features from which network?", options:["ResNet-50","U-Net","VGG or AlexNet (perceptual features)","CLIP"], answer:2 },
+      { q:"Retinex theory models image formation as:", options:["I = R + L (additive)","I = R * L (multiplicative reflectance times illumination)","I = R / L","I = conv(R, L)"], answer:1 },
+      { q:"CLAHE differs from standard histogram equalisation by:", options:["Using a global histogram","Limiting contrast amplification within local tiles to avoid over-enhancement","Applying to RGB directly","Working only in frequency domain"], answer:1 },
+      { q:"In SRGAN, the perceptual loss is computed as:", options:["Pixel-wise MSE","L2 distance between VGG feature maps of generated and ground-truth images","SSIM loss","Adversarial discriminator loss only"], answer:1 },
+      { q:"Real-ESRGAN extends ESRGAN to handle real-world degradations by:", options:["Training on synthetic Gaussian noise only","Using a high-order degradation pipeline that chains blur, noise, and JPEG compression","Adding more network layers","Using a larger discriminator"], answer:1 },
+      { q:"The forward DDPM process is designed so that x_T is approximately:", options:["A low-resolution version of x_0","Pure Gaussian noise N(0,I)","A heavily blurred version of x_0","A colour-quantised version of x_0"], answer:1 },
+      { q:"Classifier-Free Guidance (CFG) in diffusion models improves text-image alignment by:", options:["Training a separate classifier","Jointly training conditioned and unconditioned models and extrapolating at inference","Adding a CLIP loss during training","Increasing the number of denoising steps"], answer:1 },
+      { q:"ControlNet adds spatial conditioning to Stable Diffusion using:", options:["A separate full U-Net trained from scratch","Cloned encoder blocks connected via zero-convolution adapters (preserving pretrained behaviour initially)","Modifying the text embedding","Replacing cross-attention with spatial attention"], answer:1 },
+      { q:"The Dark Channel Prior for dehazing assumes that:", options:["At least one channel is saturated in hazy images","In haze-free outdoor images, at least one colour channel has very low intensity in most local patches","Haze is always grey","Transmission is uniform across the image"], answer:1 },
+      { q:"Seam carving uses dynamic programming to find:", options:["The straightest line from top to bottom","The minimum-energy connected path of pixels from top to bottom","The maximum-contrast path","The path through the most uniform region"], answer:1 },
+      { q:"DDIM sampling differs from DDPM by:", options:["Using a different U-Net architecture","Using a deterministic (non-Markovian) reverse process that skips timesteps","Training on higher-resolution images","Using a discriminator"], answer:1 },
+      { q:"In image inpainting, LaMa excels at repeating textures because it uses:", options:["Larger kernels","Fast Fourier Convolutions (FFC) that have global receptive field from the first layer","More training data","A larger discriminator"], answer:1 },
+      { q:"NIQE is a no-reference image quality metric. 'No-reference' means:", options:["It requires a low-quality reference","It estimates quality without needing a ground-truth clean reference image","It is parameter-free","It runs with no GPU"], answer:1 },
+      { q:"The 'dark channel prior' works because in haze-free nature images:", options:["The sky is always bright","At least one of R,G,B is close to zero in any local patch (except sky)","All channels are equal","Contrast is always high"], answer:1 },
+      { q:"Which model pioneered multi-stage progressive restoration for multiple restoration tasks (rain, blur, noise)?", options:["DnCNN","FFDNet","MPRNet","SwinIR"], answer:2 },
+      { q:"In StyleGAN, the W latent space is produced by:", options:["A random noise vector z directly","A mapping network (sequence of fully-connected layers) from z to w","An encoder network","The discriminator"], answer:1 },
+      { q:"FID (Frechet Inception Distance) measures:", options:["Peak signal-to-noise ratio","Frechet distance between InceptionNet feature distributions of real and generated images (lower=better)","Pixel-level accuracy","Sharpness of generated images"], answer:1 },
+      { q:"Zero-DCE (Zero-Reference Deep Curve Estimation) for low-light enhancement is unique because:", options:["It requires paired low/normal light images","It requires no paired training data or even dark images; it learns curve maps unsupervised","It uses a GAN discriminator","It works only in LAB colour space"], answer:1 },
+      { q:"In MPRNet, supervised attention modules at each stage do what?", options:["Replace batch normalisation","Produce intermediate restored outputs that supervise earlier stages, preventing gradient vanishing","Add spatial attention to features","Replace skip connections"], answer:1 },
+      { q:"The 'inpainting by exemplar' classical method (Criminisi) fills holes by:", options:["Blurring surrounding pixels","Propagating similar texture patches from the known region, guided by structure priority","Training a GAN","Using global colour statistics"], answer:1 },
+      { q:"VAE-based image generation tends to produce blurry outputs because:", options:["VAEs are undertrained","MSE reconstruction loss optimises for the expected value over all plausible reconstructions (blurry average)","The latent space is too large","Decoders are too shallow"], answer:1 },
+      { q:"Restormer applies self-attention along which dimension for efficient high-resolution processing?", options:["Spatial (H, W) dimension","Channel dimension only (transposed attention)","Batch dimension","Both spatial and channel"], answer:1 },
+      { q:"Total Variation (TV) regularisation in image restoration promotes images that are:", options:["High frequency and textured","Piecewise constant (smooth within regions, sharp at edges)","Uniformly blurred","Noise-amplified"], answer:1 },
     ]
   },
   {
-    title:"Section 5: Multimodal and Advanced Topics",
+    id:"Q5", title:"Multimodal, 3D, and Advanced Topics", color:P.accent5,
     questions:[
-      {q:"CLIP is trained with which objective?",options:["Supervised classification","Contrastive learning on image-text pairs","Generative modelling","Pixel reconstruction"],answer:1},
-      {q:"Vision Transformer (ViT) processes images by:",options:["Hierarchical convolutions","Splitting into patches and treating them as sequence tokens","Pixel-by-pixel RNN","Graph convolutions"],answer:1},
-      {q:"Swin Transformer achieves linear complexity via:",options:["Sparse attention","Local window attention with shifting","Random masking","Low-rank approximation"],answer:1},
-      {q:"BLIP-2 connects a frozen image encoder to an LLM via:",options:["Direct fine-tuning","Q-Former (Querying Transformer) bottleneck","Cross-attention only","Adapter layers"],answer:1},
-      {q:"DINOv2 learns visual features without labels using:",options:["Supervised ImageNet","Self-distillation with momentum teacher on curated web images","GAN training","Text supervision"],answer:1},
-      {q:"In VQA, the Bottom-Up Top-Down (ButD) attention uses features from:",options:["The full image CNN","Faster R-CNN detected object regions","Pixel grids","Depth maps"],answer:1},
-      {q:"NeRF represents a scene as a function that takes (x,y,z,theta,phi) and outputs:",options:["Depth only","RGB colour and volume density","Semantic label","Surface normal"],answer:1},
-      {q:"3D Gaussian Splatting achieves real-time rendering by:",options:["Running NeRF on GPU","Tile-based rasterisation of differentiable 3D Gaussians","Voxel caching","TSDF fusion"],answer:1},
-      {q:"PointNet achieves permutation invariance via:",options:["Sorting input points","Symmetric aggregation (max-pooling) over all point features","Graph convolution","Attention"],answer:1},
-      {q:"Optical flow estimation assumes which constraint between frames?",options:["Depth constancy","Brightness constancy","Texture constancy","Edge constancy"],answer:1},
-      {q:"RAFT (optical flow) uses which novel data structure?",options:["Multi-scale pyramid","4D all-pairs feature correlation volume with iterative GRU updates","Attention maps","Sparse keypoints"],answer:1},
-      {q:"Autonomous driving 3D detection in BEV space stands for:",options:["Below-Eye View","Bird's Eye View (top-down projection)","Beyond Edge View","Binocular Enhanced Vision"],answer:1},
-      {q:"The nuScenes detection metric NDS combines:",options:["Only mAP","mAP with translation, scale, orientation, attribute, and velocity errors","Precision and recall","IoU and confidence"],answer:1},
-      {q:"SlowFast networks process video with:",options:["One pathway at medium frame rate","Two pathways: Slow (high spatial, low temporal) and Fast (low spatial, high temporal)","Three timescales","Bidirectional RNN"],answer:1},
-      {q:"Action recognition with skeleton graphs uses:",options:["Standard CNNs on RGB","Graph Convolutional Networks on body joint topology","RNNs on optical flow","Transformers on pixel grids"],answer:1},
-      {q:"Depth Anything v2 achieves strong generalization by:",options:["Using better architecture","Semi-supervised training on 62M images with pseudo-labels","Larger batch size","More convolutions"],answer:1},
-      {q:"Lane detection with SCNN uses:",options:["Graph neural networks","Message passing across rows and columns of feature maps","Attention over proposals","Template matching"],answer:1},
-      {q:"Visual anomaly detection with PatchCore stores:",options:["All training features","A coreset subset of training features in a memory bank","Model weights only","Centroid per class"],answer:1},
-      {q:"Person re-identification (ReID) differs from face recognition in that it:",options:["Is easier","Works on full body without face, across non-overlapping cameras","Requires no metric learning","Uses 3D sensors"],answer:1},
-      {q:"Document Understanding model Donut avoids OCR by:",options:["Using OCR as preprocessing","Directly parsing document images with a vision encoder-decoder to JSON","Using LLMs only","Preprocessing with SIFT"],answer:1},
-      {q:"EfficientDet scales object detection using:",options:["Only depth scaling","Compound scaling of backbone, FPN, and head simultaneously","Random NAS","Data augmentation"],answer:1},
-      {q:"SigLIP improves over CLIP's contrastive loss by:",options:["Adding more text encoders","Using sigmoid pairwise loss instead of softmax over all pairs","Training on more data","Adding a generative objective"],answer:1},
-      {q:"Instant-NGP achieves fast NeRF training via:",options:["Smaller network","Multi-resolution hash encoding for positional encoding","GPU parallelism only","Fewer training views"],answer:1},
-      {q:"The occupancy prediction task in autonomous driving outputs:",options:["2D bounding boxes","A 3D voxel grid with semantic labels per voxel","Depth map only","Lane masks"],answer:1},
-      {q:"CellViT for computational pathology adapts which foundation model for cell segmentation?",options:["ResNet","SAM (Segment Anything Model)","CLIP","DINOv2"],answer:1},
+      { q:"NeRF represents a scene as a 5D function: inputs are (x,y,z) position and (theta,phi) view direction. Outputs are:", options:["Depth and normal","RGB colour and volume density (sigma)","Class label and confidence","Optical flow and disparity"], answer:1 },
+      { q:"3D Gaussian Splatting achieves real-time rendering by:", options:["Reducing polygon count","Rasterising differentiable 3D Gaussians projected as 2D ellipses, sorted by depth","Running NeRF on a GPU cluster","Using voxel grids with fast traversal"], answer:1 },
+      { q:"CLIP's zero-shot classification works by:", options:["Fine-tuning on the target dataset","Comparing image embeddings to text embeddings of class descriptions and selecting the nearest","Using a separate classifier head","Majority voting over augmented views"], answer:1 },
+      { q:"VQA (Visual Question Answering) requires:", options:["Only image understanding","Only language understanding","Joint understanding of image content and natural language question","3D scene reconstruction"], answer:2 },
+      { q:"In BLIP-2, the Q-Former (Querying Transformer) acts as:", options:["A text decoder","A lightweight bridge extracting relevant visual features from a frozen image encoder for an LLM","A discriminator","An image encoder"], answer:1 },
+      { q:"DINOv2 achieves strong dense prediction features via:", options:["Supervised ImageNet training only","Self-supervised learning combining DINO, iBOT, and KoLeo objectives on 142M curated images","Adversarial training","Contrastive learning with text pairs"], answer:1 },
+      { q:"The epipolar constraint in stereo vision states that:", options:["Corresponding points have the same depth","A 3D point's projection in one image must lie on a specific line (epipolar line) in the other image","All pixels have the same disparity","Cameras must be perfectly aligned"], answer:1 },
+      { q:"PointNet achieves permutation invariance of point sets by using:", options:["Graph convolution","Shared MLP per point followed by symmetric max-pooling over all points","3D voxelisation","Attention over point pairs"], answer:1 },
+      { q:"In autonomous driving, BEV (Bird's Eye View) representations are preferred for 3D detection because:", options:["They are easier to visualise","Object shapes and positions are scale-consistent and non-overlapping, unlike perspective view","They require less computation","Cameras directly capture BEV images"], answer:1 },
+      { q:"InstantNGP accelerates NeRF training by replacing the MLP positional encoding with:", options:["SIREN (sinusoidal activations)","Multi-resolution hash encoding of 3D positions","Voxel grids","Fourier features"], answer:1 },
+      { q:"LLaVA (Large Language and Vision Assistant) architecture connects:", options:["CLIP image encoder to GPT-2","A vision encoder (CLIP ViT) to a large language model (LLaMA/Vicuna) via a linear projection","Two CLIP models","A GAN to a text encoder"], answer:1 },
+      { q:"Medical image segmentation has lower data availability than ImageNet due to:", options:["Hardware limitations","Requirement for expert clinical annotation and strict patient privacy regulations","Medical images being lower quality","Limited camera technology"], answer:1 },
+      { q:"ControlNet was designed specifically to add what to pretrained diffusion models?", options:["Text conditioning","Spatial conditioning (edges, depth, pose) without modifying pretrained weights","Higher resolution","Faster sampling"], answer:1 },
+      { q:"In PatchCore (anomaly detection), the memory bank stores features from:", options:["Anomalous test images","Normal training image patches (CNN features), used as reference at test time","The discriminator of a GAN","Text descriptions of defects"], answer:1 },
+      { q:"FAISS (Facebook AI Similarity Search) is used in image retrieval for:", options:["Training image classifiers","Efficiently searching millions of embeddings using approximate nearest neighbour algorithms (IVF, HNSW)","Data augmentation","Depth estimation"], answer:1 },
+      { q:"The Chamfer Distance is used to compare:", options:["Image quality","Two point clouds (average nearest-neighbour distance from each point in A to B and vice versa)","Segmentation masks","Optical flow fields"], answer:1 },
+      { q:"In document understanding, LayoutLMv3 encodes which additional information beyond text tokens?", options:["Audio transcription","2D bounding box positions of text elements and image patch features","Video frames","3D document structure"], answer:1 },
+      { q:"The SA-1B dataset used to train SAM contains approximately:", options:["11K images and 11K masks","1M images and 10M masks","11M images and 1.1B masks","100M images and 1T masks"], answer:2 },
+      { q:"Which metric is used to evaluate novel view synthesis quality in NeRF papers?", options:["mAP and IOU","PSNR, SSIM, and LPIPS (measuring pixel quality, structure, and perceptual quality of rendered views)","FID and IS","Chamfer Distance only"], answer:1 },
+      { q:"VGGFace2 is used to train:", options:["General image classifiers","Face recognition models (contains 3.31M images of 9131 identities)","Object detection models","Generative models for face synthesis"], answer:1 },
+      { q:"SAMURAI extends SAM2 to video by adding:", options:["A larger image encoder","Kalman filter-based motion modelling for temporal consistency in single-object tracking","Text conditioning","Multi-object tracking heads"], answer:1 },
+      { q:"DiT (Diffusion Transformer) replaces the U-Net backbone in diffusion models with:", options:["A ResNet backbone","A Vision Transformer operating on latent patches","A GAN discriminator","A RNN sequence model"], answer:1 },
+      { q:"The P3 level of a Feature Pyramid Network (FPN) has what spatial resolution relative to the input?", options:["1/2 of input","1/8 of input","1/32 of input","Same as input"], answer:1 },
+      { q:"Open-vocabulary detection (e.g. GLIP, Grounding DINO) enables detecting:", options:["Only COCO classes","Any object described by free-form text at inference, without retraining","Objects in 3D point clouds only","Anomalies in industrial images"], answer:1 },
+      { q:"In monocular depth estimation, 'metric depth' refers to:", options:["Relative depth ordering only","Absolute depth in real-world units (metres), requiring calibration or learning from scale-aware data","Depth measured in pixels","Depth normalised to [0,1]"], answer:1 },
     ]
   },
   {
-    title:"Section 6: Practical CV and Deployment",
+    id:"Q6", title:"Practical ML, Deployment, and Ethics", color:P.accent6,
     questions:[
-      {q:"Post-Training Quantisation (PTQ) converts model weights from float32 to:",options:["float64","bfloat16 or int8","int32","float16 only"],answer:1},
-      {q:"Knowledge distillation trains the student using:",options:["Hard one-hot labels only","Soft teacher logits (probability distribution over classes)","Only teacher intermediate features","Random labels"],answer:1},
-      {q:"ONNX is used for:",options:["Training models","Vendor-neutral model exchange and deployment across runtimes","Dataset management","Hyperparameter tuning"],answer:1},
-      {q:"TensorRT is optimised for inference on:",options:["CPUs","NVIDIA GPUs","Mobile CPUs","FPGA"],answer:1},
-      {q:"Data drift refers to:",options:["Gradient instability","Input distribution at deployment differing from training distribution","Model weight drift","Label noise"],answer:1},
-      {q:"Structured pruning removes:",options:["Individual weights below threshold","Entire channels, heads, or layers (hardware-friendly)","Batch norm parameters","Biases only"],answer:1},
-      {q:"Quantisation-Aware Training (QAT) vs PTQ:",options:["QAT is faster","QAT simulates quantisation during training, achieving higher accuracy","PTQ always beats QAT","They are identical"],answer:1},
-      {q:"A/B testing in model deployment is used for:",options:["Debugging training","Safely comparing new and old model versions with a subset of live traffic","Data collection","Architecture search"],answer:1},
-      {q:"MLflow is primarily used for:",options:["Data preprocessing","Experiment tracking, model versioning, and reproducibility","Serving models at scale","Neural architecture search"],answer:1},
-      {q:"The Triton Inference Server supports:",options:["Only PyTorch","Multiple frameworks (TF, PyTorch, ONNX, TensorRT) with dynamic batching","Only TFLite","CPU inference only"],answer:1},
-      {q:"GFLOPs (Giga Floating-Point Operations) is used to measure:",options:["Model accuracy","Model computational complexity","Training speed only","Memory usage"],answer:1},
-      {q:"Test-Time Augmentation (TTA) improves prediction by:",options:["Training longer","Averaging predictions over multiple augmented versions of the test image","Using more labels","Adding dropout"],answer:1},
-      {q:"Expected Calibration Error (ECE) measures:",options:["Accuracy on easy examples","How well model confidence scores match actual accuracy","Loss value","Speed"],answer:1},
-      {q:"Canary deployment routes:",options:["All traffic to new model","A small percentage of traffic to the new model for safe rollout","Traffic based on geography","Only bot traffic"],answer:1},
-      {q:"CoreML is specifically optimised for inference on:",options:["NVIDIA GPUs","Android devices","Apple devices (iOS, macOS)","x86 CPUs"],answer:2},
-      {q:"Dynamic batching in serving (Triton) improves:",options:["Accuracy","GPU utilisation by grouping multiple concurrent requests","Model size","Training speed"],answer:1},
-      {q:"The primary purpose of Grad-CAM is:",options:["Speed up inference","Visualise which image regions influenced the model's class prediction","Compress models","Augment data"],answer:1},
-      {q:"SHAP values for image attribution are based on:",options:["Gradient magnitude","Shapley values from cooperative game theory","Attention weights","Feature correlation"],answer:1},
-      {q:"OpenVINO (Intel) is optimised for inference on:",options:["NVIDIA GPUs","Intel CPUs, integrated GPUs, and VPUs","ARM CPUs","TPUs"],answer:1},
-      {q:"Neural Architecture Search (NAS) automatically finds:",options:["The best training data","Pareto-optimal network architectures for a given hardware-accuracy tradeoff","The best loss function","The best augmentation policy"],answer:1},
-      {q:"Which evaluation split is used to tune hyperparameters (not the test set)?",options:["Training set","Validation set","Test set","Holdout set"],answer:1},
-      {q:"Confusion matrix diagonal values represent:",options:["Errors per class","Correct predictions per class (True Positives)","Total samples","FP rates"],answer:1},
-      {q:"The Receiver Operating Characteristic (ROC) curve plots:",options:["Precision vs recall","True Positive Rate vs False Positive Rate at various thresholds","Loss vs accuracy","PSNR vs SSIM"],answer:1},
-      {q:"BentoML is a framework for:",options:["Training large models","Packaging and serving ML models as production-grade APIs","Data labelling","Feature engineering"],answer:1},
-      {q:"Ray Serve is used for:",options:["Distributed training only","Scalable model serving and inference with actor-based architecture","Data preprocessing","Experiment tracking"],answer:1},
+      { q:"Post-Training Quantisation (PTQ) reduces model size without retraining. The accuracy drop for INT8 is typically:", options:["Negligible (< 1%)","Moderate (5-10%)","Severe (> 20%)","Zero"], answer:0 },
+      { q:"What is model calibration in the context of deployment?", options:["Adjusting model weights for a new dataset","Ensuring that the model's confidence scores reflect true probabilities","Reducing inference latency","Increasing model throughput"], answer:1 },
+      { q:"Expected Calibration Error (ECE) is computed as:", options:["Mean squared error between predictions and ground truth","Weighted average of the absolute difference between accuracy and confidence per confidence bin","1 - Top-1 accuracy","KL divergence between predicted and true distributions"], answer:1 },
+      { q:"TensorRT is used to:", options:["Train models faster","Optimise and compile models specifically for NVIDIA GPU inference (kernel fusion, mixed precision, batching)","Export models to mobile","Visualise model architecture"], answer:1 },
+      { q:"ONNX (Open Neural Network Exchange) is:", options:["A training framework","An open format for representing ML models, enabling cross-framework deployment","A dataset format","A GPU library"], answer:1 },
+      { q:"Which of these reduces inference latency but NOT model size?", options:["Weight pruning","INT8 quantisation","Batching multiple requests together","Knowledge distillation"], answer:2 },
+      { q:"Conformal prediction provides:", options:["A point estimate of model output","Distribution-free prediction sets with guaranteed coverage at a specified confidence level","A calibrated probability distribution","Uncertainty estimates only for regression tasks"], answer:1 },
+      { q:"Temperature scaling for calibration works by:", options:["Adding noise to logits","Dividing all logits by a learned scalar T before softmax, found via validation set","Retraining the final layer","Applying label smoothing"], answer:1 },
+      { q:"Data augmentation during training primarily helps with:", options:["Faster training","Reducing overfitting by artificially increasing training data diversity","Improving inference speed","Reducing model parameters"], answer:1 },
+      { q:"Which augmentation strategy specifically improves small object detection performance?", options:["Random horizontal flip","Random erasing / cutout","Mosaic augmentation (combining 4 images, used in YOLOv5+)","Mixup"], answer:2 },
+      { q:"Class Activation Mapping (CAM) and Grad-CAM are used for:", options:["Data augmentation","Visualising which image regions influenced a classification decision (interpretability)","Model compression","Speed benchmarking"], answer:1 },
+      { q:"The EU AI Act classifies autonomous vehicle perception systems as:", options:["Prohibited AI","Low-risk AI","High-risk AI (critical safety applications require conformity assessment)","Minimal risk AI"], answer:2 },
+      { q:"Which of these is a key challenge when deploying CV models in clinical settings?", options:["Too much data","Strict regulatory requirements (FDA, CE marking), privacy regulations (HIPAA/GDPR), and bias across patient demographics","High GPU cost","Colour calibration"], answer:1 },
+      { q:"Model bias in face recognition systems has been shown to:", options:["Affect all demographic groups equally","Perform worse on darker-skinned individuals and women, reflecting dataset imbalances in training data","Only affect age estimation","Not exist in modern systems"], answer:1 },
+      { q:"torch.compile() in PyTorch 2.0 improves inference speed by:", options:["Reducing model parameters","Compiling the model graph (kernel fusion, operation scheduling) ahead of time","Quantising weights","Pruning unused layers"], answer:1 },
+      { q:"Deepfakes pose which primary societal risk?", options:["Lower image quality","Manipulation of public discourse through synthetic media that makes real events appear false or vice versa","Increased storage requirements","Reduced model accuracy"], answer:1 },
+      { q:"Why is FLANN preferred over brute-force matching for SIFT in large-scale retrieval?", options:["Higher accuracy","Approximate nearest-neighbour search with sub-linear time complexity, much faster for large databases","Better handling of rotation invariance","Produces fewer false positives"], answer:1 },
+      { q:"The principle of 'Data Minimisation' in GDPR means:", options:["Using smaller models","Only collecting and processing the minimum personal data necessary for the specified purpose","Reducing dataset size for faster training","Using fewer sensors"], answer:1 },
+      { q:"Which metric is most appropriate for evaluating detection performance on a dataset with severe class imbalance?", options:["Pixel accuracy","mAP (mean Average Precision, which averages over the full precision-recall curve)","Simple accuracy","MSE"], answer:1 },
+      { q:"In federated learning for medical image analysis:", options:["Patient data is centralised on one server","Models are trained locally on each hospital's data; only model updates (gradients) are shared, preserving privacy","Data is encrypted then sent to a cloud","Only inference is done locally"], answer:1 },
+      { q:"Structured pruning removes entire CNN filters/channels. Its advantage over unstructured pruning is:", options:["Better accuracy preservation","Direct reduction in FLOPs and wall-clock time (hardware-friendly), unlike sparse unstructured pruning","Simpler implementation","Smaller storage savings"], answer:1 },
+      { q:"Which of these is NOT a consideration when deploying an object detection model on an edge device (e.g. Raspberry Pi)?", options:["Model size (RAM constraint)","Inference latency per frame","INT8 quantisation compatibility","ImageNet top-1 accuracy (not directly relevant to deployment task)"], answer:3 },
+      { q:"MixUp augmentation creates training samples by:", options:["Random cropping and pasting","Linear interpolation between two random training images and their labels (x=lambda*x1+(1-lambda)*x2)","Adding random noise","Randomly dropping patches (CutOut)"], answer:1 },
+      { q:"The 'LIME' explanation method explains a model prediction by:", options:["Visualising gradients","Perturbing the input, observing prediction changes, and fitting a local linear model to the resulting neighbourhood","Computing SHAP values","Backpropagating the class score to the input"], answer:1 },
+      { q:"When a CV model fails silently on out-of-distribution data, the recommended mitigation is:", options:["Retrain on more data only","Add uncertainty estimation (ensembles, MC Dropout, or conformal prediction) plus OOD detection to flag uncertain predictions","Increase model size","Reduce confidence threshold"], answer:1 },
     ]
   },
 ];
 
 /* ================================================================
-   MAIN APP COMPONENT
+   REACT COMPONENT
 ================================================================ */
 export default function App() {
   const [tab, setTab]           = useState("domains");
-  const [selDomain, setSelDomain] = useState(null);
-  const [selMod, setSelMod]     = useState(null);
-  const [selCh, setSelCh]       = useState(null);
-  const [showSol, setShowSol]   = useState(false);
-  const [quizSec, setQuizSec]   = useState(0);
-  const [quizIdx, setQuizIdx]   = useState(0);
-  const [quizAns, setQuizAns]   = useState({});
-  const [quizDone, setQuizDone] = useState(false);
-  const [searchQ, setSearchQ]   = useState("");
+  const [selectedDomain, setSelectedDomain] = useState(null);
+  const [domainSearch, setDomainSearch]     = useState("");
+  const [selectedModule, setSelectedModule] = useState(null);
   const [chFilter, setChFilter] = useState("All");
-  const [quizScore, setQuizScore] = useState(null);
+  const [selectedCh, setSelectedCh]         = useState(null);
+  const [quizSection, setQuizSection]       = useState(null);
+  const [quizIdx, setQuizIdx]   = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore]       = useState(0);
+  const [answered, setAnswered] = useState(false);
+  const [showAll, setShowAll]   = useState(false);
+  const [copied, setCopied]     = useState(false);
+  const [quizDone, setQuizDone] = useState(false);
+  const [wrongAns, setWrongAns] = useState([]);
 
-  const TABS = [
-    {id:"domains",  label:"30 Domains"},
-    {id:"modules",  label:"10 Modules"},
-    {id:"challenges",label:"100 Challenges"},
-    {id:"quiz",     label:"150 Quiz"},
-  ];
+  const filteredDomains = DOMAINS.filter(d =>
+    d.name.toLowerCase().includes(domainSearch.toLowerCase()) ||
+    d.tagline.toLowerCase().includes(domainSearch.toLowerCase())
+  );
 
-  const S = {
-    app: { background:P.bg, minHeight:"100vh", color:P.text,
-           fontFamily:"'DM Mono','Fira Code',monospace", fontSize:14 },
-    nav: { background:P.surface, borderBottom:`1px solid ${P.border}`,
-           padding:"0 24px", display:"flex", alignItems:"center", gap:8, overflowX:"auto",
-           position:"sticky", top:0, zIndex:100, boxShadow:"0 2px 20px #000a" },
-    logo: { color:P.accent1, fontWeight:700, fontSize:18, marginRight:16,
-            letterSpacing:"-0.5px", whiteSpace:"nowrap" },
-    tab: (active) => ({
-      padding:"16px 20px", cursor:"pointer", borderBottom: active?`3px solid ${P.accent1}`:"3px solid transparent",
-      color: active ? P.accent1 : P.muted, fontWeight: active?700:400,
-      background:"none", border:"none", fontSize:13, letterSpacing:1,
-      transition:"all 0.2s", whiteSpace:"nowrap",
-    }),
-    content: { maxWidth:1400, margin:"0 auto", padding:"32px 20px" },
-    card: { background:P.card, border:`1px solid ${P.border}`, borderRadius:12,
-            padding:24, marginBottom:16, cursor:"pointer", transition:"all 0.2s" },
-    grid: { display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:16 },
-    pill: (col) => ({ display:"inline-block", background:col+"22", color:col, border:`1px solid ${col}44`,
-                      borderRadius:20, padding:"3px 12px", fontSize:11, fontWeight:700, letterSpacing:1 }),
-    badge: (col) => ({ display:"inline-block", background:col+"33", color:col,
-                       borderRadius:6, padding:"2px 8px", fontSize:11, fontWeight:600 }),
-    code: { background:"#020814", borderRadius:8, padding:20, overflowX:"auto",
-            fontSize:12, lineHeight:1.7, color:"#a8d8ea", whiteSpace:"pre",
-            fontFamily:"'Fira Code',monospace", border:`1px solid ${P.border}` },
-    input: { background:P.card, border:`1px solid ${P.border}`, borderRadius:8,
-             color:P.text, padding:"10px 16px", fontSize:13, outline:"none", width:"100%",
-             boxSizing:"border-box", fontFamily:"inherit" },
-    btn: (col) => ({ background:col, color:"#000", border:"none", borderRadius:8,
-                     padding:"10px 20px", cursor:"pointer", fontWeight:700, fontSize:12,
-                     letterSpacing:1, transition:"opacity 0.2s" }),
-    section: { background:P.surface, borderRadius:8, padding:20, marginBottom:16,
-               border:`1px solid ${P.border}` },
+  const filteredChallenges = chFilter === "All"
+    ? CHALLENGES
+    : CHALLENGES.filter(c => c.difficulty === chFilter);
+
+  const copyCode = (code) => {
+    navigator.clipboard.writeText(code).then(() => {
+      setCopied(true); setTimeout(() => setCopied(false), 2000);
+    });
   };
 
-  // ---- DOMAINS VIEW ----
-  const DomainsView = () => {
-    if (selDomain) {
-      const d = selDomain;
-      return (
-        <div>
-          <button style={{...S.btn(P.accent1), marginBottom:24}} onClick={()=>setSelDomain(null)}>
-            ← Back to Domains
-          </button>
-          <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:24}}>
-            <div style={{width:48,height:48,borderRadius:12,background:d.color+"33",
-                         display:"flex",alignItems:"center",justifyContent:"center",
-                         fontSize:22,fontWeight:700,color:d.color}}>{d.id}</div>
-            <div>
-              <h1 style={{margin:0,color:d.color,fontSize:28}}>{d.name}</h1>
-              <div style={{color:P.muted,marginTop:4}}>{d.tagline}</div>
-            </div>
-          </div>
-          <div style={{...S.section}}>
-            <h3 style={{color:P.accent2,margin:"0 0 12px"}}>Theory</h3>
-            <p style={{lineHeight:1.8,color:P.text,margin:0}}>{d.theory}</p>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:16}}>
-            {[["Architectures",d.architectures,P.accent3],["Metrics",d.metrics,P.accent4],["Datasets",d.datasets,P.accent5]].map(([title,items,col])=>(
-              <div key={title} style={{...S.section}}>
-                <h4 style={{color:col,margin:"0 0 10px"}}>{title}</h4>
-                {items.map(it=><div key={it} style={{...S.badge(col),margin:"3px 4px 3px 0",display:"inline-block"}}>{it}</div>)}
-              </div>
-            ))}
-          </div>
-          <div style={S.section}>
-            <h3 style={{color:P.accent6,margin:"0 0 12px"}}>Google Colab Code</h3>
-            <div style={S.code}>{d.colab}</div>
-          </div>
-        </div>
-      );
-    }
-    const filtered = DOMAINS.filter(d =>
-      d.name.toLowerCase().includes(searchQ.toLowerCase()) ||
-      d.theory.toLowerCase().includes(searchQ.toLowerCase())
-    );
-    return (
-      <div>
-        <h2 style={{color:P.accent1,marginBottom:8}}>30 Computer Vision Domains</h2>
-        <p style={{color:P.muted,marginBottom:20}}>From classical image processing to state-of-the-art deep learning. Click any domain for full theory, architectures, datasets, and runnable Colab code.</p>
-        <input style={{...S.input,marginBottom:20,maxWidth:400}} placeholder="Search domains..."
-               value={searchQ} onChange={e=>setSearchQ(e.target.value)} />
-        <div style={S.grid}>
-          {filtered.map((d,i)=>(
-            <div key={d.id} style={{...S.card, borderLeft:`4px solid ${d.color}`, borderColor:P.border}}
-                 onClick={()=>setSelDomain(d)}
-                 onMouseEnter={e=>{e.currentTarget.style.background=P.card2;e.currentTarget.style.borderLeft=`4px solid ${d.color}`}}
-                 onMouseLeave={e=>{e.currentTarget.style.background=P.card;e.currentTarget.style.borderLeft=`1px solid ${P.border}`}}>
-              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
-                <div style={{width:36,height:36,borderRadius:8,background:d.color+"22",
-                             display:"flex",alignItems:"center",justifyContent:"center",
-                             color:d.color,fontWeight:700,fontSize:14}}>{d.id}</div>
-                <div>
-                  <div style={{fontWeight:700,color:P.text}}>{d.name}</div>
-                  <div style={{color:P.muted,fontSize:11,marginTop:2}}>{d.tagline}</div>
-                </div>
-              </div>
-              <div style={{...S.pill(d.color),marginBottom:10}}>{d.architectures[0]} + {d.architectures.length-1} more</div>
-              <div style={{color:P.muted,fontSize:12,lineHeight:1.6}}>{d.theory.slice(0,120)}...</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+  const handleAnswer = (idx) => {
+    if (answered) return;
+    setSelected(idx); setAnswered(true);
+    const q = quizSection.questions[quizIdx];
+    if (idx === q.answer) setScore(s => s+1);
+    else setWrongAns(w => [...w, { q: q.q, correct: q.options[q.answer], chosen: q.options[idx] }]);
   };
 
-  // ---- MODULES VIEW ----
-  const ModulesView = () => {
-    if (selMod !== null) {
-      const m = MODULES[selMod];
-      return (
-        <div>
-          <button style={{...S.btn(P.accent2),marginBottom:24}} onClick={()=>setSelMod(null)}>← Modules</button>
-          <div style={{marginBottom:24}}>
-            <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:8}}>
-              <div style={{...S.pill(m.color)}}>{m.level}</div>
-              <div style={{color:P.muted,fontSize:12}}>⏱ {m.time}</div>
-            </div>
-            <h1 style={{margin:"0 0 8px",color:m.color,fontSize:26}}>Module {m.id}: {m.title}</h1>
-          </div>
-          {m.sections.map((s,i)=>(
-            <div key={i} style={S.section}>
-              <h3 style={{color:C(i),margin:"0 0 12px"}}>{s.heading}</h3>
-              <p style={{lineHeight:1.8,margin:0}}>{s.body}</p>
-            </div>
-          ))}
-          <div style={S.section}>
-            <h3 style={{color:P.accent5,margin:"0 0 12px"}}>Python Code (Colab-Ready)</h3>
-            <div style={S.code}>{m.code}</div>
-          </div>
-        </div>
-      );
-    }
-    return (
-      <div>
-        <h2 style={{color:P.accent2,marginBottom:8}}>10 Learning Modules</h2>
-        <p style={{color:P.muted,marginBottom:24}}>Structured learning path from absolute beginner to advanced. Each module includes detailed theory and fully runnable Python code.</p>
-        <div style={{display:"flex",flexDirection:"column",gap:12}}>
-          {MODULES.map((m,i)=>(
-            <div key={m.id} style={{...S.card,display:"flex",alignItems:"center",gap:20,padding:20}}
-                 onClick={()=>setSelMod(i)}
-                 onMouseEnter={e=>e.currentTarget.style.background=P.card2}
-                 onMouseLeave={e=>e.currentTarget.style.background=P.card}>
-              <div style={{width:52,height:52,borderRadius:12,background:m.color+"22",
-                           display:"flex",alignItems:"center",justifyContent:"center",
-                           color:m.color,fontWeight:700,fontSize:18,flexShrink:0}}>M{m.id}</div>
-              <div style={{flex:1}}>
-                <div style={{fontWeight:700,fontSize:16,marginBottom:4}}>{m.title}</div>
-                <div style={{display:"flex",gap:10}}>
-                  <div style={{...S.pill(m.color)}}>{m.level}</div>
-                  <div style={{color:P.muted,fontSize:12,alignSelf:"center"}}>⏱ {m.time}</div>
-                  <div style={{color:P.muted,fontSize:12,alignSelf:"center"}}>{m.sections.length} sections</div>
-                </div>
-              </div>
-              <div style={{color:P.accent1,fontSize:18}}>→</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  // ---- CHALLENGES VIEW ----
-  const ChallengesView = () => {
-    const DIFFS = ["All","Easy","Medium","Hard"];
-    const filtered = CHALLENGES.filter(c =>
-      (chFilter==="All" || c.difficulty===chFilter) &&
-      (c.title.toLowerCase().includes(searchQ.toLowerCase()) ||
-       c.tag.toLowerCase().includes(searchQ.toLowerCase()) ||
-       c.desc.toLowerCase().includes(searchQ.toLowerCase()))
-    );
-    const diffColor = {"Easy":P.accent3,"Medium":P.accent5,"Hard":P.accent9};
-    if (selCh) {
-      const c = selCh;
-      return (
-        <div>
-          <button style={{...S.btn(P.accent3),marginBottom:24}} onClick={()=>{setSelCh(null);setShowSol(false);}}>← Challenges</button>
-          <div style={{display:"flex",flexWrap:"wrap",gap:10,marginBottom:20,alignItems:"center"}}>
-            <div style={{...S.pill(diffColor[c.difficulty]||P.accent5)}}>{c.difficulty}</div>
-            <div style={{...S.badge(P.accent1)}}>{c.tag}</div>
-            <div style={{...S.badge(P.accent6)}}>{c.points} pts</div>
-            <div style={{color:P.muted,fontSize:12}}>{c.company}</div>
-          </div>
-          <h1 style={{margin:"0 0 16px",fontSize:24}}>{c.id}: {c.title}</h1>
-          <div style={S.section}>
-            <h4 style={{color:P.accent2,margin:"0 0 10px"}}>Problem Description</h4>
-            <p style={{lineHeight:1.8,margin:0}}>{c.desc}</p>
-          </div>
-          <div style={S.section}>
-            <h4 style={{color:P.accent4,margin:"0 0 10px"}}>Example</h4>
-            <div style={S.code}>{c.example}</div>
-          </div>
-          <div style={S.section}>
-            <h4 style={{color:P.accent5,margin:"0 0 10px"}}>Hint</h4>
-            <p style={{color:P.muted,margin:0,lineHeight:1.8}}>{c.hint}</p>
-          </div>
-          <button style={{...S.btn(P.accent6),marginBottom:16}} onClick={()=>setShowSol(!showSol)}>
-            {showSol?"Hide Solution":"Show Full Solution"}
-          </button>
-          {showSol && (
-            <div>
-              <div style={S.section}>
-                <h4 style={{color:P.accent6,margin:"0 0 10px"}}>Full Solution (with Image Loading)</h4>
-                <div style={S.code}>{c.fullSolution}</div>
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-                <div style={S.section}>
-                  <h4 style={{color:P.accent7,margin:"0 0 10px"}}>Complexity</h4>
-                  <div style={{color:P.muted,fontFamily:"'Fira Code',monospace",fontSize:12}}>{c.complexity}</div>
-                </div>
-                <div style={S.section}>
-                  <h4 style={{color:P.accent8,margin:"0 0 10px"}}>Follow-up Question</h4>
-                  <p style={{color:P.muted,margin:0,lineHeight:1.6}}>{c.followup}</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      );
-    }
-    const counts = {Easy:CHALLENGES.filter(c=>c.difficulty==="Easy").length,
-                    Medium:CHALLENGES.filter(c=>c.difficulty==="Medium").length,
-                    Hard:CHALLENGES.filter(c=>c.difficulty==="Hard").length};
-    return (
-      <div>
-        <h2 style={{color:P.accent3,marginBottom:8}}>100 LeetCode-Style Challenges</h2>
-        <div style={{display:"flex",gap:16,marginBottom:20,flexWrap:"wrap"}}>
-          {Object.entries(counts).map(([d,n])=>(
-            <div key={d} style={{...S.badge(diffColor[d]),padding:"6px 14px",fontSize:12}}>{n} {d}</div>
-          ))}
-        </div>
-        <div style={{display:"flex",gap:12,marginBottom:20,flexWrap:"wrap"}}>
-          <input style={{...S.input,maxWidth:300}} placeholder="Search challenges..."
-                 value={searchQ} onChange={e=>setSearchQ(e.target.value)} />
-          <div style={{display:"flex",gap:8}}>
-            {DIFFS.map(d=>(
-              <button key={d} style={{...S.btn(chFilter===d?P.accent3:P.border),
-                                      color:chFilter===d?"#000":P.muted, fontSize:11}}
-                      onClick={()=>setChFilter(d)}>{d}</button>
-            ))}
-          </div>
-        </div>
-        <div style={{...S.grid}}>
-          {filtered.map(c=>(
-            <div key={c.id} style={{...S.card}} onClick={()=>setSelCh(c)}
-                 onMouseEnter={e=>e.currentTarget.style.background=P.card2}
-                 onMouseLeave={e=>e.currentTarget.style.background=P.card}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
-                <div style={{...S.pill(diffColor[c.difficulty]||P.accent5)}}>{c.difficulty}</div>
-                <div style={{color:P.accent6,fontWeight:700,fontSize:13}}>{c.points} pts</div>
-              </div>
-              <div style={{fontWeight:700,marginBottom:6,fontSize:14}}>{c.id}: {c.title}</div>
-              <div style={{...S.badge(P.accent1),marginBottom:8}}>{c.tag}</div>
-              <div style={{color:P.muted,fontSize:11,lineHeight:1.6}}>{c.desc.slice(0,100)}...</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  // ---- QUIZ VIEW ----
-  const QuizView = () => {
-    const sec = QUIZ_SECTIONS[quizSec];
-    const q   = sec.questions[quizIdx];
-    const key = `${quizSec}-${quizIdx}`;
-    const answered = quizAns[key] !== undefined;
-
-    const submitQuiz = () => {
-      let correct = 0, total = 0;
-      QUIZ_SECTIONS.forEach((s,si)=>{
-        s.questions.forEach((q,qi)=>{
-          total++;
-          if (quizAns[`${si}-${qi}`]===q.answer) correct++;
-        });
-      });
-      setQuizScore({correct,total});
+  const nextQuestion = () => {
+    if (quizIdx + 1 >= quizSection.questions.length) {
       setQuizDone(true);
-    };
+    } else {
+      setQuizIdx(i => i+1); setSelected(null); setAnswered(false);
+    }
+  };
 
-    if (quizDone && quizScore) {
-      const pct = Math.round(quizScore.correct/quizScore.total*100);
+  const resetQuiz = () => {
+    setQuizSection(null); setQuizIdx(0); setSelected(null);
+    setScore(0); setAnswered(false); setQuizDone(false); setWrongAns([]);
+  };
+
+  /* ── Styles ── */
+  const S = {
+    app:    { minHeight:"100vh", background:P.bg, color:P.text, fontFamily:"'JetBrains Mono','Fira Code',monospace" },
+    header: { background:`linear-gradient(135deg,${P.surface} 0%,#0a1830 100%)`,
+              padding:"2rem 2rem 1.5rem", borderBottom:`1px solid ${P.border}` },
+    heroTitle:{ fontSize:"clamp(1.6rem,3vw,2.6rem)", fontWeight:800, letterSpacing:"-0.02em",
+                background:`linear-gradient(90deg,${P.accent1},${P.accent2},${P.accent3})`,
+                WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" },
+    heroSub:{ color:P.muted, fontSize:"0.9rem", marginTop:"0.4rem" },
+    stats:  { display:"flex", gap:"2rem", marginTop:"1.2rem", flexWrap:"wrap" },
+    stat:   { textAlign:"center" },
+    statN:  { fontSize:"1.6rem", fontWeight:800, color:P.accent1 },
+    statL:  { fontSize:"0.72rem", color:P.muted, textTransform:"uppercase", letterSpacing:"0.08em" },
+    tabs:   { display:"flex", gap:"0.3rem", padding:"1rem 2rem 0", background:P.surface,
+              borderBottom:`1px solid ${P.border}`, overflowX:"auto" },
+    tab:    (active) => ({ padding:"0.65rem 1.4rem", borderRadius:"8px 8px 0 0", cursor:"pointer",
+              fontWeight:600, fontSize:"0.82rem", letterSpacing:"0.04em",
+              background: active ? P.card : "transparent",
+              color: active ? P.accent1 : P.muted,
+              border: active ? `1px solid ${P.border}` : "1px solid transparent",
+              borderBottom: active ? `1px solid ${P.card}` : "1px solid transparent",
+              transition:"all 0.2s", whiteSpace:"nowrap" }),
+    content:{ padding:"2rem", maxWidth:"1400px", margin:"0 auto" },
+    grid3:  { display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:"1.2rem" },
+    grid2:  { display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(380px,1fr))", gap:"1.2rem" },
+    card:   (col) => ({ background:P.card, border:`1px solid ${col}33`, borderRadius:12,
+              padding:"1.4rem", cursor:"pointer", transition:"all 0.2s",
+              borderLeft:`3px solid ${col}` }),
+    badge:  (col) => ({ display:"inline-block", background:`${col}22`, color:col,
+              borderRadius:20, padding:"0.18rem 0.7rem", fontSize:"0.72rem",
+              fontWeight:700, letterSpacing:"0.06em" }),
+    btn:    (col,sm) => ({ padding: sm?"0.4rem 0.9rem":"0.65rem 1.4rem",
+              background:`${col}22`, color:col, border:`1px solid ${col}55`,
+              borderRadius:8, cursor:"pointer", fontWeight:700,
+              fontSize: sm?"0.75rem":"0.85rem", transition:"all 0.15s" }),
+    input:  { background:P.card2, border:`1px solid ${P.border}`, borderRadius:8,
+              color:P.text, padding:"0.6rem 1rem", fontSize:"0.85rem", width:"100%",
+              outline:"none", boxSizing:"border-box" },
+    code:   { background:"#020509", border:`1px solid ${P.border}`, borderRadius:8,
+              padding:"1.2rem", fontSize:"0.78rem", overflowX:"auto",
+              whiteSpace:"pre", lineHeight:1.65, color:"#a8d8a8", maxHeight:480,
+              overflowY:"auto", display:"block" },
+    panel:  { background:P.card, border:`1px solid ${P.border}`, borderRadius:14, padding:"2rem" },
+    tag:    (col) => ({ display:"inline-block", background:`${col}15`, color:col,
+              border:`1px solid ${col}33`, borderRadius:6, padding:"0.12rem 0.5rem",
+              fontSize:"0.7rem", fontWeight:600 }),
+    diffBadge: (d) => {
+      const m={Easy:P.ok,Medium:P.warn,Hard:P.accent4};
+      return { display:"inline-block", background:`${m[d]}22`, color:m[d],
+               borderRadius:20, padding:"0.15rem 0.65rem", fontSize:"0.7rem", fontWeight:700 };
+    },
+    back:   { background:"none", border:"none", color:P.accent1, cursor:"pointer",
+              fontSize:"0.85rem", marginBottom:"1.2rem", display:"flex", alignItems:"center", gap:"0.4rem" },
+    sectionTitle: { fontSize:"1.4rem", fontWeight:800, marginBottom:"1.2rem",
+                    color:P.text, letterSpacing:"-0.01em" },
+    listItem: (col) => ({ background:P.card2, border:`1px solid ${col}33`, borderRadius:8,
+               padding:"0.5rem 0.9rem", marginBottom:"0.4rem", fontSize:"0.82rem", color:P.muted }),
+    quizOpt:  (state) => {
+      const base = { padding:"0.9rem 1.2rem", borderRadius:10, cursor:"pointer",
+                     marginBottom:"0.6rem", fontSize:"0.88rem", fontWeight:500,
+                     border:"1px solid", transition:"all 0.15s" };
+      if (state==="correct")   return {...base, background:`${P.ok}22`,    color:P.ok,    borderColor:P.ok};
+      if (state==="wrong")     return {...base, background:`${P.accent4}22`,color:P.accent4,borderColor:P.accent4};
+      if (state==="neutral")   return {...base, background:P.card2,         color:P.text,  borderColor:P.border};
+      if (state==="unselected-correct") return {...base, background:`${P.ok}11`, color:P.ok, borderColor:`${P.ok}55`};
+      return {...base, background:P.card2, color:P.text, borderColor:P.border};
+    },
+  };
+
+  /* ── DOMAIN VIEW ── */
+  if (selectedDomain) {
+    const d = selectedDomain;
+    return (
+      <div style={S.app}>
+        <div style={{...S.content, paddingTop:"1.5rem"}}>
+          <button style={S.back} onClick={()=>setSelectedDomain(null)}>← Back to Domains</button>
+          <div style={{display:"flex",alignItems:"center",gap:"1rem",marginBottom:"0.5rem"}}>
+            <h1 style={{fontSize:"1.8rem",fontWeight:900,color:d.color,margin:0}}>{d.name}</h1>
+            <span style={S.badge(d.color)}>{d.tagline}</span>
+          </div>
+          <div style={{...S.panel, marginBottom:"1.5rem"}}>
+            <h3 style={{color:d.color,marginTop:0}}>Theory</h3>
+            <p style={{lineHeight:1.9,color:P.muted,whiteSpace:"pre-line",fontSize:"0.9rem"}}>{d.theory}</p>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:"1rem",marginBottom:"1.5rem"}}>
+            {[["Key Architectures",d.architectures,d.color],["Metrics",d.metrics,P.accent2],["Datasets",d.datasets,P.accent3]].map(([title,items,col])=>(
+              <div key={title} style={{...S.panel}}>
+                <h4 style={{color:col,marginTop:0,marginBottom:"0.8rem"}}>{title}</h4>
+                {items.map((it,i)=><div key={i} style={S.listItem(col)}>{it}</div>)}
+              </div>
+            ))}
+          </div>
+          <div style={S.panel}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"0.8rem"}}>
+              <h3 style={{color:d.color,margin:0}}>Google Colab Code</h3>
+              <button style={S.btn(d.color,true)} onClick={()=>copyCode(d.colab)}>{copied?"Copied!":"Copy"}</button>
+            </div>
+            <code style={S.code}>{d.colab}</code>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── MODULE VIEW ── */
+  if (selectedModule) {
+    const m = selectedModule;
+    return (
+      <div style={S.app}>
+        <div style={{...S.content,paddingTop:"1.5rem"}}>
+          <button style={S.back} onClick={()=>setSelectedModule(null)}>← Back to Modules</button>
+          <div style={{display:"flex",alignItems:"center",gap:"1rem",marginBottom:"1rem",flexWrap:"wrap"}}>
+            <h1 style={{fontSize:"1.6rem",fontWeight:900,color:m.color,margin:0}}>{m.title}</h1>
+            <span style={S.badge(m.color)}>{m.level}</span>
+            <span style={S.badge(P.accent6)}>{m.time}</span>
+          </div>
+          {m.sections.map((sec,i)=>(
+            <div key={i} style={{...S.panel,marginBottom:"1.2rem"}}>
+              <h3 style={{color:m.color,marginTop:0}}>{sec.heading}</h3>
+              <p style={{lineHeight:1.9,color:P.muted,whiteSpace:"pre-line",fontSize:"0.88rem"}}>{sec.body}</p>
+            </div>
+          ))}
+          <div style={S.panel}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"0.8rem"}}>
+              <h3 style={{color:m.color,margin:0}}>Hands-On Code</h3>
+              <button style={S.btn(m.color,true)} onClick={()=>copyCode(m.code)}>{copied?"Copied!":"Copy"}</button>
+            </div>
+            <code style={S.code}>{m.code}</code>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── CHALLENGE VIEW ── */
+  if (selectedCh) {
+    const ch = selectedCh;
+    const diffColor = {Easy:P.ok,Medium:P.warn,Hard:P.accent4}[ch.difficulty];
+    return (
+      <div style={S.app}>
+        <div style={{...S.content,paddingTop:"1.5rem"}}>
+          <button style={S.back} onClick={()=>setSelectedCh(null)}>← Back to Challenges</button>
+          <div style={{display:"flex",alignItems:"center",gap:"1rem",flexWrap:"wrap",marginBottom:"1rem"}}>
+            <span style={{fontSize:"1rem",fontWeight:800,color:P.muted}}>{ch.id}</span>
+            <h1 style={{fontSize:"1.5rem",fontWeight:900,color:diffColor,margin:0}}>{ch.title}</h1>
+            <span style={S.diffBadge(ch.difficulty)}>{ch.difficulty}</span>
+            <span style={S.tag(P.accent2)}>{ch.tag}</span>
+            <span style={S.badge(P.accent6)}>{ch.points} pts</span>
+          </div>
+          <div style={{color:P.muted,fontSize:"0.78rem",marginBottom:"1.2rem"}}>Asked by: {ch.company}</div>
+          <div style={{...S.panel,marginBottom:"1rem"}}>
+            <h3 style={{color:diffColor,marginTop:0}}>Problem Statement</h3>
+            <p style={{lineHeight:1.8,color:P.text,fontSize:"0.9rem"}}>{ch.desc}</p>
+            {ch.example && (<>
+              <h4 style={{color:P.accent3}}>Example</h4>
+              <code style={{...S.code,maxHeight:160,fontSize:"0.8rem"}}>{ch.example}</code>
+            </>)}
+          </div>
+          <div style={{...S.panel,marginBottom:"1rem",background:P.card2}}>
+            <h4 style={{color:P.accent6,marginTop:0}}>Hint</h4>
+            <p style={{color:P.muted,fontSize:"0.88rem",lineHeight:1.7}}>{ch.hint}</p>
+          </div>
+          <div style={S.panel}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"0.8rem",flexWrap:"wrap",gap:"0.5rem"}}>
+              <h3 style={{color:diffColor,margin:0}}>Full Solution (with image loading)</h3>
+              <button style={S.btn(diffColor,true)} onClick={()=>copyCode(ch.fullSolution)}>{copied?"Copied!":"Copy"}</button>
+            </div>
+            <code style={S.code}>{ch.fullSolution}</code>
+            <div style={{marginTop:"1rem",display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem"}}>
+              <div style={{background:P.card2,borderRadius:8,padding:"0.8rem"}}>
+                <div style={{color:P.accent3,fontSize:"0.75rem",fontWeight:700,marginBottom:"0.3rem"}}>COMPLEXITY</div>
+                <div style={{color:P.muted,fontSize:"0.82rem"}}>{ch.complexity}</div>
+              </div>
+              <div style={{background:P.card2,borderRadius:8,padding:"0.8rem"}}>
+                <div style={{color:P.accent1,fontSize:"0.75rem",fontWeight:700,marginBottom:"0.3rem"}}>FOLLOW-UP</div>
+                <div style={{color:P.muted,fontSize:"0.82rem"}}>{ch.followup}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── QUIZ FLOW ── */
+  if (quizSection) {
+    const q = quizSection.questions[quizIdx];
+    const totalQ = quizSection.questions.length;
+    if (quizDone) {
+      const pct = Math.round(score/totalQ*100);
       return (
-        <div style={{textAlign:"center",padding:"60px 20px"}}>
-          <div style={{fontSize:72,marginBottom:16}}>{pct>=80?"🏆":pct>=60?"🎯":"📚"}</div>
-          <h2 style={{color:pct>=80?P.accent3:pct>=60?P.accent5:P.accent9,fontSize:32,marginBottom:8}}>
-            {quizScore.correct}/{quizScore.total} Correct ({pct}%)
-          </h2>
-          <div style={{color:P.muted,marginBottom:32,fontSize:16}}>
-            {pct>=80?"Excellent! You have strong CV foundations.":
-             pct>=60?"Good effort! Review the sections you missed.":
-             "Keep studying the modules and try again."}
+        <div style={S.app}>
+          <div style={{...S.content,paddingTop:"3rem",maxWidth:600}}>
+            <div style={{...S.panel,textAlign:"center"}}>
+              <div style={{fontSize:"4rem",marginBottom:"0.5rem"}}>{pct>=80?"🏆":pct>=60?"🎯":"📚"}</div>
+              <h2 style={{color:quizSection.color,fontSize:"1.8rem"}}>Quiz Complete!</h2>
+              <div style={{fontSize:"3rem",fontWeight:900,color:pct>=80?P.ok:pct>=60?P.warn:P.accent4,margin:"1rem 0"}}>{score}/{totalQ}</div>
+              <div style={{color:P.muted,marginBottom:"1.5rem"}}>{pct}% correct</div>
+              {wrongAns.length>0 && (
+                <div style={{textAlign:"left",marginBottom:"1.5rem"}}>
+                  <div style={{color:P.accent4,fontWeight:700,marginBottom:"0.8rem",fontSize:"0.85rem"}}>Review Incorrect Answers:</div>
+                  {wrongAns.map((w,i)=>(
+                    <div key={i} style={{background:P.card2,borderRadius:8,padding:"0.8rem",marginBottom:"0.5rem",fontSize:"0.8rem"}}>
+                      <div style={{color:P.text,marginBottom:"0.4rem"}}>{w.q}</div>
+                      <div style={{color:P.accent4}}>You answered: {w.chosen}</div>
+                      <div style={{color:P.ok}}>Correct: {w.correct}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <button style={S.btn(quizSection.color)} onClick={resetQuiz}>Back to Quiz Sections</button>
+            </div>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,maxWidth:600,margin:"0 auto 32px"}}>
-            {QUIZ_SECTIONS.map((s,si)=>{
-              const correct=s.questions.filter((_,qi)=>quizAns[`${si}-${qi}`]===s.questions[qi].answer).length;
-              const pct2=Math.round(correct/s.questions.length*100);
-              return <div key={si} style={{...S.section,textAlign:"center"}}>
-                <div style={{color:pct2>=80?P.accent3:pct2>=60?P.accent5:P.accent9,fontWeight:700,fontSize:20}}>{pct2}%</div>
-                <div style={{color:P.muted,fontSize:11,marginTop:4}}>{s.title.replace("Section ","S")}</div>
-              </div>;
-            })}
-          </div>
-          <button style={S.btn(P.accent1)} onClick={()=>{setQuizDone(false);setQuizAns({});setQuizSec(0);setQuizIdx(0);setQuizScore(null);}}>
-            Retake Quiz
-          </button>
         </div>
       );
     }
-
     return (
-      <div style={{maxWidth:700,margin:"0 auto"}}>
-        <h2 style={{color:P.accent4,marginBottom:8}}>150 Question Quiz</h2>
-        <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
-          {QUIZ_SECTIONS.map((s,i)=>(
-            <button key={i} style={{...S.btn(i===quizSec?P.accent4:P.border),
-                                    color:i===quizSec?"#000":P.muted,fontSize:11,padding:"6px 12px"}}
-                    onClick={()=>{setQuizSec(i);setQuizIdx(0);}}>
-              S{i+1}
-            </button>
-          ))}
-        </div>
-        <div style={{color:P.muted,fontSize:12,marginBottom:4}}>{sec.title}</div>
-        <div style={{display:"flex",justifyContent:"space-between",marginBottom:20}}>
-          <div style={{color:P.muted,fontSize:12}}>Q {quizIdx+1} / {sec.questions.length}</div>
-          <div style={{background:P.border,borderRadius:4,height:4,flex:1,margin:"6px 12px 0"}}>
-            <div style={{background:P.accent4,height:4,borderRadius:4,
-                         width:`${(quizIdx+1)/sec.questions.length*100}%`,transition:"width 0.3s"}}/>
+      <div style={S.app}>
+        <div style={{...S.content,paddingTop:"1.5rem",maxWidth:720}}>
+          <button style={S.back} onClick={resetQuiz}>← Quiz Sections</button>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1.5rem"}}>
+            <div>
+              <div style={{color:quizSection.color,fontWeight:800,fontSize:"1rem"}}>{quizSection.title}</div>
+              <div style={{color:P.muted,fontSize:"0.78rem"}}>Question {quizIdx+1} of {totalQ}</div>
+            </div>
+            <div style={{fontSize:"1.2rem",fontWeight:800,color:P.ok}}>Score: {score}</div>
           </div>
-          <div style={{color:P.accent4,fontWeight:700,fontSize:12}}>
-            {Object.values(quizAns).filter((v,i2)=>{ const k=Object.keys(quizAns)[i2]; const [si,qi]=k.split("-").map(Number); return quizAns[k]===QUIZ_SECTIONS[si].questions[qi].answer; }).length} correct
+          <div style={{background:P.card2,borderRadius:6,height:6,marginBottom:"1.5rem",overflow:"hidden"}}>
+            <div style={{height:"100%",width:`${(quizIdx/totalQ)*100}%`,background:quizSection.color,transition:"width 0.4s"}}/>
           </div>
-        </div>
-        <div style={{...S.section,marginBottom:20}}>
-          <h3 style={{margin:"0 0 20px",lineHeight:1.5,fontSize:16}}>{q.q}</h3>
-          <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            {q.options.map((opt,oi)=>{
-              const selected = quizAns[key]===oi;
-              const correct  = oi===q.answer;
-              let bg=P.card2; let col=P.text; let border=P.border;
-              if (answered) {
-                if (correct) { bg=P.ok+"22"; col=P.ok; border=P.ok; }
-                else if (selected) { bg=P.warn+"22"; col=P.warn; border=P.warn; }
-              } else if (selected) { bg=P.accent4+"22"; col=P.accent4; border=P.accent4; }
-              return (
-                <div key={oi} style={{background:bg,border:`1px solid ${border}`,borderRadius:8,
-                                      padding:"12px 16px",cursor:answered?"default":"pointer",
-                                      color:col,transition:"all 0.15s",fontSize:13,lineHeight:1.4}}
-                     onClick={()=>{ if (!answered) setQuizAns({...quizAns,[key]:oi}); }}>
-                  <span style={{fontWeight:700,marginRight:10}}>{["A","B","C","D"][oi]}.</span>{opt}
-                  {answered && correct && <span style={{float:"right",color:P.ok}}>✓</span>}
-                  {answered && selected && !correct && <span style={{float:"right",color:P.warn}}>✗</span>}
-                </div>
-              );
-            })}
+          <div style={{...S.panel,marginBottom:"1.2rem"}}>
+            <p style={{fontSize:"1.05rem",fontWeight:600,lineHeight:1.7,color:P.text,margin:0}}>{q.q}</p>
           </div>
-          {answered && <div style={{marginTop:12,color:P.muted,fontSize:12,padding:"10px",background:P.surface,borderRadius:6}}>
-            {quizAns[key]===q.answer ? "✓ Correct!" : `✗ Correct answer: ${["A","B","C","D"][q.answer]}. ${q.options[q.answer]}`}
-          </div>}
-        </div>
-        <div style={{display:"flex",justifyContent:"space-between",gap:12}}>
-          <button style={{...S.btn(P.border),color:P.muted}} disabled={quizIdx===0 && quizSec===0}
-                  onClick={()=>{ if (quizIdx>0) setQuizIdx(quizIdx-1); else if (quizSec>0){setQuizSec(quizSec-1);setQuizIdx(QUIZ_SECTIONS[quizSec-1].questions.length-1);} }}>
-            ← Prev
-          </button>
-          {(quizIdx===sec.questions.length-1 && quizSec===QUIZ_SECTIONS.length-1) ? (
-            <button style={S.btn(P.accent3)} onClick={submitQuiz}>Submit Quiz →</button>
-          ) : (
-            <button style={{...S.btn(P.accent4)}}
-                    onClick={()=>{ if (quizIdx<sec.questions.length-1) setQuizIdx(quizIdx+1); else if (quizSec<QUIZ_SECTIONS.length-1){setQuizSec(quizSec+1);setQuizIdx(0);} }}>
-              Next →
-            </button>
+          {q.options.map((opt,i)=>{
+            let state="neutral";
+            if (answered) {
+              if (i===q.answer) state="correct";
+              else if (i===selected && i!==q.answer) state="wrong";
+              else state="neutral";
+            }
+            return (
+              <div key={i} style={S.quizOpt(state)} onClick={()=>handleAnswer(i)}>
+                <span style={{marginRight:"0.6rem",fontWeight:800,opacity:0.6}}>{String.fromCharCode(65+i)}.</span>
+                {opt}
+                {answered && i===q.answer && <span style={{float:"right"}}>✓</span>}
+                {answered && i===selected && i!==q.answer && <span style={{float:"right"}}>✗</span>}
+              </div>
+            );
+          })}
+          {answered && (
+            <div style={{marginTop:"1rem",textAlign:"right"}}>
+              <button style={S.btn(quizSection.color)} onClick={nextQuestion}>
+                {quizIdx+1>=totalQ?"See Results":"Next Question →"}
+              </button>
+            </div>
           )}
         </div>
       </div>
     );
-  };
+  }
 
+  /* ── MAIN LAYOUT ── */
   return (
     <div style={S.app}>
-      <nav style={S.nav}>
-        <div style={S.logo}>CV Tutorial</div>
-        {TABS.map(t=>(
-          <button key={t.id} style={S.tab(tab===t.id)} onClick={()=>{setTab(t.id);setSelDomain(null);setSelMod(null);setSelCh(null);setSearchQ("");}}>
-            {t.label}
-          </button>
+      {/* Header */}
+      <div style={S.header}>
+        <div style={{maxWidth:1400,margin:"0 auto"}}>
+          <div style={S.heroTitle}>Computer Vision Mastery</div>
+          <div style={S.heroSub}>The complete deep dive: theory, code, challenges, and quizzes: from pixel to production</div>
+          <div style={S.stats}>
+            {[["30","CV Domains",P.accent1],["10","Learning Modules",P.accent2],["100","Code Challenges",P.accent3],["150","Quiz Questions",P.accent4]].map(([n,l,c])=>(
+              <div key={l} style={S.stat}>
+                <div style={{...S.statN,color:c}}>{n}</div>
+                <div style={S.statL}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div style={S.tabs}>
+        {[["domains","30 Domains"],["modules","10 Modules"],["challenges","100 Challenges"],["quiz","150 Quizzes"]].map(([id,label])=>(
+          <button key={id} style={S.tab(tab===id)} onClick={()=>setTab(id)}>{label}</button>
         ))}
-      </nav>
+      </div>
+
       <div style={S.content}>
-        {tab==="domains"    && <DomainsView />}
-        {tab==="modules"    && <ModulesView />}
-        {tab==="challenges" && <ChallengesView />}
-        {tab==="quiz"       && <QuizView />}
+
+        {/* DOMAINS TAB */}
+        {tab==="domains" && (
+          <>
+            <div style={{marginBottom:"1.5rem"}}>
+              <input style={S.input} placeholder="Search domains (e.g. segmentation, restoration, GAN)..."
+                value={domainSearch} onChange={e=>setDomainSearch(e.target.value)}/>
+            </div>
+            <div style={S.grid3}>
+              {filteredDomains.map(d=>(
+                <div key={d.id} style={S.card(d.color)} onClick={()=>setSelectedDomain(d)}
+                  onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow=`0 8px 24px ${d.color}22`}}
+                  onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow=""}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"start",marginBottom:"0.8rem"}}>
+                    <span style={{fontSize:"0.72rem",color:P.muted,fontWeight:700}}>Domain #{d.id}</span>
+                    <span style={S.badge(d.color)}>theory + code</span>
+                  </div>
+                  <h3 style={{margin:"0 0 0.4rem",color:d.color,fontSize:"1rem",fontWeight:800}}>{d.name}</h3>
+                  <p style={{margin:"0 0 1rem",color:P.muted,fontSize:"0.8rem",lineHeight:1.5}}>{d.tagline}</p>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:"0.3rem"}}>
+                    {d.architectures.slice(0,3).map(a=><span key={a} style={S.tag(d.color)}>{a}</span>)}
+                    {d.architectures.length>3 && <span style={S.tag(d.color)}>+{d.architectures.length-3} more</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {filteredDomains.length===0 && (
+              <div style={{textAlign:"center",color:P.muted,padding:"3rem"}}>No domains match "{domainSearch}"</div>
+            )}
+          </>
+        )}
+
+        {/* MODULES TAB */}
+        {tab==="modules" && (
+          <>
+            <h2 style={S.sectionTitle}>Learning Modules</h2>
+            <div style={S.grid2}>
+              {MODULES.map((m,i)=>(
+                <div key={m.id} style={S.card(m.color)} onClick={()=>setSelectedModule(m)}
+                  onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)"}}
+                  onMouseLeave={e=>{e.currentTarget.style.transform=""}}>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:"0.8rem",alignItems:"center"}}>
+                    <span style={{fontSize:"0.72rem",color:P.muted,fontWeight:700}}>Module {i}</span>
+                    <span style={S.badge(m.color)}>{m.time}</span>
+                  </div>
+                  <h3 style={{margin:"0 0 0.4rem",color:m.color,fontSize:"1rem",fontWeight:800}}>{m.title}</h3>
+                  <div style={{marginBottom:"0.8rem"}}><span style={S.tag(m.color)}>{m.level}</span></div>
+                  <div style={{color:P.muted,fontSize:"0.78rem"}}>{m.sections.length} sections • Hands-on code included</div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* CHALLENGES TAB */}
+        {tab==="challenges" && (
+          <>
+            <div style={{display:"flex",gap:"0.6rem",marginBottom:"1.5rem",flexWrap:"wrap",alignItems:"center"}}>
+              <span style={{color:P.muted,fontSize:"0.82rem",fontWeight:600}}>Filter:</span>
+              {["All","Easy","Medium","Hard"].map(f=>(
+                <button key={f} style={S.btn(f==="Easy"?P.ok:f==="Medium"?P.warn:f==="Hard"?P.accent4:P.accent1,true)}
+                  onClick={()=>setChFilter(f)}>{f} {f!=="All"?`(${CHALLENGES.filter(c=>c.difficulty===f).length})`:""}</button>
+              ))}
+              <span style={{marginLeft:"auto",color:P.muted,fontSize:"0.8rem"}}>Showing {filteredChallenges.length} challenges</span>
+            </div>
+            <div style={S.grid3}>
+              {(showAll?filteredChallenges:filteredChallenges.slice(0,30)).map(ch=>{
+                const diffColor={Easy:P.ok,Medium:P.warn,Hard:P.accent4}[ch.difficulty];
+                return (
+                  <div key={ch.id} style={S.card(diffColor)} onClick={()=>setSelectedCh(ch)}
+                    onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)"}}
+                    onMouseLeave={e=>{e.currentTarget.style.transform=""}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:"0.6rem",alignItems:"center"}}>
+                      <span style={{fontSize:"0.7rem",color:P.muted,fontWeight:700}}>{ch.id}</span>
+                      <div style={{display:"flex",gap:"0.4rem",alignItems:"center"}}>
+                        <span style={S.diffBadge(ch.difficulty)}>{ch.difficulty}</span>
+                        <span style={S.badge(P.accent6)}>{ch.points}pt</span>
+                      </div>
+                    </div>
+                    <h3 style={{margin:"0 0 0.4rem",color:diffColor,fontSize:"0.92rem",fontWeight:800}}>{ch.title}</h3>
+                    <div style={{marginBottom:"0.6rem"}}><span style={S.tag(P.accent2)}>{ch.tag}</span></div>
+                    <div style={{color:P.muted,fontSize:"0.75rem",lineHeight:1.4}}>{ch.desc.slice(0,90)}...</div>
+                    <div style={{marginTop:"0.8rem",color:P.muted,fontSize:"0.7rem"}}>🏢 {ch.company}</div>
+                  </div>
+                );
+              })}
+            </div>
+            {!showAll && filteredChallenges.length>30 && (
+              <div style={{textAlign:"center",marginTop:"2rem"}}>
+                <button style={S.btn(P.accent1)} onClick={()=>setShowAll(true)}>
+                  Show All {filteredChallenges.length} Challenges
+                </button>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* QUIZ TAB */}
+        {tab==="quiz" && (
+          <>
+            <h2 style={S.sectionTitle}>Quiz Sections</h2>
+            <p style={{color:P.muted,marginBottom:"1.5rem",fontSize:"0.88rem"}}>
+              Test your knowledge across all areas of computer vision. 25 questions per section, 150 total.
+            </p>
+            <div style={S.grid2}>
+              {QUIZ_SECTIONS.map(sec=>(
+                <div key={sec.id} style={S.card(sec.color)}
+                  onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)"}}
+                  onMouseLeave={e=>{e.currentTarget.style.transform=""}}>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:"0.8rem"}}>
+                    <span style={S.badge(sec.color)}>25 Questions</span>
+                  </div>
+                  <h3 style={{margin:"0 0 0.8rem",color:sec.color,fontSize:"1.05rem",fontWeight:800}}>{sec.title}</h3>
+                  <div style={{color:P.muted,fontSize:"0.8rem",marginBottom:"1.2rem",lineHeight:1.5}}>
+                    {sec.id==="Q1" && "Pixels, colour spaces, filters, classical features, and basic CV algorithms."}
+                    {sec.id==="Q2" && "CNNs, ResNet, transformers, GANs, diffusion models, and training techniques."}
+                    {sec.id==="Q3" && "Object detection, segmentation, pose estimation, tracking, and autonomous driving."}
+                    {sec.id==="Q4" && "Image restoration, super-resolution, dehazing, inpainting, and generative models."}
+                    {sec.id==="Q5" && "NeRF, 3D reconstruction, VQA, multimodal models, and point clouds."}
+                    {sec.id==="Q6" && "Deployment, quantisation, calibration, ethics, bias, and practical considerations."}
+                  </div>
+                  <button style={S.btn(sec.color)} onClick={()=>{setQuizSection(sec);setQuizIdx(0);setScore(0);setAnswered(false);setSelected(null);setQuizDone(false);setWrongAns([]);}}>
+                    Start Quiz →
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
       </div>
     </div>
   );
