@@ -571,35 +571,1093 @@ print("Saved full checkpoint")
 `
 },
 
-  { id:2, name:"Object Detection", color:P.accent2, tagline:"Locate and classify multiple objects with bounding boxes",
-    theory:`Object detection simultaneously answers WHERE and WHAT: it draws axis-aligned bounding boxes around objects and assigns class labels. Two paradigms dominate. Two-stage detectors (Faster R-CNN) first propose candidate regions then refine them via a second network. One-stage detectors (YOLO, SSD, RetinaNet) predict boxes and classes in a single forward pass, trading some accuracy for much higher speed. Key concepts: anchor boxes are predefined reference boxes at multiple scales and aspect ratios; IoU (Intersection-over-Union) measures box overlap; Non-Maximum Suppression (NMS) eliminates duplicate detections; Focal Loss addresses extreme class imbalance between foreground objects and background. DETR replaced anchors entirely with transformer encoder-decoder and bipartite matching loss, eliminating hand-engineered components. YOLOv8 through v10 represent the current real-time detection frontier.`,
-    architectures:["Faster R-CNN","YOLO v5/v8/v9/v10","SSD","RetinaNet","DETR","RT-DETR","EfficientDet","CenterNet","CornerNet","DINO-Det"],
-    metrics:["mAP@0.5","mAP@0.5:0.95","IoU","Precision","Recall","FPS"],
-    datasets:["COCO (330K images, 80 classes)","Pascal VOC 2007/2012","Open Images v7","LVIS v1","Objects365","VisDrone","KITTI"],
-    colab:`# Object Detection with YOLOv8 (Ultralytics)
-# !pip install ultralytics
-from ultralytics import YOLO
-import urllib.request, io
+  {
+  id:2,
+  name:"Object Detection",
+  color:P.accent2,
+  tagline:"Locate and classify multiple objects inside an image using bounding boxes",
+
+  theory:`
+Object detection is the computer vision task that answers two questions at the same time:
+
+1. What object is present?
+2. Where is the object located?
+
+Image classification gives one label for the entire image. Object detection gives labels and bounding boxes for one or more objects inside the image.
+
+For example, image classification may say:
+This image contains a bus.
+
+Object detection says:
+There is a bus at coordinates [x1, y1, x2, y2].
+There is a person at coordinates [x1, y1, x2, y2].
+There is another person at coordinates [x1, y1, x2, y2].
+
+A bounding box is a rectangle around an object. It usually uses one of these formats:
+
+1. xyxy format:
+[x1, y1, x2, y2]
+
+2. xywh format:
+[x_center, y_center, width, height]
+
+3. YOLO normalized format:
+[class_id, x_center, y_center, width, height]
+
+In YOLO format, x_center, y_center, width, and height are divided by image width or height so that the values fall between 0 and 1.
+
+Object detection is used in:
+- autonomous driving
+- traffic monitoring
+- medical imaging
+- agriculture
+- robotics
+- drones
+- retail analytics
+- smart cities
+- security systems
+- manufacturing defect detection
+- parking monitoring
+- wildlife monitoring
+- sports analytics
+
+The key concepts are:
+
+Bounding box:
+A rectangle that shows where an object is located.
+
+Class label:
+The name of the object, such as person, car, dog, traffic sign, or tomato.
+
+Confidence score:
+How sure the model is about a prediction.
+
+IoU:
+Intersection over Union. It measures how much two boxes overlap.
+
+NMS:
+Non-Maximum Suppression. It removes duplicate boxes around the same object.
+
+mAP:
+Mean Average Precision. It is the standard object detection metric.
+
+Object detection models are usually grouped into two major families:
+
+Two-stage detectors:
+These first propose candidate regions, then classify and refine them. They are often accurate but slower. Examples include R-CNN, Fast R-CNN, Faster R-CNN, and Mask R-CNN.
+
+One-stage detectors:
+These predict bounding boxes and classes directly in one pass. They are usually faster and useful for real-time systems. Examples include YOLO, SSD, RetinaNet, EfficientDet, and CenterNet.
+
+Transformer-based detectors:
+These use attention mechanisms to model relationships between image regions. Examples include DETR, Deformable DETR, DINO, and RT-DETR.
+
+YOLO is one of the most popular families because it is fast, practical, and beginner friendly. YOLO means You Only Look Once. It processes the image once and predicts bounding boxes, labels, and confidence scores.
+
+This tutorial teaches object detection from the ground up. You will learn how boxes work, how IoU works, how NMS works, how to run YOLO inference, how to prepare a dataset, how to train a detector, how to validate it, how to save checkpoints, how to resume training, and how to test the final model.
+`,
+
+  fundamentals:[
+    "Object detection predicts both class labels and object locations.",
+    "A bounding box is a rectangle around an object.",
+    "xyxy means left, top, right, bottom.",
+    "xywh means center x, center y, width, height.",
+    "YOLO labels use normalized xywh values between 0 and 1.",
+    "IoU measures overlap between a predicted box and a ground truth box.",
+    "NMS removes duplicate boxes for the same object.",
+    "mAP is the most common detection metric.",
+    "Training requires images and annotation files.",
+    "Fine-tuning uses a pretrained detector and adapts it to a custom dataset."
+  ],
+
+  architectures:[
+    "R-CNN",
+    "Fast R-CNN",
+    "Faster R-CNN",
+    "Mask R-CNN",
+    "SSD",
+    "RetinaNet",
+    "YOLOv3",
+    "YOLOv5",
+    "YOLOv8",
+    "YOLOv9",
+    "YOLOv10",
+    "EfficientDet",
+    "CenterNet",
+    "DETR",
+    "Deformable DETR",
+    "RT-DETR",
+    "DINO"
+  ],
+
+  metrics:[
+    "IoU",
+    "Precision",
+    "Recall",
+    "F1 Score",
+    "mAP@0.5",
+    "mAP@0.5:0.95",
+    "FPS",
+    "Inference Latency",
+    "Confusion Matrix"
+  ],
+
+  datasets:[
+    "COCO, 80 object classes, general object detection",
+    "Pascal VOC, 20 object classes, beginner friendly benchmark",
+    "Open Images, large-scale object detection dataset",
+    "KITTI, autonomous driving object detection",
+    "VisDrone, drone-based object detection",
+    "Global Wheat Detection, agriculture object detection",
+    "BDD100K, driving scenes and road objects",
+    "Roboflow Universe datasets, many small custom datasets for practice"
+  ],
+
+  colab:`
+# ============================================================
+# OBJECT DETECTION MASTER NOTEBOOK
+# Daintymindz Laboratory
+# Beginner to Advanced, Boxes, IoU, NMS, YOLO Inference,
+# Custom Dataset Format, Training, Validation, Checkpointing,
+# Testing, and Prediction
+# ============================================================
+
+# ============================================================
+# SECTION 0: INSTALL LIBRARIES
+# ============================================================
+
+!pip install ultralytics opencv-python matplotlib pillow numpy pyyaml
+
+# ============================================================
+# SECTION 1: IMPORT LIBRARIES
+# ============================================================
+
+import os
+import cv2
+import yaml
+import shutil
+import random
+import urllib.request
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
 from PIL import Image
-import numpy as np, matplotlib.pyplot as plt, matplotlib.patches as patches
+from ultralytics import YOLO
 
-model = YOLO("yolov8n.pt")  # nano model, ~6MB
-url   = "https://ultralytics.com/images/bus.jpg"
-img   = Image.open(io.BytesIO(urllib.request.urlopen(url).read())).convert("RGB")
+# ============================================================
+# SECTION 2: WHAT IS OBJECT DETECTION?
+# ============================================================
 
-results = model(img)
-boxes   = results[0].boxes
+# Object detection means:
+# 1. finding objects inside an image
+# 2. drawing bounding boxes around them
+# 3. assigning class labels to each detected object
+#
+# Example:
+# person at box [100, 50, 240, 380]
+# bus at box [20, 100, 500, 420]
+#
+# A bounding box is just a rectangle.
+# The rectangle tells us where the object is located.
 
-fig, ax = plt.subplots(1,1,figsize=(12,8))
-ax.imshow(np.array(img))
-for box in boxes:
-    x1,y1,x2,y2 = box.xyxy[0].tolist()
-    cls  = int(box.cls[0]); conf = float(box.conf[0])
-    label = model.names[cls]
-    rect = patches.Rectangle((x1,y1),x2-x1,y2-y1,linewidth=2,edgecolor="lime",facecolor="none")
+# ============================================================
+# SECTION 3: DOWNLOAD A SAMPLE IMAGE
+# ============================================================
+
+image_url = "https://ultralytics.com/images/bus.jpg"
+image_path = "bus.jpg"
+
+urllib.request.urlretrieve(image_url, image_path)
+
+img = Image.open(image_path).convert("RGB")
+img_np = np.array(img)
+
+print("Image shape:", img_np.shape)
+print("Height:", img_np.shape[0])
+print("Width:", img_np.shape[1])
+print("Channels:", img_np.shape[2])
+
+plt.figure(figsize=(10, 7))
+plt.imshow(img_np)
+plt.title("Sample Image")
+plt.axis("off")
+plt.show()
+
+# ============================================================
+# SECTION 4: UNDERSTANDING PIXEL COORDINATES
+# ============================================================
+
+# In images:
+# x means horizontal position
+# y means vertical position
+#
+# x increases from left to right.
+# y increases from top to bottom.
+#
+# Top-left corner is:
+# x = 0
+# y = 0
+#
+# A box in xyxy format:
+# [x1, y1, x2, y2]
+#
+# x1 = left side
+# y1 = top side
+# x2 = right side
+# y2 = bottom side
+
+# ============================================================
+# SECTION 5: DRAW A MANUAL BOUNDING BOX
+# ============================================================
+
+manual_box = [50, 220, 800, 750]
+
+x1, y1, x2, y2 = manual_box
+
+fig, ax = plt.subplots(figsize=(12, 8))
+ax.imshow(img_np)
+
+rect = patches.Rectangle(
+    (x1, y1),
+    x2 - x1,
+    y2 - y1,
+    linewidth=3,
+    edgecolor="lime",
+    facecolor="none"
+)
+
+ax.add_patch(rect)
+
+ax.text(
+    x1,
+    y1 - 10,
+    "manual bus box",
+    color="white",
+    fontsize=12,
+    fontweight="bold",
+    bbox=dict(facecolor="green", alpha=0.7)
+)
+
+ax.set_title("Manual Bounding Box")
+ax.axis("off")
+plt.show()
+
+print("Box in xyxy format:", manual_box)
+print("Width of box:", x2 - x1)
+print("Height of box:", y2 - y1)
+
+# ============================================================
+# SECTION 6: CONVERT xyxy TO xywh
+# ============================================================
+
+def xyxy_to_xywh(box):
+    x1, y1, x2, y2 = box
+
+    width = x2 - x1
+    height = y2 - y1
+
+    x_center = x1 + width / 2
+    y_center = y1 + height / 2
+
+    return [x_center, y_center, width, height]
+
+box_xywh = xyxy_to_xywh(manual_box)
+
+print("xyxy:", manual_box)
+print("xywh:", box_xywh)
+
+# ============================================================
+# SECTION 7: CONVERT xywh BACK TO xyxy
+# ============================================================
+
+def xywh_to_xyxy(box):
+    x_center, y_center, width, height = box
+
+    x1 = x_center - width / 2
+    y1 = y_center - height / 2
+    x2 = x_center + width / 2
+    y2 = y_center + height / 2
+
+    return [x1, y1, x2, y2]
+
+converted_back = xywh_to_xyxy(box_xywh)
+
+print("Converted back to xyxy:", converted_back)
+
+# ============================================================
+# SECTION 8: YOLO NORMALIZED LABEL FORMAT
+# ============================================================
+
+# YOLO annotation format:
+# class_id x_center y_center width height
+#
+# All box values are normalized between 0 and 1.
+#
+# x_center is divided by image width.
+# y_center is divided by image height.
+# width is divided by image width.
+# height is divided by image height.
+
+def xyxy_to_yolo(box, image_width, image_height, class_id):
+    x1, y1, x2, y2 = box
+
+    x_center = ((x1 + x2) / 2) / image_width
+    y_center = ((y1 + y2) / 2) / image_height
+
+    width = (x2 - x1) / image_width
+    height = (y2 - y1) / image_height
+
+    return [class_id, x_center, y_center, width, height]
+
+h, w = img_np.shape[:2]
+
+yolo_label = xyxy_to_yolo(
+    manual_box,
+    image_width=w,
+    image_height=h,
+    class_id=0
+)
+
+print("YOLO label format:")
+print(yolo_label)
+
+# ============================================================
+# SECTION 9: CONVERT YOLO FORMAT BACK TO xyxy
+# ============================================================
+
+def yolo_to_xyxy(label, image_width, image_height):
+    class_id, x_center, y_center, width, height = label
+
+    x_center = x_center * image_width
+    y_center = y_center * image_height
+    width = width * image_width
+    height = height * image_height
+
+    x1 = x_center - width / 2
+    y1 = y_center - height / 2
+    x2 = x_center + width / 2
+    y2 = y_center + height / 2
+
+    return [x1, y1, x2, y2]
+
+box_from_yolo = yolo_to_xyxy(yolo_label, w, h)
+
+print("Box recovered from YOLO label:")
+print(box_from_yolo)
+
+# ============================================================
+# SECTION 10: INTERSECTION OVER UNION, IoU
+# ============================================================
+
+# IoU compares two boxes:
+# ground truth box
+# predicted box
+#
+# IoU = intersection area / union area
+#
+# IoU = 0 means no overlap.
+# IoU = 1 means perfect overlap.
+
+def compute_iou(box_a, box_b):
+    ax1, ay1, ax2, ay2 = box_a
+    bx1, by1, bx2, by2 = box_b
+
+    inter_x1 = max(ax1, bx1)
+    inter_y1 = max(ay1, by1)
+    inter_x2 = min(ax2, bx2)
+    inter_y2 = min(ay2, by2)
+
+    inter_width = max(0, inter_x2 - inter_x1)
+    inter_height = max(0, inter_y2 - inter_y1)
+
+    intersection_area = inter_width * inter_height
+
+    area_a = (ax2 - ax1) * (ay2 - ay1)
+    area_b = (bx2 - bx1) * (by2 - by1)
+
+    union_area = area_a + area_b - intersection_area
+
+    iou = intersection_area / union_area
+
+    return iou
+
+ground_truth_box = [50, 220, 800, 750]
+predicted_box = [80, 250, 780, 730]
+
+iou_value = compute_iou(ground_truth_box, predicted_box)
+
+print("IoU:", iou_value)
+
+fig, ax = plt.subplots(figsize=(10, 7))
+ax.imshow(img_np)
+
+gt_rect = patches.Rectangle(
+    (ground_truth_box[0], ground_truth_box[1]),
+    ground_truth_box[2] - ground_truth_box[0],
+    ground_truth_box[3] - ground_truth_box[1],
+    linewidth=3,
+    edgecolor="green",
+    facecolor="none",
+    label="Ground Truth"
+)
+
+pred_rect = patches.Rectangle(
+    (predicted_box[0], predicted_box[1]),
+    predicted_box[2] - predicted_box[0],
+    predicted_box[3] - predicted_box[1],
+    linewidth=3,
+    edgecolor="red",
+    facecolor="none",
+    label="Prediction"
+)
+
+ax.add_patch(gt_rect)
+ax.add_patch(pred_rect)
+ax.legend()
+ax.set_title(f"IoU = {iou_value:.4f}")
+ax.axis("off")
+plt.show()
+
+# ============================================================
+# SECTION 11: NON-MAXIMUM SUPPRESSION, NMS
+# ============================================================
+
+# A detector can predict many boxes around the same object.
+# NMS keeps the best box and removes duplicate boxes.
+
+def nms(boxes, scores, iou_threshold=0.5):
+    indices = np.argsort(scores)[::-1]
+
+    keep = []
+
+    while len(indices) > 0:
+        current = indices[0]
+        keep.append(current)
+
+        remaining = indices[1:]
+
+        remaining_after_suppression = []
+
+        for idx in remaining:
+            iou = compute_iou(boxes[current], boxes[idx])
+
+            if iou < iou_threshold:
+                remaining_after_suppression.append(idx)
+
+        indices = np.array(remaining_after_suppression)
+
+    return keep
+
+boxes = np.array([
+    [50, 220, 800, 750],
+    [70, 240, 790, 740],
+    [60, 230, 810, 760],
+    [850, 300, 1050, 700]
+])
+
+scores = np.array([0.95, 0.80, 0.70, 0.88])
+
+kept_indices = nms(boxes, scores, iou_threshold=0.5)
+
+print("Kept box indices:", kept_indices)
+
+fig, ax = plt.subplots(figsize=(12, 8))
+ax.imshow(img_np)
+
+for i, box in enumerate(boxes):
+    x1, y1, x2, y2 = box
+
+    if i in kept_indices:
+        color = "lime"
+        label = f"kept {scores[i]:.2f}"
+    else:
+        color = "red"
+        label = f"removed {scores[i]:.2f}"
+
+    rect = patches.Rectangle(
+        (x1, y1),
+        x2 - x1,
+        y2 - y1,
+        linewidth=3,
+        edgecolor=color,
+        facecolor="none"
+    )
+
     ax.add_patch(rect)
-    ax.text(x1, y1-5, f"{label} {conf:.2f}", color="lime", fontsize=9, fontweight="bold")
-ax.axis("off"); plt.tight_layout(); plt.savefig("detection.png",dpi=150); plt.show()` },
+
+    ax.text(
+        x1,
+        y1 - 8,
+        label,
+        color=color,
+        fontsize=11,
+        fontweight="bold"
+    )
+
+ax.set_title("Non-Maximum Suppression")
+ax.axis("off")
+plt.show()
+
+# ============================================================
+# SECTION 12: RUN PRETRAINED YOLO INFERENCE
+# ============================================================
+
+# YOLOv8n means YOLOv8 nano.
+# It is small, fast, and good for learning.
+
+model = YOLO("yolov8n.pt")
+
+results = model(image_path)
+
+result = results[0]
+
+print("Number of detections:", len(result.boxes))
+
+# ============================================================
+# SECTION 13: VISUALIZE YOLO DETECTIONS
+# ============================================================
+
+fig, ax = plt.subplots(figsize=(12, 8))
+ax.imshow(img_np)
+
+for box in result.boxes:
+    x1, y1, x2, y2 = box.xyxy[0].tolist()
+
+    class_id = int(box.cls[0])
+    confidence = float(box.conf[0])
+    label = model.names[class_id]
+
+    rect = patches.Rectangle(
+        (x1, y1),
+        x2 - x1,
+        y2 - y1,
+        linewidth=3,
+        edgecolor="lime",
+        facecolor="none"
+    )
+
+    ax.add_patch(rect)
+
+    ax.text(
+        x1,
+        y1 - 8,
+        f"{label} {confidence:.2f}",
+        color="white",
+        fontsize=11,
+        fontweight="bold",
+        bbox=dict(facecolor="green", alpha=0.7)
+    )
+
+ax.set_title("YOLOv8 Object Detection")
+ax.axis("off")
+plt.show()
+
+# ============================================================
+# SECTION 14: PRINT YOLO RESULTS CLEARLY
+# ============================================================
+
+for i, box in enumerate(result.boxes):
+    x1, y1, x2, y2 = box.xyxy[0].tolist()
+
+    class_id = int(box.cls[0])
+    confidence = float(box.conf[0])
+    label = model.names[class_id]
+
+    print(f"Detection {i+1}")
+    print("Class:", label)
+    print("Confidence:", confidence)
+    print("Box xyxy:", [round(x1, 2), round(y1, 2), round(x2, 2), round(y2, 2)])
+    print("Width:", round(x2 - x1, 2))
+    print("Height:", round(y2 - y1, 2))
+    print("-" * 50)
+
+# ============================================================
+# SECTION 15: SAVE DETECTION OUTPUT IMAGE
+# ============================================================
+
+annotated = result.plot()
+
+# result.plot returns BGR image, convert to RGB for matplotlib
+annotated_rgb = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
+
+plt.figure(figsize=(12, 8))
+plt.imshow(annotated_rgb)
+plt.title("YOLO Built-in Annotated Output")
+plt.axis("off")
+plt.show()
+
+cv2.imwrite("yolo_detection_output.jpg", annotated)
+
+print("Saved detection image as yolo_detection_output.jpg")
+
+# ============================================================
+# SECTION 16: RUN YOLO ON MULTIPLE IMAGES
+# ============================================================
+
+image_urls = [
+    "https://ultralytics.com/images/bus.jpg",
+    "https://ultralytics.com/images/zidane.jpg"
+]
+
+image_paths = []
+
+for i, url in enumerate(image_urls):
+    path = f"sample_{i}.jpg"
+    urllib.request.urlretrieve(url, path)
+    image_paths.append(path)
+
+batch_results = model(image_paths)
+
+for path, res in zip(image_paths, batch_results):
+    print("\\nImage:", path)
+    print("Detected objects:", len(res.boxes))
+
+    for box in res.boxes:
+        class_id = int(box.cls[0])
+        confidence = float(box.conf[0])
+        label = model.names[class_id]
+        print(f"  {label}: {confidence:.2f}")
+
+# ============================================================
+# SECTION 17: UNDERSTANDING CUSTOM DATASET STRUCTURE
+# ============================================================
+
+# YOLO expects this structure:
+#
+# dataset/
+#   images/
+#     train/
+#     val/
+#     test/
+#   labels/
+#     train/
+#     val/
+#     test/
+#   data.yaml
+#
+# Each image has a matching .txt label file.
+#
+# Example:
+# images/train/cat001.jpg
+# labels/train/cat001.txt
+#
+# The label file contains:
+# class_id x_center y_center width height
+#
+# Example:
+# 0 0.50 0.45 0.30 0.40
+
+# ============================================================
+# SECTION 18: CREATE A TINY TOY DATASET FOR LEARNING
+# ============================================================
+
+# This toy dataset is not for serious accuracy.
+# It teaches folder structure, labels, YAML file, training, and checkpointing.
+#
+# We will create simple images with colored rectangles.
+# The model will learn to detect the rectangles.
+#
+# Class 0 = rectangle_object
+
+dataset_root = "toy_detection_dataset"
+
+for split in ["train", "val", "test"]:
+    os.makedirs(f"{dataset_root}/images/{split}", exist_ok=True)
+    os.makedirs(f"{dataset_root}/labels/{split}", exist_ok=True)
+
+class_names = ["rectangle_object"]
+
+def create_toy_image(save_img_path, save_label_path, image_size=256):
+    img = np.ones((image_size, image_size, 3), dtype=np.uint8) * 255
+
+    x1 = random.randint(30, 120)
+    y1 = random.randint(30, 120)
+    box_width = random.randint(50, 100)
+    box_height = random.randint(40, 90)
+
+    x2 = min(x1 + box_width, image_size - 10)
+    y2 = min(y1 + box_height, image_size - 10)
+
+    color = (
+        random.randint(0, 80),
+        random.randint(80, 180),
+        random.randint(120, 255)
+    )
+
+    cv2.rectangle(img, (x1, y1), (x2, y2), color, -1)
+
+    cv2.imwrite(save_img_path, img)
+
+    # Convert to YOLO normalized format
+    x_center = ((x1 + x2) / 2) / image_size
+    y_center = ((y1 + y2) / 2) / image_size
+    width = (x2 - x1) / image_size
+    height = (y2 - y1) / image_size
+
+    with open(save_label_path, "w") as f:
+        f.write(f"0 {x_center} {y_center} {width} {height}\\n")
+
+# Create training, validation, and testing images
+for split, count in [("train", 80), ("val", 20), ("test", 10)]:
+    for i in range(count):
+        img_path = f"{dataset_root}/images/{split}/img_{i}.jpg"
+        label_path = f"{dataset_root}/labels/{split}/img_{i}.txt"
+        create_toy_image(img_path, label_path)
+
+print("Toy dataset created successfully")
+
+# ============================================================
+# SECTION 19: VIEW TOY DATASET SAMPLE WITH LABEL
+# ============================================================
+
+sample_img_path = f"{dataset_root}/images/train/img_0.jpg"
+sample_label_path = f"{dataset_root}/labels/train/img_0.txt"
+
+sample_img = cv2.imread(sample_img_path)
+sample_img_rgb = cv2.cvtColor(sample_img, cv2.COLOR_BGR2RGB)
+
+with open(sample_label_path, "r") as f:
+    label_line = f.readline().strip()
+
+print("YOLO label line:", label_line)
+
+class_id, x_center, y_center, width, height = map(float, label_line.split())
+
+image_h, image_w = sample_img_rgb.shape[:2]
+
+x_center *= image_w
+y_center *= image_h
+width *= image_w
+height *= image_h
+
+x1 = x_center - width / 2
+y1 = y_center - height / 2
+x2 = x_center + width / 2
+y2 = y_center + height / 2
+
+fig, ax = plt.subplots(figsize=(6, 6))
+ax.imshow(sample_img_rgb)
+
+rect = patches.Rectangle(
+    (x1, y1),
+    x2 - x1,
+    y2 - y1,
+    linewidth=3,
+    edgecolor="lime",
+    facecolor="none"
+)
+
+ax.add_patch(rect)
+ax.set_title("Toy Dataset Sample with Label")
+ax.axis("off")
+plt.show()
+
+# ============================================================
+# SECTION 20: CREATE data.yaml FILE
+# ============================================================
+
+data_yaml = {
+    "path": os.path.abspath(dataset_root),
+    "train": "images/train",
+    "val": "images/val",
+    "test": "images/test",
+    "names": {
+        0: "rectangle_object"
+    }
+}
+
+yaml_path = f"{dataset_root}/data.yaml"
+
+with open(yaml_path, "w") as f:
+    yaml.dump(data_yaml, f)
+
+print("Created YAML file:")
+print(yaml_path)
+
+with open(yaml_path, "r") as f:
+    print(f.read())
+
+# ============================================================
+# SECTION 21: TRAIN YOLO ON THE TOY DATASET
+# ============================================================
+
+# We start from pretrained YOLO weights.
+# This is called fine-tuning.
+#
+# epochs controls how many times the model sees the dataset.
+# imgsz controls image size.
+# batch controls how many images are processed together.
+#
+# For a real dataset, increase epochs to 50, 100, or more.
+
+train_model = YOLO("yolov8n.pt")
+
+train_results = train_model.train(
+    data=yaml_path,
+    epochs=3,
+    imgsz=256,
+    batch=8,
+    name="toy_rectangle_detector",
+    project="runs_detect",
+    patience=10
+)
+
+print("Training complete")
+
+# ============================================================
+# SECTION 22: WHERE ARE CHECKPOINTS SAVED?
+# ============================================================
+
+# Ultralytics saves checkpoints automatically.
+#
+# Typical location:
+# runs_detect/toy_rectangle_detector/weights/
+#
+# Files:
+# best.pt, best model based on validation performance
+# last.pt, latest model at final epoch
+
+weights_dir = "runs_detect/toy_rectangle_detector/weights"
+
+print("Checkpoint folder:", weights_dir)
+
+if os.path.exists(weights_dir):
+    print("Files inside checkpoint folder:")
+    print(os.listdir(weights_dir))
+
+best_weight_path = f"{weights_dir}/best.pt"
+last_weight_path = f"{weights_dir}/last.pt"
+
+print("Best checkpoint:", best_weight_path)
+print("Last checkpoint:", last_weight_path)
+
+# ============================================================
+# SECTION 23: LOAD BEST CHECKPOINT
+# ============================================================
+
+best_model = YOLO(best_weight_path)
+
+print("Loaded best model checkpoint")
+
+# ============================================================
+# SECTION 24: VALIDATE BEST MODEL
+# ============================================================
+
+metrics = best_model.val(
+    data=yaml_path,
+    imgsz=256,
+    split="val"
+)
+
+print("Validation complete")
+print(metrics)
+
+# ============================================================
+# SECTION 25: TEST BEST MODEL
+# ============================================================
+
+test_metrics = best_model.val(
+    data=yaml_path,
+    imgsz=256,
+    split="test"
+)
+
+print("Test complete")
+print(test_metrics)
+
+# ============================================================
+# SECTION 26: RUN PREDICTION ON A TEST IMAGE
+# ============================================================
+
+test_image_path = f"{dataset_root}/images/test/img_0.jpg"
+
+pred_results = best_model.predict(
+    source=test_image_path,
+    conf=0.25,
+    save=True
+)
+
+print("Prediction complete")
+
+# ============================================================
+# SECTION 27: VISUALIZE TEST PREDICTION
+# ============================================================
+
+test_img = Image.open(test_image_path).convert("RGB")
+
+res = pred_results[0]
+
+fig, ax = plt.subplots(figsize=(6, 6))
+ax.imshow(test_img)
+
+for box in res.boxes:
+    x1, y1, x2, y2 = box.xyxy[0].tolist()
+    class_id = int(box.cls[0])
+    confidence = float(box.conf[0])
+    label = best_model.names[class_id]
+
+    rect = patches.Rectangle(
+        (x1, y1),
+        x2 - x1,
+        y2 - y1,
+        linewidth=3,
+        edgecolor="lime",
+        facecolor="none"
+    )
+
+    ax.add_patch(rect)
+
+    ax.text(
+        x1,
+        y1 - 5,
+        f"{label} {confidence:.2f}",
+        color="white",
+        fontsize=10,
+        fontweight="bold",
+        bbox=dict(facecolor="green", alpha=0.7)
+    )
+
+ax.set_title("Prediction from Fine-Tuned Toy Detector")
+ax.axis("off")
+plt.show()
+
+# ============================================================
+# SECTION 28: RESUME TRAINING FROM LAST CHECKPOINT
+# ============================================================
+
+# Resume training only if last.pt exists.
+# This is useful if training stops suddenly.
+
+if os.path.exists(last_weight_path):
+    resume_model = YOLO(last_weight_path)
+
+    # Uncomment to resume:
+    # resume_model.train(resume=True)
+
+    print("Resume checkpoint is available")
+else:
+    print("No last checkpoint found")
+
+# ============================================================
+# SECTION 29: EXPORT MODEL
+# ============================================================
+
+# Exporting makes the model easier to deploy in other environments.
+# Common formats:
+# ONNX, TorchScript, OpenVINO, TensorRT
+#
+# For this tutorial, ONNX is a good beginner export format.
+
+# Uncomment if needed:
+# best_model.export(format="onnx")
+
+print("Model can be exported with: best_model.export(format='onnx')")
+
+# ============================================================
+# SECTION 30: TRAINING ON A REAL CUSTOM DATASET
+# ============================================================
+
+# For a real object detection dataset, you need:
+#
+# 1. images
+# 2. labels
+# 3. data.yaml
+#
+# Example real data.yaml:
+#
+# path: /content/my_dataset
+# train: images/train
+# val: images/val
+# test: images/test
+# names:
+#   0: tomato
+#   1: damaged_tomato
+#   2: ripe_tomato
+#
+# Each label file must look like:
+#
+# 0 0.512 0.431 0.200 0.340
+# 2 0.210 0.600 0.110 0.180
+#
+# Meaning:
+# class_id x_center y_center width height
+
+# ============================================================
+# SECTION 31: COMMON TRAINING SETTINGS
+# ============================================================
+
+# For quick experiment:
+# model.train(data="data.yaml", epochs=5, imgsz=640)
+#
+# For serious training:
+# model.train(data="data.yaml", epochs=100, imgsz=640, batch=16)
+#
+# For small object detection:
+# use larger image size, such as imgsz=960 or imgsz=1280
+#
+# For limited GPU memory:
+# reduce batch size
+#
+# For custom dataset:
+# start from pretrained weights, such as yolov8n.pt or yolov8s.pt
+
+# ============================================================
+# SECTION 32: COMMON BEGINNER MISTAKES
+# ============================================================
+
+# 1. Image file exists but label file is missing.
+# 2. Label file name does not match image file name.
+# 3. YOLO values are not normalized between 0 and 1.
+# 4. Class ids do not start from 0.
+# 5. data.yaml paths are wrong.
+# 6. Too few training images.
+# 7. Objects are labeled inconsistently.
+# 8. Training set and validation set are mixed incorrectly.
+# 9. Using a model that is too large for the GPU.
+# 10. Expecting high accuracy from 3 epochs.
+
+# ============================================================
+# SECTION 33: PRACTICE TASKS
+# ============================================================
+
+# Task 1:
+# Change the manual bounding box and observe how width and height change.
+#
+# Task 2:
+# Create two boxes with poor overlap and compute IoU.
+#
+# Task 3:
+# Change the NMS IoU threshold from 0.5 to 0.2 and observe what happens.
+#
+# Task 4:
+# Run YOLO on a different online image.
+#
+# Task 5:
+# Increase toy dataset training epochs from 3 to 10.
+#
+# Task 6:
+# Create two classes in the toy dataset:
+# rectangle_object
+# circle_object
+#
+# Task 7:
+# Train YOLO to detect both rectangles and circles.
+#
+# Task 8:
+# Export the final detector to ONNX.
+#
+# Task 9:
+# Use your own images and label them in YOLO format.
+#
+# Task 10:
+# Build a detector for one Daintymindz project, for example tomatoes, parking spaces, vehicles, or defects.
+
+# ============================================================
+# END OF OBJECT DETECTION MASTER NOTEBOOK
+# ============================================================
+`
+},
 
   { id:3, name:"Semantic Segmentation", color:P.accent3, tagline:"Assign a class label to every pixel",
     theory:`Semantic segmentation produces a dense per-pixel class map. Unlike detection, it has no notion of individual instances; all pixels of the same class share one label. Encoder-decoder networks are standard: the encoder progressively downsamples to extract rich features; the decoder upsamples back to original resolution using skip connections. FCN established the paradigm by replacing fully-connected layers with convolutions. DeepLab introduced dilated (atrous) convolutions to expand receptive fields without losing resolution, plus ASPP (Atrous Spatial Pyramid Pooling) for multi-scale context. SegFormer uses a hierarchical transformer encoder with a lightweight MLP decoder. Segment Anything Model (SAM) enables zero-shot segmentation of arbitrary objects given prompts (points, boxes, or text). Panoptic segmentation unifies semantic and instance segmentation into a single prediction.`,
